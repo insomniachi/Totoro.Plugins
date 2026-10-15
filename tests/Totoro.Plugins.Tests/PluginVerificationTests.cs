@@ -1,7 +1,7 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Totoro.Core.Modules.Streaming;
-using Totoro.Core.Plugins;
 using Totoro.Plugins.AnimePahe;
 using Totoro.Plugins.Senshi;
 using Totoro.Plugins.SubsPlease;
@@ -10,6 +10,12 @@ namespace Totoro.Plugins.Tests;
 
 public class PluginVerificationTests
 {
+	private sealed record PluginManifestDto(
+		[property: JsonPropertyName("id")] Guid Id,
+		[property: JsonPropertyName("name")] string Name,
+		[property: JsonPropertyName("version")] string Version,
+		[property: JsonPropertyName("entryPoint")] string EntryPoint);
+
 	[Fact]
 	public void AllPluginManifests_AreValidAndParseable()
 	{
@@ -23,7 +29,7 @@ public class PluginVerificationTests
 		foreach (var file in manifestFiles)
 		{
 			var json = File.ReadAllText(file);
-			var manifest = JsonSerializer.Deserialize<PluginManifest>(json);
+			var manifest = JsonSerializer.Deserialize<PluginManifestDto>(json);
 
 			Assert.NotNull(manifest);
 			Assert.NotEqual(Guid.Empty, manifest.Id);
