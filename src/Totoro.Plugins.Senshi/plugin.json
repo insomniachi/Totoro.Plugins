@@ -5,6 +5,8 @@
   "description": "Senshi streams anime directly, subtitled and dubbed.",
   "author": "Totoro",
   "entryPoint": "Totoro.Plugins.Senshi.dll",
-  "moduleTypes": [ "AnimeProvider" ],
+  "moduleTypes": [
+    "AnimeProvider"
+  ],
   "minAppVersion": "2.0.0"
 }

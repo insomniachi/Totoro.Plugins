@@ -1,17 +1,5 @@
 [
   {
-    "id": "c6066fda-8e30-4545-9599-8e6c3e917312",
-    "name": "Senshi",
-    "version": "2.0.0",
-    "description": "Stream anime and search catalogs via senshi.to.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Senshi-v2.0.0/Senshi.totoro-plugin",
-    "moduleTypes": [
-      "IAnimeProvider"
-    ],
-    "minTotoroVersion": "2.0.0"
-  },
-  {
     "id": "5c2f8e1a-7d43-4b96-a0e5-3f9c1b6d8a27",
     "name": "AnimePahe",
     "version": "2.0.0",
@@ -30,6 +18,19 @@
     "description": "SubsPlease provides fast and timely English subtitled anime immediately after simulcasting.",
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/SubsPlease-v1.0.0/SubsPlease.totoro-plugin",
+    "iconUrl": null,
+    "minTotoroVersion": "2.0.0",
+    "moduleTypes": [
+      "IAnimeProvider"
+    ]
+  },
+  {
+    "id": "c6066fda-8e30-4545-9599-8e6c3e917312",
+    "name": "Senshi",
+    "version": "1.0.0",
+    "description": "Senshi streams anime directly, subtitled and dubbed.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Senshi-v1.0.0/Senshi.totoro-plugin",
     "iconUrl": null,
     "minTotoroVersion": "2.0.0",
     "moduleTypes": [
