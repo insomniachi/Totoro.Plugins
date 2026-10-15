@@ -15,6 +15,14 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
+      with:
+        path: Totoro.Plugins
+
+    - name: Checkout Totoro Core
+      uses: actions/checkout@v4
+      with:
+        repository: insomniachi/Totoro
+        path: Totoro
 
     - name: Setup .NET 10
       uses: actions/setup-dotnet@v4
@@ -22,13 +30,20 @@ jobs:
         dotnet-version: '10.0.x'
 
     - name: Restore Dependencies
+      working-directory: Totoro.Plugins
       run: dotnet restore Totoro.Plugins.slnx
 
+    - name: Run Tests
+      working-directory: Totoro.Plugins
+      run: dotnet test Totoro.Plugins.slnx -c Release --no-restore
+
     - name: Build and Package Plugins (Release)
+      working-directory: Totoro.Plugins
       run: dotnet build Totoro.Plugins.slnx -c Release --no-restore
 
     - name: Collect Artifacts
       id: collect
+      working-directory: Totoro.Plugins
       shell: pwsh
       run: |
         New-Item -ItemType Directory -Path "dist" -Force
@@ -39,7 +54,7 @@ jobs:
 
         # Generate plugins.json catalog manifest
         $catalog = @()
-        Get-ChildItem -Path "src" -Recurse -Filter "plugin.json" | ForEach-Object {
+        Get-ChildItem -Path "src" -Recurse -Filter "plugin.json" | Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' } | ForEach-Object {
           $content = Get-Content $_.FullName -Raw | ConvertFrom-Json
           $pluginName = $_.Directory.Name.Replace("Totoro.Plugins.", "")
           $packageFile = "$pluginName.totoro-plugin"
@@ -62,12 +77,12 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Totoro-Plugins
-        path: dist/*
+        path: Totoro.Plugins/dist/*
 
     - name: Create GitHub Release
       if: startsWith(github.ref, 'refs/tags/v')
       uses: softprops/action-gh-release@v2
       with:
-        files: dist/*
+        files: Totoro.Plugins/dist/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
