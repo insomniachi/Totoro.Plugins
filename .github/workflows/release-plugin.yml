@@ -1,0 +1,171 @@
+name: Release Plugin
+
+on:
+  push:
+    tags:
+      - '*-v*'
+  workflow_dispatch:
+    inputs:
+      plugin:
+        description: 'Plugin to release'
+        required: true
+        type: choice
+        options:
+          - Senshi
+          - SubsPlease
+          - AnimePahe
+      version:
+        description: 'Version (e.g. 2.0.1) - leave blank to read from plugin.json'
+        required: false
+        type: string
+      release_notes:
+        description: 'Release Notes'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        path: Totoro.Plugins
+        fetch-depth: 0
+
+    - name: Checkout Totoro Core
+      uses: actions/checkout@v4
+      with:
+        repository: insomniachi/Totoro
+        ref: next
+        path: Totoro
+
+    - name: Setup .NET 10
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Parse Plugin and Version
+      id: parse
+      working-directory: Totoro.Plugins
+      shell: pwsh
+      run: |
+        if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+          $pluginName = "${{ github.event.inputs.plugin }}"
+          $inputVersion = "${{ github.event.inputs.version }}".Trim()
+          if ([string]::IsNullOrWhiteSpace($inputVersion)) {
+            $manifest = Get-Content "src/Totoro.Plugins.$pluginName/plugin.json" -Raw | ConvertFrom-Json
+            $version = $manifest.version
+          } else {
+            $version = $inputVersion
+          }
+          $tag = "$pluginName-v$version"
+        } else {
+          $tag = "${{ github.ref_name }}"
+          if ($tag -match '^(?<plugin>.+)-v(?<version>[0-9]+\.[0-9]+(\.[0-9]+)?.*)$') {
+            $pluginName = $Matches['plugin']
+            $version = $Matches['version']
+          } else {
+            Write-Error "Invalid tag format '$tag'. Expected: <PluginName>-v<Version> (e.g. Senshi-v2.0.1)"
+            exit 1
+          }
+        }
+
+        Write-Host "Releasing plugin: $pluginName version: $version with tag: $tag"
+        "plugin_name=$pluginName" >> $env:GITHUB_OUTPUT
+        "version=$version" >> $env:GITHUB_OUTPUT
+        "tag=$tag" >> $env:GITHUB_OUTPUT
+
+    - name: Update plugin.json Version
+      working-directory: Totoro.Plugins
+      shell: pwsh
+      run: |
+        $manifestPath = "src/Totoro.Plugins.${{ steps.parse.outputs.plugin_name }}/plugin.json"
+        $json = Get-Content $manifestPath -Raw | ConvertFrom-Json
+        $json.version = "${{ steps.parse.outputs.version }}"
+        $updated = $json | ConvertTo-Json -Depth 5
+        Set-Content -Path $manifestPath -Value $updated
+        Write-Host "Set $manifestPath version to ${{ steps.parse.outputs.version }}"
+
+    - name: Build and Package Plugin
+      working-directory: Totoro.Plugins
+      run: |
+        dotnet build "src/Totoro.Plugins.${{ steps.parse.outputs.plugin_name }}/Totoro.Plugins.${{ steps.parse.outputs.plugin_name }}.csproj" -c Release
+
+    - name: Create GitHub Release and Upload Asset
+      working-directory: Totoro.Plugins
+      shell: pwsh
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        $plugin = "${{ steps.parse.outputs.plugin_name }}"
+        $ver = "${{ steps.parse.outputs.version }}"
+        $tag = "${{ steps.parse.outputs.tag }}"
+        $packagePath = "src/Totoro.Plugins.$plugin/bin/Release/Package/$plugin.totoro-plugin"
+
+        if (-not (Test-Path $packagePath)) {
+          Write-Error "Package not found at $packagePath"
+          exit 1
+        }
+
+        $notes = "${{ github.event.inputs.release_notes }}"
+        if ([string]::IsNullOrWhiteSpace($notes)) {
+          $notes = "Release of $plugin plugin v$ver"
+        }
+
+        gh release create $tag $packagePath `
+          --title "$plugin v$ver" `
+          --notes "$notes"
+
+        Write-Host "Created release $tag successfully."
+
+    - name: Update plugins.json Catalog
+      working-directory: Totoro.Plugins
+      shell: pwsh
+      run: |
+        $catalogPath = "plugins.json"
+        $catalog = @()
+        if (Test-Path $catalogPath) {
+          $catalog = Get-Content $catalogPath -Raw | ConvertFrom-Json
+          if ($catalog -isnot [System.Array]) { $catalog = @($catalog) }
+        }
+
+        $plugin = "${{ steps.parse.outputs.plugin_name }}"
+        $manifest = Get-Content "src/Totoro.Plugins.$plugin/plugin.json" -Raw | ConvertFrom-Json
+        $tag = "${{ steps.parse.outputs.tag }}"
+        $downloadUrl = "https://github.com/insomniachi/Totoro.Plugins/releases/download/$tag/$plugin.totoro-plugin"
+
+        $existing = $catalog | Where-Object { $_.id -eq $manifest.id }
+        if ($existing) {
+          $existing.version = $manifest.version
+          $existing.description = $manifest.description
+          $existing.author = $manifest.author
+          $existing.downloadUrl = $downloadUrl
+          $existing.iconUrl = $manifest.iconUrl
+          $existing.minTotoroVersion = $manifest.minTotoroVersion
+        } else {
+          $catalog += [PSCustomObject]@{
+            id = $manifest.id
+            name = $manifest.name
+            version = $manifest.version
+            description = $manifest.description
+            author = $manifest.author
+            downloadUrl = $downloadUrl
+            iconUrl = $manifest.iconUrl
+            minTotoroVersion = $manifest.minTotoroVersion
+            moduleTypes = @("IAnimeProvider")
+          }
+        }
+
+        $catalogJson = $catalog | ConvertTo-Json -Depth 5
+        Set-Content -Path $catalogPath -Value $catalogJson
+
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add $catalogPath "src/Totoro.Plugins.$plugin/plugin.json"
+        git commit -m "Update catalog for $plugin v${{ steps.parse.outputs.version }} [skip ci]" || exit 0
+        git push origin main

@@ -36,22 +36,42 @@ When building in a clean CI environment or without a local Totoro clone:
 
 ---
 
-## Building & Packaging
+## Releasing Plugins Separately
 
-To compile and package all plugins into distributable `.totoro-plugin` archives:
+Each plugin in this repository has its own independent semantic version (defined in its `plugin.json`). You can release any plugin individually using either of two methods:
+
+### Method 1: Using the GitHub Actions UI (Recommended)
+1. Go to **Actions** → **[Release Plugin](https://github.com/insomniachi/Totoro.Plugins/actions/workflows/release-plugin.yml)**.
+2. Click **Run workflow**.
+3. Select the plugin to release (e.g. `Senshi`, `SubsPlease`, `AnimePahe`).
+4. (Optional) Enter the new version number (e.g. `2.0.1`), or leave blank to use the version in `plugin.json`.
+5. (Optional) Enter release notes.
+6. Click **Run workflow**.
+
+The workflow will automatically:
+- Build and package only that plugin into a `.totoro-plugin` archive.
+- Create a GitHub Release with tag `<Plugin>-v<version>` (e.g. `Senshi-v2.0.1`).
+- Attach `<Plugin>.totoro-plugin` to the release.
+- Update `plugins.json` on `main` with the new version and release download URL.
+
+### Method 2: Using Scoped Git Tags
+Push a tag following the pattern `<PluginName>-v<Version>`:
 
 ```powershell
-dotnet build Totoro.Plugins.slnx -c Release
+# Example: release version 2.0.1 of Senshi
+git tag Senshi-v2.0.1
+git push origin Senshi-v2.0.1
+
+# Example: release version 2.1.0 of SubsPlease
+git tag SubsPlease-v2.1.0
+git push origin SubsPlease-v2.1.0
 ```
 
-The resulting `.totoro-plugin` zip files are automatically created in each project's `bin\Release\Package\` folder:
-- `src/Totoro.Plugins.Senshi/bin/Release/Package/Senshi.totoro-plugin`
-- `src/Totoro.Plugins.SubsPlease/bin/Release/Package/SubsPlease.totoro-plugin`
-- `src/Totoro.Plugins.AnimePahe/bin/Release/Package/AnimePahe.totoro-plugin`
+The `Release Plugin` workflow triggers automatically on matching tags and performs the complete release and catalog update process.
 
 ---
 
 ## Installing Plugins in Totoro
 
+- **In-App Store**: In Totoro, open **Test → Plugins** to browse the catalog and click **Install** or **Update**.
 - **Manual**: Extract any `.totoro-plugin` zip into `%LocalAppData%\Totoro\Plugins\<PluginName>\`.
-- **In-App**: In Totoro, open **Test → Plugins** and click **Install Plugin (.totoro-plugin)**.
