@@ -117,11 +117,22 @@ jobs:
           $notes = "Release of $plugin plugin v$ver"
         }
 
-        gh release create $tag $packagePath `
-          --title "$plugin v$ver" `
-          --notes "$notes"
+        $releaseExists = $false
+        gh release view $tag 2>$null
+        if ($LASTEXITCODE -eq 0) {
+          $releaseExists = $true
+        }
 
-        Write-Host "Created release $tag successfully."
+        if ($releaseExists) {
+          Write-Host "Release $tag already exists; uploading/updating asset..."
+          gh release upload $tag $packagePath --clobber
+        } else {
+          gh release create $tag $packagePath `
+            --title "$plugin v$ver" `
+            --notes "$notes"
+        }
+
+        Write-Host "Release $tag ready."
 
     - name: Update plugins.json Catalog
       working-directory: Totoro.Plugins
@@ -139,27 +150,21 @@ jobs:
         $tag = "${{ steps.parse.outputs.tag }}"
         $downloadUrl = "https://github.com/insomniachi/Totoro.Plugins/releases/download/$tag/$plugin.totoro-plugin"
 
-        $existing = $catalog | Where-Object { $_.id -eq $manifest.id }
-        if ($existing) {
-          $existing.version = $manifest.version
-          $existing.description = $manifest.description
-          $existing.author = $manifest.author
-          $existing.downloadUrl = $downloadUrl
-          $existing.iconUrl = $manifest.iconUrl
-          $existing.minTotoroVersion = $manifest.minTotoroVersion
-        } else {
-          $catalog += [PSCustomObject]@{
-            id = $manifest.id
-            name = $manifest.name
-            version = $manifest.version
-            description = $manifest.description
-            author = $manifest.author
-            downloadUrl = $downloadUrl
-            iconUrl = $manifest.iconUrl
-            minTotoroVersion = $manifest.minTotoroVersion
-            moduleTypes = @("IAnimeProvider")
-          }
+        $newEntry = [PSCustomObject]@{
+          id = $manifest.id
+          name = $manifest.name
+          version = $manifest.version
+          description = $manifest.description
+          author = $manifest.author
+          downloadUrl = $downloadUrl
+          iconUrl = $manifest.iconUrl
+          minTotoroVersion = "2.0.0"
+          moduleTypes = @("IAnimeProvider")
         }
+
+        # Replace existing entry if found, otherwise append
+        $filtered = @($catalog | Where-Object { $_.id -ne $manifest.id })
+        $catalog = $filtered + $newEntry
 
         $catalogJson = $catalog | ConvertTo-Json -Depth 5
         Set-Content -Path $catalogPath -Value $catalogJson
@@ -167,5 +172,10 @@ jobs:
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add $catalogPath "src/Totoro.Plugins.$plugin/plugin.json"
-        git commit -m "Update catalog for $plugin v${{ steps.parse.outputs.version }} [skip ci]" || exit 0
-        git push origin main
+        $status = git status --porcelain
+        if ($status) {
+          git commit -m "Update catalog for $plugin v${{ steps.parse.outputs.version }} [skip ci]"
+          git pull --rebase origin main
+          git push origin main
+        }
+        Write-Host "Catalog updated successfully."
