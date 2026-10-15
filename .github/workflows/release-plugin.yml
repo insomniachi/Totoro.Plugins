@@ -12,7 +12,7 @@ on:
           - SubsPlease
           - AnimePahe
       version:
-        description: 'Version (e.g. 1.0.0) - leave blank to read from plugin.json'
+        description: 'Version (e.g. 1.0.1) - leave blank to auto-increment patch from current version'
         required: false
         type: string
       release_notes:
@@ -53,14 +53,41 @@ jobs:
       run: |
         $pluginName = "${{ github.event.inputs.plugin }}"
         $inputVersion = "${{ github.event.inputs.version }}".Trim()
+
         if ([string]::IsNullOrWhiteSpace($inputVersion)) {
           $manifest = Get-Content "src/Totoro.Plugins.$pluginName/plugin.json" -Raw | ConvertFrom-Json
-          $version = $manifest.version
+          $currentVersion = $manifest.version
+
+          # Cross-check with plugins.json to ensure we increment from the highest released version
+          if (Test-Path "plugins.json") {
+            $catalog = Get-Content "plugins.json" -Raw | ConvertFrom-Json
+            $catalogEntry = $catalog | Where-Object { $_.name -eq $pluginName -or $_.id -eq $manifest.id }
+            if ($catalogEntry -and $catalogEntry.version) {
+              if ([Version]::TryParse($catalogEntry.version, [ref]$null) -and [Version]::TryParse($currentVersion, [ref]$null)) {
+                if ([Version]$catalogEntry.version -gt [Version]$currentVersion) {
+                  $currentVersion = $catalogEntry.version
+                }
+              }
+            }
+          }
+
+          if ($currentVersion -match '^(?<major>\d+)\.(?<minor>\d+)(\.(?<patch>\d+))?') {
+            $major = [int]$Matches['major']
+            $minor = [int]$Matches['minor']
+            $patch = if ($Matches['patch']) { [int]$Matches['patch'] } else { 0 }
+            $nextPatch = $patch + 1
+            $version = "$major.$minor.$nextPatch"
+            Write-Host "Auto-incremented version from $currentVersion to $version"
+          } else {
+            Write-Error "Could not parse current version '$currentVersion' as a semantic version."
+            exit 1
+          }
         } else {
           $version = $inputVersion
+          Write-Host "Using explicitly provided version: $version"
         }
-        $tag = "$pluginName-v$version"
 
+        $tag = "$pluginName-v$version"
         Write-Host "Releasing plugin: $pluginName version: $version with tag: $tag"
         "plugin_name=$pluginName" >> $env:GITHUB_OUTPUT
         "version=$version" >> $env:GITHUB_OUTPUT
