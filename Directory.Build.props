@@ -1,0 +1,52 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <GenerateDependencyFile>true</GenerateDependencyFile>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <IsPluginProject Condition="$(MSBuildProjectName.StartsWith('Totoro.Plugins.')) and !$(MSBuildProjectName.EndsWith('.Tests'))">true</IsPluginProject>
+  </PropertyGroup>
+
+  <!-- Auto-detect sibling Totoro repository for ProjectReference vs PackageReference -->
+  <PropertyGroup>
+    <TotoroRepoRoot Condition="'$(TotoroRepoRoot)' == '' and Exists('$(MSBuildThisFileDirectory)..\New folder\src\Totoro.Core\Totoro.Core.csproj')">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\New folder'))</TotoroRepoRoot>
+    <TotoroRepoRoot Condition="'$(TotoroRepoRoot)' == '' and Exists('$(MSBuildThisFileDirectory)..\Totoro\src\Totoro.Core\Totoro.Core.csproj')">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\Totoro'))</TotoroRepoRoot>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsPluginProject)' == 'true'">
+    <!-- When local Totoro repository is found, use ProjectReference directly -->
+    <ProjectReference Include="$(TotoroRepoRoot)\src\Totoro.Core\Totoro.Core.csproj"
+                      Condition="'$(TotoroRepoRoot)' != '' and Exists('$(TotoroRepoRoot)\src\Totoro.Core\Totoro.Core.csproj')"
+                      Private="false"
+                      ExcludeAssets="runtime" />
+
+    <!-- Otherwise (e.g. standalone build / CI), consume Totoro.Core via NuGet -->
+    <PackageReference Include="Totoro.Core"
+                      Version="2.0.0"
+                      Condition="'$(TotoroRepoRoot)' == '' or !Exists('$(TotoroRepoRoot)\src\Totoro.Core\Totoro.Core.csproj')"
+                      ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <!-- Automatically copy plugin.json if present -->
+  <ItemGroup Condition="Exists('$(MSBuildProjectDirectory)\plugin.json')">
+    <None Include="$(MSBuildProjectDirectory)\plugin.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>plugin.json</Link>
+    </None>
+  </ItemGroup>
+
+  <!-- Package into .totoro-plugin on Release build -->
+  <Target Name="PackTotoroPlugin" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' and '$(IsPluginProject)' == 'true'">
+    <PropertyGroup>
+      <PluginPackageDir>$(TargetDir)..\Package\</PluginPackageDir>
+      <PluginShortName>$(MSBuildProjectName.Replace('Totoro.Plugins.', ''))</PluginShortName>
+      <PluginArchive>$(PluginPackageDir)$(PluginShortName).totoro-plugin</PluginArchive>
+    </PropertyGroup>
+    <MakeDir Directories="$(PluginPackageDir)" />
+    <Delete Files="$(PluginArchive)" Condition="Exists('$(PluginArchive)')" />
+    <ZipDirectory SourceDirectory="$(TargetDir)" DestinationFile="$(PluginArchive)" Overwrite="true" />
+    <Message Importance="high" Text="Built Totoro plugin archive: $(PluginArchive)" />
+  </Target>
+</Project>

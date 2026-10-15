@@ -1,0 +1,9 @@
+# Visual Studio / .NET ignores
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+.vs/
+TestResults/
+*.totoro-plugin
+!src/**/bin/Release/Package/*.totoro-plugin
