@@ -5,6 +5,8 @@
   "description": "SubsPlease provides fast and timely English subtitled anime immediately after simulcasting.",
   "author": "Totoro",
   "entryPoint": "Totoro.Plugins.SubsPlease.dll",
-  "moduleTypes": [ "AnimeProvider" ],
+  "moduleTypes": [
+    "AnimeProvider"
+  ],
   "minAppVersion": "2.0.0"
 }
