@@ -1,9 +1,6 @@
 name: Release Plugin
 
 on:
-  push:
-    tags:
-      - '*-v*'
   workflow_dispatch:
     inputs:
       plugin:
@@ -15,7 +12,7 @@ on:
           - SubsPlease
           - AnimePahe
       version:
-        description: 'Version (e.g. 2.0.1) - leave blank to read from plugin.json'
+        description: 'Version (e.g. 1.0.0) - leave blank to read from plugin.json'
         required: false
         type: string
       release_notes:
@@ -54,26 +51,15 @@ jobs:
       working-directory: Totoro.Plugins
       shell: pwsh
       run: |
-        if ("${{ github.event_name }}" -eq "workflow_dispatch") {
-          $pluginName = "${{ github.event.inputs.plugin }}"
-          $inputVersion = "${{ github.event.inputs.version }}".Trim()
-          if ([string]::IsNullOrWhiteSpace($inputVersion)) {
-            $manifest = Get-Content "src/Totoro.Plugins.$pluginName/plugin.json" -Raw | ConvertFrom-Json
-            $version = $manifest.version
-          } else {
-            $version = $inputVersion
-          }
-          $tag = "$pluginName-v$version"
+        $pluginName = "${{ github.event.inputs.plugin }}"
+        $inputVersion = "${{ github.event.inputs.version }}".Trim()
+        if ([string]::IsNullOrWhiteSpace($inputVersion)) {
+          $manifest = Get-Content "src/Totoro.Plugins.$pluginName/plugin.json" -Raw | ConvertFrom-Json
+          $version = $manifest.version
         } else {
-          $tag = "${{ github.ref_name }}"
-          if ($tag -match '^(?<plugin>.+)-v(?<version>[0-9]+\.[0-9]+(\.[0-9]+)?.*)$') {
-            $pluginName = $Matches['plugin']
-            $version = $Matches['version']
-          } else {
-            Write-Error "Invalid tag format '$tag'. Expected: <PluginName>-v<Version> (e.g. Senshi-v2.0.1)"
-            exit 1
-          }
+          $version = $inputVersion
         }
+        $tag = "$pluginName-v$version"
 
         Write-Host "Releasing plugin: $pluginName version: $version with tag: $tag"
         "plugin_name=$pluginName" >> $env:GITHUB_OUTPUT
