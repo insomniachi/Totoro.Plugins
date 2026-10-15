@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Reference Totoro.Core for test host runtime assemblies -->
+    <ProjectReference Include="$(TotoroRepoRoot)\src\Totoro.Core\Totoro.Core.csproj"
+                      Condition="'$(TotoroRepoRoot)' != '' and Exists('$(TotoroRepoRoot)\src\Totoro.Core\Totoro.Core.csproj')" />
+    <PackageReference Include="Totoro.Core"
+                      Version="2.0.0"
+                      Condition="'$(TotoroRepoRoot)' == '' or !Exists('$(TotoroRepoRoot)\src\Totoro.Core\Totoro.Core.csproj')" />
+
+    <ProjectReference Include="..\..\src\Totoro.Plugins.Senshi\Totoro.Plugins.Senshi.csproj" />
+    <ProjectReference Include="..\..\src\Totoro.Plugins.SubsPlease\Totoro.Plugins.SubsPlease.csproj" />
+    <ProjectReference Include="..\..\src\Totoro.Plugins.AnimePahe\Totoro.Plugins.AnimePahe.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

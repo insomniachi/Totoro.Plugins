@@ -4,4 +4,7 @@
     <Project Path="src/Totoro.Plugins.Senshi/Totoro.Plugins.Senshi.csproj" />
     <Project Path="src/Totoro.Plugins.SubsPlease/Totoro.Plugins.SubsPlease.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Totoro.Plugins.Tests/Totoro.Plugins.Tests.csproj" />
+  </Folder>
 </Solution>
