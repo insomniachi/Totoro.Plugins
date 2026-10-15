@@ -2,8 +2,4 @@
   <PropertyGroup>
     <RootNamespace>Totoro.Plugins.AnimePahe</RootNamespace>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.13.0" />
-  </ItemGroup>
 </Project>
