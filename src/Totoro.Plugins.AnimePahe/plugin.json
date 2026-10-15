@@ -5,6 +5,8 @@
   "description": "AnimePahe streams anime, subtitled and dubbed, from Kwik.",
   "author": "Totoro",
   "entryPoint": "Totoro.Plugins.AnimePahe.dll",
-  "moduleTypes": [ "AnimeProvider" ],
+  "moduleTypes": [
+    "AnimeProvider"
+  ],
   "minAppVersion": "2.0.0"
 }
