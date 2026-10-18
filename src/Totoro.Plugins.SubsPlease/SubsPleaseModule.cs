@@ -16,7 +16,8 @@ public class SubsPleaseModule : IModule<Settings>
 		Id = Id,
 		Name = "SubsPlease",
 		Description = "SubsPlease's goal is to provide fast and timely English subtitled anime immediately after they are simulcasted.",
-		EntryPoint = "Totoro.Plugins.SubsPlease.dll"
+		EntryPoint = "Totoro.Plugins.SubsPlease.dll",
+		Image = "icon.png"
 	};
 
 	Descriptor IModule.Descriptor => Descriptor;

@@ -6,7 +6,7 @@
     "description": "SubsPlease provides fast and timely English subtitled anime immediately after simulcasting.",
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/SubsPlease-v1.0.0/SubsPlease.totoro-plugin",
-    "iconUrl": null,
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.SubsPlease/icon.png",
     "minTotoroVersion": "2.0.0",
     "moduleTypes": [
       "IAnimeProvider"
@@ -19,7 +19,7 @@
     "description": "Senshi streams anime directly, subtitled and dubbed.",
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Senshi-v1.0.0/Senshi.totoro-plugin",
-    "iconUrl": null,
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Senshi/icon.png",
     "minTotoroVersion": "2.0.0",
     "moduleTypes": [
       "IAnimeProvider"
@@ -32,7 +32,7 @@
     "description": "AnimePahe streams anime, subtitled and dubbed, from Kwik.",
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/AnimePahe-v1.0.0/AnimePahe.totoro-plugin",
-    "iconUrl": null,
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.AnimePahe/icon.png",
     "minTotoroVersion": "2.0.0",
     "moduleTypes": [
       "IAnimeProvider"

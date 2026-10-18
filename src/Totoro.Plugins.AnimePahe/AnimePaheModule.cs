@@ -16,7 +16,8 @@ public class AnimePaheModule : IModule<Settings>
 		Id = Id,
 		Name = "AnimePahe",
 		Description = "AnimePahe streams anime, subtitled and dubbed, from Kwik. Its site is behind Cloudflare, which now and then asks you to show you're not a bot.",
-		EntryPoint = "Totoro.Plugins.AnimePahe.dll"
+		EntryPoint = "Totoro.Plugins.AnimePahe.dll",
+		Image = "icon.png"
 	};
 
 	Descriptor IModule.Descriptor => Descriptor;

@@ -38,6 +38,14 @@
     </None>
   </ItemGroup>
 
+  <!-- And its icon (the module descriptor's Image) -->
+  <ItemGroup Condition="Exists('$(MSBuildProjectDirectory)\icon.png')">
+    <None Include="$(MSBuildProjectDirectory)\icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>icon.png</Link>
+    </None>
+  </ItemGroup>
+
   <!-- Package into .totoro-plugin on Release build -->
   <Target Name="PackTotoroPlugin" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' and '$(IsPluginProject)' == 'true'">
     <PropertyGroup>
