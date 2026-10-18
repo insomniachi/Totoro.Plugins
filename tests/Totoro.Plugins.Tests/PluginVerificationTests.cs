@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Totoro.Core.Modules.Streaming;
 using Totoro.Plugins.AnimePahe;
+using Totoro.Plugins.ReAnime;
 using Totoro.Plugins.Senshi;
 using Totoro.Plugins.SubsPlease;
 
@@ -24,7 +25,7 @@ public class PluginVerificationTests
 			.Where(f => !f.Contains("bin", StringComparison.OrdinalIgnoreCase) && !f.Contains("obj", StringComparison.OrdinalIgnoreCase))
 			.ToList();
 
-		Assert.Equal(3, manifestFiles.Count);
+		Assert.Equal(4, manifestFiles.Count);
 
 		foreach (var file in manifestFiles)
 		{
@@ -99,6 +100,29 @@ public class PluginVerificationTests
 		var results = await provider.SearchAsync("Frieren", CancellationToken.None);
 		Assert.NotEmpty(results);
 		Assert.Contains(results, s => s.Title.Contains("Frieren", StringComparison.OrdinalIgnoreCase));
+	}
+
+	[Fact]
+	public async Task ReAnimeProvider_Live_SearchesListsAndResolvesAFile()
+	{
+		var module = new ReAnimeModule();
+		var services = new ServiceCollection();
+		services.AddLogging();
+		module.ConfigureServices(services);
+
+		var sp = services.BuildServiceProvider();
+		var provider = sp.GetRequiredKeyedService<IAnimeProvider>(ReAnimeModule.Id);
+		Assert.Equal("Re:ANIME", provider.Name);
+
+		var shows = await provider.SearchAsync("Frieren", CancellationToken.None);
+		Assert.Contains(shows, s => s.Title.Contains("Frieren", StringComparison.OrdinalIgnoreCase));
+
+		var episodes = await provider.GetEpisodesAsync(shows[0].Id, CancellationToken.None);
+		Assert.NotEmpty(episodes);
+
+		var servers = await provider.GetServersAsync(episodes.MinBy(x => x.Number)!, CancellationToken.None);
+		Assert.NotEmpty(servers);
+		Assert.All(servers, x => Assert.True(x.Url.IsAbsoluteUri));
 	}
 
 	private sealed class DummyWebPageLoader : Totoro.Core.Web.IWebPageLoader

@@ -26,6 +26,7 @@
     <ProjectReference Include="..\..\src\Totoro.Plugins.Senshi\Totoro.Plugins.Senshi.csproj" />
     <ProjectReference Include="..\..\src\Totoro.Plugins.SubsPlease\Totoro.Plugins.SubsPlease.csproj" />
     <ProjectReference Include="..\..\src\Totoro.Plugins.AnimePahe\Totoro.Plugins.AnimePahe.csproj" />
+    <ProjectReference Include="..\..\src\Totoro.Plugins.ReAnime\Totoro.Plugins.ReAnime.csproj" />
   </ItemGroup>
 
   <ItemGroup>

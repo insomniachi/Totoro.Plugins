@@ -13,6 +13,7 @@ Plugins in this repository are dynamically loaded at runtime into an isolated `A
 | **Senshi** (`Totoro.Plugins.Senshi`) | `c6066fda-8e30-4545-9599-8e6c3e917312` | Stream anime and search catalogs via `senshi.to`. |
 | **SubsPlease** (`Totoro.Plugins.SubsPlease`) | `9b7a71c8-7633-46e8-be5e-288c19ac1330` | Direct torrent schedule and magnet extraction via `subsplease.org`. |
 | **AnimePahe** (`Totoro.Plugins.AnimePahe`) | `5c2f8e1a-7d43-4b96-a0e5-3f9c1b6d8a27` | Search, episodes, and stream link extraction via `animepahe.ru`. |
+| **ReAnime** (`Totoro.Plugins.ReAnime`) | `1d572b0b-9185-4679-86d7-5e6dfa1bcdcd` | Search, episodes, and FlixCloud file links via `reanime.to`. |
 
 ---
 
@@ -43,7 +44,7 @@ Each plugin in this repository has its own independent semantic version (defined
 ### Method 1: Using the GitHub Actions UI (Recommended)
 1. Go to **Actions** → **[Release Plugin](https://github.com/insomniachi/Totoro.Plugins/actions/workflows/release-plugin.yml)**.
 2. Click **Run workflow**.
-3. Select the plugin to release (e.g. `Senshi`, `SubsPlease`, `AnimePahe`).
+3. Select the plugin to release (e.g. `Senshi`, `SubsPlease`, `AnimePahe`, `ReAnime`).
 4. (Optional) Enter the new version number (e.g. `2.0.1`), or leave blank to use the version in `plugin.json`.
 5. (Optional) Enter release notes.
 6. Click **Run workflow**.

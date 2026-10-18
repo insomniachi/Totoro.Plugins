@@ -11,6 +11,7 @@ on:
           - Senshi
           - SubsPlease
           - AnimePahe
+          - ReAnime
       version:
         description: 'Version (e.g. 1.0.1) - leave blank to auto-increment patch from current version'
         required: false

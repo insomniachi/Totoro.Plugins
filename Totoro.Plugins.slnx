@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Totoro.Plugins.AnimePahe/Totoro.Plugins.AnimePahe.csproj" />
+    <Project Path="src/Totoro.Plugins.ReAnime/Totoro.Plugins.ReAnime.csproj" />
     <Project Path="src/Totoro.Plugins.Senshi/Totoro.Plugins.Senshi.csproj" />
     <Project Path="src/Totoro.Plugins.SubsPlease/Totoro.Plugins.SubsPlease.csproj" />
   </Folder>
