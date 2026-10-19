@@ -37,5 +37,18 @@
     "moduleTypes": [
       "IAnimeProvider"
     ]
+  },
+  {
+    "id": "1d572b0b-9185-4679-86d7-5e6dfa1bcdcd",
+    "name": "ReAnime",
+    "version": "1.0.0",
+    "description": "Re:ANIME streams anime, subtitled and dubbed, as the original files from FlixCloud.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/ReAnime-v1.0.0/ReAnime.totoro-plugin",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.ReAnime/icon.png",
+    "minTotoroVersion": "2.0.0",
+    "moduleTypes": [
+      "IAnimeProvider"
+    ]
   }
 ]
