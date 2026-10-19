@@ -31,7 +31,10 @@ public class ReAnimeModule : IModule<Settings>
 		{
 			client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
 			client.DefaultRequestHeaders.Accept.ParseAdd("application/json, text/plain, */*");
-		});
+		})
+		// FlixCloud's file links only work from the IP address that asked for them, so connect the way the player will
+		// (the OS's order, IPv6 first), not over IPv4 as the app's clients do.
+		.ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler());
 	}
 }
 
