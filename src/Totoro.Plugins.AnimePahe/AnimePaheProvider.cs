@@ -45,7 +45,7 @@ public sealed partial class AnimePaheProvider(
 		var shows = await SearchShowsAsync(query, ct);
 		return
 		[
-			.. shows.Select(x => new ProviderShow($"{x.AnimeId}:{x.Title}", x.Title, TitleMatch.Score(query, x.Title)))
+			.. shows.Select(x => new ProviderShow($"{x.AnimeId}:{x.Title}", x.Title, TitleMatch.Score(query, x.Title)) { Image = x.Poster })
 					.OrderByDescending(x => x.Score)
 		];
 	}
@@ -93,10 +93,10 @@ public sealed partial class AnimePaheProvider(
 	}
 
 	/// <summary>The API's search results, whose sessions are kept for later.</summary>
-	private async Task<List<(string AnimeId, string Title)>> SearchShowsAsync(string query, CancellationToken ct)
+	private async Task<List<(string AnimeId, string Title, string Poster)>> SearchShowsAsync(string query, CancellationToken ct)
 	{
 		using var json = await GetJsonAsync($"api?m=search&q={Uri.EscapeDataString(query)}", ct);
-		List<(string, string)> shows = [];
+		List<(string, string, string)> shows = [];
 		foreach (var item in Items(json))
 		{
 			if (item.TryGetProperty("id", out var id) && item.TryGetProperty("session", out var session) &&
@@ -104,7 +104,7 @@ public sealed partial class AnimePaheProvider(
 			{
 				var animeId = id.ToString();
 				sessions.Set(animeId, session.GetString() ?? "", name);
-				shows.Add((animeId, name));
+				shows.Add((animeId, name, item.TryGetProperty("poster", out var poster) ? poster.GetString() ?? "" : ""));
 			}
 		}
 

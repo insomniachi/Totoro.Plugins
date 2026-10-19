@@ -44,7 +44,7 @@ public sealed class SenshiProvider(
 			return
 			[
 				.. response.Items
-						   .Select(item => new ProviderShow(item.Id, item.Title, TitleMatch.Score(query, item.Title)))
+						   .Select(item => new ProviderShow(item.Id, item.Title, TitleMatch.Score(query, item.Title)) { Image = item.Image ?? "" })
 						   .OrderByDescending(x => x.Score)
 			];
 		}

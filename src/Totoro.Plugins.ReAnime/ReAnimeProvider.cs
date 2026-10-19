@@ -48,7 +48,8 @@ public sealed partial class ReAnimeProvider(
 				.Select(x => new ProviderShow(
 					$"{x.AnimeId}:{x.AnilistId}",
 					x.Title!.Name!,
-					x.Title.All.Max(title => TitleMatch.Score(query, title))))
+					x.Title.All.Max(title => TitleMatch.Score(query, title)))
+					{ Image = x.Cover?.ExtraLarge ?? x.Cover?.Large ?? "" })
 				.OrderByDescending(x => x.Score)
 		];
 	}
@@ -171,7 +172,11 @@ public sealed partial class ReAnimeProvider(
 	private sealed record Anime(
 		[property: JsonPropertyName("anime_id")] string AnimeId,
 		[property: JsonPropertyName("anilist_id")] int AnilistId,
-		Title? Title);
+		Title? Title,
+		[property: JsonPropertyName("cover_image")] CoverImage? Cover);
+
+	// AniList's covers: "extra_large" is AniList's large.
+	private sealed record CoverImage([property: JsonPropertyName("extra_large")] string? ExtraLarge, string? Large);
 
 	private sealed record Title(string? English, string? Romaji, string? Native)
 	{
