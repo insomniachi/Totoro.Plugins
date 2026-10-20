@@ -45,7 +45,8 @@ public sealed partial class ReAnimeProvider(
 		return
 		[
 			.. (response?.Results ?? [])
-				.Where(x => x.AnilistId > 0 && x.Title?.Name is { Length: > 0 })
+				// It also lists shows with nothing to watch yet (unreleased, shorts it hasn't got), which its site hides.
+				.Where(x => x.AnilistId > 0 && x.Title?.Name is { Length: > 0 } && (x.Subbed > 0 || x.Dubbed > 0))
 				.Select(x => new ProviderShow(
 					$"{x.AnimeId}:{x.AnilistId}",
 					x.Title!.Name!,
@@ -174,7 +175,9 @@ public sealed partial class ReAnimeProvider(
 		[property: JsonPropertyName("anime_id")] string AnimeId,
 		[property: JsonPropertyName("anilist_id")] int AnilistId,
 		Title? Title,
-		[property: JsonPropertyName("cover_image")] CoverImage? Cover);
+		[property: JsonPropertyName("cover_image")] CoverImage? Cover,
+		int Subbed,
+		int Dubbed);
 
 	// AniList's covers: "extra_large" is AniList's large.
 	private sealed record CoverImage([property: JsonPropertyName("extra_large")] string? ExtraLarge, string? Large);
