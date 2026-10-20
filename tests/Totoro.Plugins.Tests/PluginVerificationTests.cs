@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using Totoro.Core.Modules.Anime;
 using Totoro.Core.Modules.Streaming;
 using Totoro.Plugins.AnimePahe;
 using Totoro.Plugins.ReAnime;
@@ -103,6 +104,24 @@ public class PluginVerificationTests
 	}
 
 	[Fact]
+	public async Task SenshiProvider_LiveFindShow_ByMyAnimeListId()
+	{
+		var module = new SenshiModule();
+		var services = new ServiceCollection();
+		services.AddLogging();
+		module.ConfigureServices(services);
+
+		var provider = services.BuildServiceProvider().GetRequiredKeyedService<IAnimeProvider>(SenshiModule.Id);
+
+		var show = await provider.FindShowAsync(new AnimeId { MyAnimeList = 52991 }, CancellationToken.None);
+		Assert.NotNull(show);
+		Assert.Contains("Frieren", show.Title, StringComparison.OrdinalIgnoreCase);
+		Assert.Equal(154587, show.Ids?.Anilist);
+		Assert.NotEmpty(await provider.GetEpisodesAsync(show.Id, CancellationToken.None));
+		Assert.Null(await provider.FindShowAsync(new AnimeId { MyAnimeList = 999999999 }, CancellationToken.None));
+	}
+
+	[Fact]
 	public async Task ReAnimeProvider_Live_SearchesListsAndResolvesAFile()
 	{
 		var module = new ReAnimeModule();
@@ -116,6 +135,7 @@ public class PluginVerificationTests
 
 		var shows = await provider.SearchAsync("Frieren", CancellationToken.None);
 		Assert.Contains(shows, s => s.Title.Contains("Frieren", StringComparison.OrdinalIgnoreCase));
+		Assert.Contains(shows, s => s.Ids?.Anilist == 154587);
 
 		var episodes = await provider.GetEpisodesAsync(shows[0].Id, CancellationToken.None);
 		Assert.NotEmpty(episodes);

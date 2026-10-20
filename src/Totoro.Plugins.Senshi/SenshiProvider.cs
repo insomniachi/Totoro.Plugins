@@ -1,6 +1,7 @@
 using System.Globalization;
 using Flurl.Http;
 using Microsoft.Extensions.Logging;
+using Totoro.Core.Modules.Anime;
 using Totoro.Core.Modules.Streaming;
 using Totoro.Core.Settings;
 
@@ -44,7 +45,7 @@ public sealed class SenshiProvider(
 			return
 			[
 				.. response.Items
-						   .Select(item => new ProviderShow(item.Id, item.Title, TitleMatch.Score(query, item.Title)) { Image = item.Image ?? "" })
+						   .Select(item => new ProviderShow(item.Id, item.Title, TitleMatch.Score(query, item.Title)) { Image = item.Image ?? "", Ids = Ids(item) })
 						   .OrderByDescending(x => x.Score)
 			];
 		}
@@ -52,6 +53,29 @@ public sealed class SenshiProvider(
 		{
 			logger.LogWarning(ex, "Senshi search for \"{Query}\" failed", query);
 			return [];
+		}
+	}
+
+	// Senshi's own id for a show is its MyAnimeList id: /anime/{it} is the show, or 404.
+	public async Task<ProviderShow?> FindShowAsync(AnimeId ids, CancellationToken ct)
+	{
+		if (ids.MyAnimeList <= 0)
+		{
+			return null;
+		}
+
+		try
+		{
+			using var client = CreateClient();
+			var item = await client.Request("anime", ids.MyAnimeList)
+								   .AllowHttpStatus(404)
+								   .GetJsonAsync<SenshiItem?>(cancellationToken: ct);
+			return item is { Id.Length: > 0 } ? new ProviderShow(item.Id, item.Title, 1) { Image = item.Image ?? "", Ids = Ids(item) } : null;
+		}
+		catch (Exception ex) when (ex is not OperationCanceledException)
+		{
+			logger.LogWarning(ex, "Senshi lookup of MyAnimeList id {Id} failed", ids.MyAnimeList);
+			return null;
 		}
 	}
 
@@ -126,6 +150,9 @@ public sealed class SenshiProvider(
 			return [];
 		}
 	}
+
+	// Senshi's own id is the MyAnimeList id; it has the AniList one only for a show's details, not in searches.
+	private static AnimeId Ids(SenshiItem item) => new() { MyAnimeList = item.InternalId, Anilist = item.AnilistId ?? 0 };
 
 	private FlurlClient CreateClient()
 	{

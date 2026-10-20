@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
+using Totoro.Core.Modules.Anime;
 using Totoro.Core.Modules.Streaming;
 using Totoro.Core.Settings;
 
@@ -49,7 +50,7 @@ public sealed partial class ReAnimeProvider(
 					$"{x.AnimeId}:{x.AnilistId}",
 					x.Title!.Name!,
 					x.Title.All.Max(title => TitleMatch.Score(query, title)))
-					{ Image = x.Cover?.ExtraLarge ?? x.Cover?.Large ?? "" })
+					{ Image = x.Cover?.ExtraLarge ?? x.Cover?.Large ?? "", Ids = new AnimeId { Anilist = x.AnilistId } })
 				.OrderByDescending(x => x.Score)
 		];
 	}
