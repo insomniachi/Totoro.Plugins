@@ -1,7 +1,7 @@
 {
   "id": "1d572b0b-9185-4679-86d7-5e6dfa1bcdcd",
   "name": "ReAnime",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Re:ANIME streams anime, subtitled and dubbed, as the original files from FlixCloud.",
   "author": "Totoro",
   "entryPoint": "Totoro.Plugins.ReAnime.dll",
