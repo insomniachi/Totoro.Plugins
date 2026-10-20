@@ -1,18 +1,5 @@
 [
   {
-    "id": "9b7a71c8-7633-46e8-be5e-288c19ac1330",
-    "name": "SubsPlease",
-    "version": "1.0.0",
-    "description": "SubsPlease provides fast and timely English subtitled anime immediately after simulcasting.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/SubsPlease-v1.0.0/SubsPlease.totoro-plugin",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.SubsPlease/icon.png",
-    "minTotoroVersion": "2.0.0",
-    "moduleTypes": [
-      "IAnimeProvider"
-    ]
-  },
-  {
     "id": "1d572b0b-9185-4679-86d7-5e6dfa1bcdcd",
     "name": "ReAnime",
     "version": "1.0.1",
@@ -46,6 +33,19 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Senshi-v1.0.1/Senshi.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Senshi/icon.png",
+    "minTotoroVersion": "2.0.0",
+    "moduleTypes": [
+      "IAnimeProvider"
+    ]
+  },
+  {
+    "id": "9b7a71c8-7633-46e8-be5e-288c19ac1330",
+    "name": "SubsPlease",
+    "version": "1.0.1",
+    "description": "SubsPlease provides fast and timely English subtitled anime immediately after simulcasting.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/SubsPlease-v1.0.1/SubsPlease.totoro-plugin",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.SubsPlease/icon.png",
     "minTotoroVersion": "2.0.0",
     "moduleTypes": [
       "IAnimeProvider"
