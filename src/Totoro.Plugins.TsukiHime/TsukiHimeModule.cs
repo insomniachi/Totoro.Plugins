@@ -17,6 +17,7 @@ public class TsukiHimeModule : IModule<Settings>
 		Name = "TsukiHime",
 		Description = "TsukiHime indexes anime torrents from Nyaa, NekoBT and TokyoTosho, matched to shows and episodes.",
 		EntryPoint = "Totoro.Plugins.TsukiHime.dll",
+		Image = "icon.png"
 	};
 
 	Descriptor IModule.Descriptor => Descriptor;
