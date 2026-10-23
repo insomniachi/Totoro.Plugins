@@ -1,0 +1,12 @@
+{
+  "id": "e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58",
+  "name": "TsukiHime",
+  "version": "1.0.0",
+  "description": "TsukiHime indexes anime torrents from Nyaa, NekoBT and TokyoTosho, matched to shows and episodes.",
+  "author": "Totoro",
+  "entryPoint": "Totoro.Plugins.TsukiHime.dll",
+  "moduleTypes": [
+    "AnimeProvider"
+  ],
+  "minAppVersion": "2.0.0"
+}

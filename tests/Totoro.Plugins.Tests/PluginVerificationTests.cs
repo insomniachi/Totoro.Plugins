@@ -7,6 +7,7 @@ using Totoro.Plugins.AnimePahe;
 using Totoro.Plugins.ReAnime;
 using Totoro.Plugins.Senshi;
 using Totoro.Plugins.SubsPlease;
+using Totoro.Plugins.TsukiHime;
 
 namespace Totoro.Plugins.Tests;
 
@@ -26,7 +27,7 @@ public class PluginVerificationTests
 			.Where(f => !f.Contains("bin", StringComparison.OrdinalIgnoreCase) && !f.Contains("obj", StringComparison.OrdinalIgnoreCase))
 			.ToList();
 
-		Assert.Equal(4, manifestFiles.Count);
+		Assert.Equal(5, manifestFiles.Count);
 
 		foreach (var file in manifestFiles)
 		{
@@ -143,6 +144,68 @@ public class PluginVerificationTests
 		var servers = await provider.GetServersAsync(episodes.MinBy(x => x.Number)!, CancellationToken.None);
 		Assert.NotEmpty(servers);
 		Assert.All(servers, x => Assert.True(x.Url.IsAbsoluteUri));
+	}
+
+	[Fact]
+	public void TsukiHimeModule_RegistersKeyedAnimeProvider()
+	{
+		var module = new TsukiHimeModule();
+		var services = new ServiceCollection();
+		services.AddLogging();
+		module.ConfigureServices(services);
+
+		var provider = services.BuildServiceProvider().GetKeyedService<IAnimeProvider>(TsukiHimeModule.Id);
+
+		Assert.NotNull(provider);
+		Assert.Equal("TsukiHime", provider.Name);
+	}
+
+	[Fact]
+	public void TsukiHimeProvider_ToServers_DropsBatchesAndOrdersByAudioThenQuality()
+	{
+		var json = """
+			[
+			  {"name": "[A] Show - 01 (720p)", "btih": "1111111111111111111111111111111111111111", "nyaa_id": 5, "filecount": 1, "audiolangs": ["ja"], "group": {"name": "A"}},
+			  {"name": "[B] Show - 01 (1080p)", "btih": "2222222222222222222222222222222222222222", "nyaa_id": 0, "filecount": 1, "audiolangs": ["en"], "group": {"name": "B"}},
+			  {"name": "[C] Show - 01 (1080p)", "btih": "3333333333333333333333333333333333333333", "nyaa_id": 0, "filecount": 1, "audiolangs": [], "group": {"name": "C"}},
+			  {"name": "[D] Show - Batch (1080p)", "btih": "4444444444444444444444444444444444444444", "nyaa_id": 0, "filecount": 12, "audiolangs": ["ja"], "group": {"name": "D"}}
+			]
+			""";
+		var torrents = JsonSerializer.Deserialize<List<TsukiHimeProvider.Torrent>>(json)!;
+
+		var sub = TsukiHimeProvider.ToServers(torrents, new Totoro.Plugins.TsukiHime.Settings());
+		Assert.Equal(["C 1080p", "A 720p", "B 1080p (dub)"], sub.Select(x => x.Name));
+		Assert.All(sub, x => Assert.Equal(VideoServerKind.Torrent, x.Kind));
+		Assert.Equal("https://nyaa.si/download/5.torrent", sub[1].Url.ToString());
+		Assert.StartsWith("magnet:?xt=urn:btih:3333", sub[0].Url.ToString());
+
+		var dub = TsukiHimeProvider.ToServers(torrents, new Totoro.Plugins.TsukiHime.Settings { Audio = Totoro.Plugins.TsukiHime.AudioType.Dub, Quality = Totoro.Plugins.TsukiHime.VideoQuality.Hd });
+		Assert.Equal("B 1080p (dub)", dub[0].Name);
+	}
+
+	[Fact]
+	public async Task TsukiHimeProvider_Live_FindsShowByAnilistIdAndListsTorrents()
+	{
+		var module = new TsukiHimeModule();
+		var services = new ServiceCollection();
+		services.AddLogging();
+		module.ConfigureServices(services);
+
+		var provider = services.BuildServiceProvider().GetRequiredKeyedService<IAnimeProvider>(TsukiHimeModule.Id);
+
+		// Link Click Season 3.
+		var show = await provider.FindShowAsync(new AnimeId { Anilist = 191832 }, CancellationToken.None);
+		Assert.NotNull(show);
+		Assert.Equal(191832, show.Ids?.Anilist);
+
+		var episodes = await provider.GetEpisodesAsync(show.Id, CancellationToken.None);
+		Assert.NotEmpty(episodes);
+
+		var servers = await provider.GetServersAsync(episodes.MinBy(x => x.Number)!, CancellationToken.None);
+		Assert.NotEmpty(servers);
+
+		Assert.Contains(await provider.SearchAsync("Frieren", CancellationToken.None), s => s.Title.Contains("Frieren", StringComparison.OrdinalIgnoreCase));
+		Assert.Null(await provider.FindShowAsync(new AnimeId { MyAnimeList = 999999999 }, CancellationToken.None));
 	}
 
 	private sealed class DummyWebPageLoader : Totoro.Core.Web.IWebPageLoader
