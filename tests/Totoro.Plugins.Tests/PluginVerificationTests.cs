@@ -5,6 +5,7 @@ using Totoro.Core.Modules.Anime;
 using Totoro.Core.Modules.Streaming;
 using Totoro.Plugins.AnimePahe;
 using Totoro.Plugins.ReAnime;
+using Totoro.Plugins.RealDebrid;
 using Totoro.Plugins.Senshi;
 using Totoro.Plugins.SubsPlease;
 using Totoro.Plugins.TorBox;
@@ -28,7 +29,7 @@ public class PluginVerificationTests
 			.Where(f => !f.Contains("bin", StringComparison.OrdinalIgnoreCase) && !f.Contains("obj", StringComparison.OrdinalIgnoreCase))
 			.ToList();
 
-		Assert.Equal(6, manifestFiles.Count);
+		Assert.Equal(7, manifestFiles.Count);
 
 		foreach (var file in manifestFiles)
 		{
@@ -264,6 +265,53 @@ public class PluginVerificationTests
 		var error = await Assert.ThrowsAsync<TorrentStreamException>(() => streamer.StreamAsync(new Uri("magnet:?xt=urn:btih:2"), TorrentFile.LargestVideo, null,
 																									  CancellationToken.None));
 		Assert.Equal("TorBox: Your API key is invalid.", error.Message);
+	}
+
+	[Fact]
+	public async Task RealDebridStreamer_SelectsTheFileWaitsAndUnrestrictsItsLink()
+	{
+		var services = new ServiceCollection();
+		services.AddLogging();
+		new RealDebridModule().ConfigureServices(services);
+		var sp = services.BuildServiceProvider();
+		var streamer = sp.GetRequiredKeyedService<ITorrentStreamer>(RealDebridModule.Id);
+		Assert.Equal("Real-Debrid", streamer.Name);
+
+		// Changed in memory only: module settings are written to disk by Save.
+		var settings = sp.GetRequiredService<Totoro.Core.Settings.IModuleSettings<Totoro.Plugins.RealDebrid.Settings>>().Value;
+		settings.ApiKey = "";
+		Assert.False(streamer.IsAvailable());
+		settings.ApiKey = "key";
+		settings.KeepTorrents = false;
+
+		var files = new[] { new { id = 1, path = "/Show/sample.mkv", bytes = 10L }, new { id = 2, path = "/Show/Show - 01.mkv", bytes = 100L } };
+		var magnet = new Uri("magnet:?xt=urn:btih:1111111111111111111111111111111111111111");
+		using var http = new Flurl.Http.Testing.HttpTest();
+		http.RespondWithJson(new { id = "ABC", uri = "https://api.real-debrid.com/rest/1.0/torrents/info/ABC" }, 201)
+			.RespondWithJson(new { status = "waiting_files_selection", progress = 0.0, files, links = Array.Empty<string>() })
+			.RespondWith("", 204)
+			.RespondWithJson(new { status = "downloading", progress = 50.0, files, links = Array.Empty<string>() })
+			.RespondWithJson(new { status = "downloaded", progress = 100.0, files, links = new[] { "https://real-debrid.com/d/XYZ" } })
+			.RespondWithJson(new { download = "https://cdn.real-debrid.com/d/XYZ/Show%20-%2001.mkv" })
+			.RespondWith("", 204);
+
+		var stream = await streamer.StreamAsync(magnet, TorrentFile.LargestVideo, null, CancellationToken.None);
+
+		Assert.Equal("https://cdn.real-debrid.com/d/XYZ/Show%20-%2001.mkv", stream.Url.AbsoluteUri);
+		Assert.Equal(2, stream.File.Index);
+		Assert.Equal("Show/Show - 01.mkv", stream.File.Path);
+		http.ShouldHaveCalled("https://api.real-debrid.com/rest/1.0/torrents/selectFiles/ABC").WithRequestUrlEncoded(new { files = 2 })
+			.WithOAuthBearerToken("key");
+		http.ShouldHaveCalled("https://api.real-debrid.com/rest/1.0/unrestrict/link").WithRequestUrlEncoded(new { link = "https://real-debrid.com/d/XYZ" });
+
+		// Added by the stream, so removed when it ends.
+		await stream.DisposeAsync();
+		http.ShouldHaveCalled("https://api.real-debrid.com/rest/1.0/torrents/delete/ABC").WithVerb(HttpMethod.Delete);
+
+		http.RespondWithJson(new { error = "bad_token", error_code = 8 }, 401);
+		var error = await Assert.ThrowsAsync<TorrentStreamException>(() => streamer.StreamAsync(new Uri("magnet:?xt=urn:btih:2"), TorrentFile.LargestVideo, null,
+																									  CancellationToken.None));
+		Assert.Equal("Real-Debrid: bad token", error.Message);
 	}
 
 	private sealed class DummyWebPageLoader : Totoro.Core.Web.IWebPageLoader

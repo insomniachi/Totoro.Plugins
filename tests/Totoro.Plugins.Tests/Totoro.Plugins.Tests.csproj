@@ -29,6 +29,7 @@
     <ProjectReference Include="..\..\src\Totoro.Plugins.ReAnime\Totoro.Plugins.ReAnime.csproj" />
     <ProjectReference Include="..\..\src\Totoro.Plugins.TsukiHime\Totoro.Plugins.TsukiHime.csproj" />
     <ProjectReference Include="..\..\src\Totoro.Plugins.TorBox\Totoro.Plugins.TorBox.csproj" />
+    <ProjectReference Include="..\..\src\Totoro.Plugins.RealDebrid\Totoro.Plugins.RealDebrid.csproj" />
   </ItemGroup>
 
   <ItemGroup>
