@@ -11,7 +11,6 @@
 
   <!-- Auto-detect sibling or subfolder Totoro repository for ProjectReference vs PackageReference -->
   <PropertyGroup>
-    <TotoroRepoRoot Condition="'$(TotoroRepoRoot)' == '' and Exists('$(MSBuildThisFileDirectory)..\New folder\src\Totoro.Core\Totoro.Core.csproj')">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\New folder'))</TotoroRepoRoot>
     <TotoroRepoRoot Condition="'$(TotoroRepoRoot)' == '' and Exists('$(MSBuildThisFileDirectory)..\Totoro\src\Totoro.Core\Totoro.Core.csproj')">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\Totoro'))</TotoroRepoRoot>
     <TotoroRepoRoot Condition="'$(TotoroRepoRoot)' == '' and Exists('$(MSBuildThisFileDirectory)Totoro\src\Totoro.Core\Totoro.Core.csproj')">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)Totoro'))</TotoroRepoRoot>
   </PropertyGroup>
