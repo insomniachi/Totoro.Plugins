@@ -7,6 +7,7 @@ using Totoro.Plugins.AnimePahe;
 using Totoro.Plugins.ReAnime;
 using Totoro.Plugins.Senshi;
 using Totoro.Plugins.SubsPlease;
+using Totoro.Plugins.TorBox;
 using Totoro.Plugins.TsukiHime;
 
 namespace Totoro.Plugins.Tests;
@@ -27,7 +28,7 @@ public class PluginVerificationTests
 			.Where(f => !f.Contains("bin", StringComparison.OrdinalIgnoreCase) && !f.Contains("obj", StringComparison.OrdinalIgnoreCase))
 			.ToList();
 
-		Assert.Equal(5, manifestFiles.Count);
+		Assert.Equal(6, manifestFiles.Count);
 
 		foreach (var file in manifestFiles)
 		{
@@ -206,6 +207,63 @@ public class PluginVerificationTests
 
 		Assert.Contains(await provider.SearchAsync("Frieren", CancellationToken.None), s => s.Title.Contains("Frieren", StringComparison.OrdinalIgnoreCase));
 		Assert.Null(await provider.FindShowAsync(new AnimeId { MyAnimeList = 999999999 }, CancellationToken.None));
+	}
+
+	[Fact]
+	public async Task TorBoxStreamer_AddsWaitsForDownloadAndLinksTheSelectedFile()
+	{
+		var services = new ServiceCollection();
+		services.AddLogging();
+		new TorBoxModule().ConfigureServices(services);
+		var sp = services.BuildServiceProvider();
+		var streamer = sp.GetRequiredKeyedService<ITorrentStreamer>(TorBoxModule.Id);
+		Assert.Equal("TorBox", streamer.Name);
+
+		// Changed in memory only: module settings are written to disk by Save.
+		var settings = sp.GetRequiredService<Totoro.Core.Settings.IModuleSettings<Totoro.Plugins.TorBox.Settings>>().Value;
+		settings.ApiKey = "";
+		Assert.False(streamer.IsAvailable());
+		settings.ApiKey = "key";
+		settings.KeepTorrents = false;
+		settings.OnlyCached = false;
+
+		var files = new[] { new { id = 0, name = "Show/sample.mkv", size = 10L }, new { id = 1, name = "Show/Show - 01.mkv", size = 100L } };
+		var magnet = new Uri("magnet:?xt=urn:btih:1111111111111111111111111111111111111111");
+		using var http = new Flurl.Http.Testing.HttpTest();
+		http.RespondWithJson(new { success = true, data = new[] { new { id = 3 } } })
+			.RespondWithJson(new { success = true, data = new { torrent_id = 7 } })
+			.RespondWithJson(new { success = true, data = new { download_state = "downloading", download_finished = false, download_present = false, progress = 0.5, files } })
+			.RespondWithJson(new { success = true, data = new { download_state = "cached", download_finished = true, download_present = true, progress = 1.0, files } })
+			.RespondWithJson(new { success = true, data = "https://cdn.torbox.app/7/1" })
+			.RespondWithJson(new { success = true, data = (object?)null });
+
+		var stream = await streamer.StreamAsync(magnet, TorrentFile.LargestVideo, null, CancellationToken.None);
+
+		Assert.Equal("https://cdn.torbox.app/7/1", stream.Url.ToString());
+		Assert.Equal(1, stream.File.Index);
+		http.ShouldHaveCalled("https://api.torbox.app/v1/api/torrents/requestdl").WithQueryParam("torrent_id", 7).WithQueryParam("file_id", 1)
+			.WithOAuthBearerToken("key");
+
+		// Added by the stream, so removed when it ends.
+		await stream.DisposeAsync();
+		http.ShouldHaveCalled("https://api.torbox.app/v1/api/torrents/controltorrent").WithRequestJson(new { torrent_id = 7, operation = "delete" });
+
+		// The user's own torrent (3) is left in TorBox; only cached ones are asked for.
+		settings.OnlyCached = true;
+		http.RespondWithJson(new { success = true, data = new[] { new { id = 3 } } })
+			.RespondWithJson(new { success = true, data = new { torrent_id = 3 } })
+			.RespondWithJson(new { success = true, data = new { download_state = "cached", download_finished = true, download_present = true, progress = 1.0, files } })
+			.RespondWithJson(new { success = true, data = "https://cdn.torbox.app/3/1" });
+		await (await streamer.StreamAsync(magnet, TorrentFile.LargestVideo, null, CancellationToken.None)).DisposeAsync();
+		http.ShouldHaveCalled("https://api.torbox.app/v1/api/torrents/createtorrent")
+			.With(c => c.HttpRequestMessage.Content is System.Net.Http.MultipartContent parts &&
+					   parts.Any(x => x.Headers.ContentDisposition?.Name?.Trim('"') == "add_only_if_cached"));
+		http.ShouldHaveCalled("https://api.torbox.app/v1/api/torrents/controltorrent").Times(1);
+
+		http.RespondWithJson(new { success = false, detail = "Your API key is invalid." });
+		var error = await Assert.ThrowsAsync<TorrentStreamException>(() => streamer.StreamAsync(new Uri("magnet:?xt=urn:btih:2"), TorrentFile.LargestVideo, null,
+																									  CancellationToken.None));
+		Assert.Equal("TorBox: Your API key is invalid.", error.Message);
 	}
 
 	private sealed class DummyWebPageLoader : Totoro.Core.Web.IWebPageLoader

@@ -1,0 +1,13 @@
+{
+  "id": "33c86adc-7dc0-4fa4-a2bf-993acc66700b",
+  "name": "TorBox",
+  "version": "1.0.0",
+  "description": "Streams torrents through TorBox, a debrid service: it downloads them on its servers and the player streams its copy.",
+  "author": "Totoro",
+  "entryPoint": "Totoro.Plugins.TorBox.dll",
+  "moduleTypes": [
+    "TorrentStreamer"
+  ],
+  "minAppVersion": "2.0.0",
+  "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.TorBox/icon.png"
+}
