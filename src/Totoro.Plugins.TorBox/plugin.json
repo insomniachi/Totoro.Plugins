@@ -1,7 +1,7 @@
 {
   "id": "33c86adc-7dc0-4fa4-a2bf-993acc66700b",
   "name": "TorBox",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Streams torrents through TorBox, a debrid service: it downloads them on its servers and the player streams its copy.",
   "author": "Totoro",
   "entryPoint": "Totoro.Plugins.TorBox.dll",
