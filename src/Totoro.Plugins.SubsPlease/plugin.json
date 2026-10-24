@@ -1,7 +1,7 @@
 {
   "id": "9b7a71c8-7633-46e8-be5e-288c19ac1330",
   "name": "SubsPlease",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "SubsPlease provides fast and timely English subtitled anime immediately after simulcasting.",
   "author": "Totoro",
   "entryPoint": "Totoro.Plugins.SubsPlease.dll",
