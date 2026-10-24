@@ -63,5 +63,18 @@
     "moduleTypes": [
       "IAnimeProvider"
     ]
+  },
+  {
+    "id": "33c86adc-7dc0-4fa4-a2bf-993acc66700b",
+    "name": "TorBox",
+    "version": "1.0.1",
+    "description": "Streams torrents through TorBox, a debrid service: it downloads them on its servers and the player streams its copy.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/TorBox-v1.0.1/TorBox.totoro-plugin",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.TorBox/icon.png",
+    "minTotoroVersion": "2.0.0",
+    "moduleTypes": [
+      "IAnimeProvider"
+    ]
   }
 ]
