@@ -39,19 +39,6 @@
     ]
   },
   {
-    "id": "c6066fda-8e30-4545-9599-8e6c3e917312",
-    "name": "Senshi",
-    "version": "1.0.2",
-    "description": "Senshi streams anime directly, subtitled and dubbed.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Senshi-v1.0.2/Senshi.totoro-plugin",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Senshi/icon.png",
-    "minTotoroVersion": "2.0.0",
-    "moduleTypes": [
-      "IAnimeProvider"
-    ]
-  },
-  {
     "id": "e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58",
     "name": "TsukiHime",
     "version": "1.0.1",
@@ -72,6 +59,19 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/TorBox-v1.0.1/TorBox.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.TorBox/icon.png",
+    "minTotoroVersion": "2.0.0",
+    "moduleTypes": [
+      "IAnimeProvider"
+    ]
+  },
+  {
+    "id": "c6066fda-8e30-4545-9599-8e6c3e917312",
+    "name": "Senshi",
+    "version": "1.0.3",
+    "description": "Senshi streams anime directly, subtitled and dubbed.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Senshi-v1.0.3/Senshi.totoro-plugin",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Senshi/icon.png",
     "minTotoroVersion": "2.0.0",
     "moduleTypes": [
       "IAnimeProvider"
