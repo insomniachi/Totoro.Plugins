@@ -16,7 +16,7 @@ public class RealDebridModule : IModule<Settings>
 		Id = Id,
 		Name = "Real-Debrid",
 		Description = "Streams torrents through Real-Debrid, a debrid service: it downloads them on its servers and the player streams its copy.",
-		EntryPoint = "Totoro.Plugins.RealDebrid.dll",
+		DataFolder = "RealDebrid",
 		Image = "icon.png"
 	};
 

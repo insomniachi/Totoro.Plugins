@@ -18,7 +18,7 @@ public class ReAnimeModule : IModule<Settings>
 		Id = Id,
 		Name = "Re:ANIME",
 		Description = "Re:ANIME streams anime, subtitled and dubbed, as the original release files (with their own audio and subtitle tracks) from FlixCloud.",
-		EntryPoint = "Totoro.Plugins.ReAnime.dll",
+		DataFolder = "ReAnime",
 		Image = "icon.png"
 	};
 

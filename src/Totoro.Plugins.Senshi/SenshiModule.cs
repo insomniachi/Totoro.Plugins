@@ -16,7 +16,7 @@ public class SenshiModule : IModule<Settings>
 		Id = Id,
 		Name = "Senshi",
 		Description = "Senshi streams anime directly, subtitled and dubbed.",
-		EntryPoint = "Totoro.Plugins.Senshi.dll",
+		DataFolder = "Senshi",
 		Image = "icon.png"
 	};
 

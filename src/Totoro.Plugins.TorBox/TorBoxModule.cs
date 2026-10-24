@@ -16,7 +16,7 @@ public class TorBoxModule : IModule<Settings>
 		Id = Id,
 		Name = "TorBox",
 		Description = "Streams torrents through TorBox, a debrid service: it downloads them on its servers and the player streams its copy.",
-		EntryPoint = "Totoro.Plugins.TorBox.dll",
+		DataFolder = "TorBox",
 		Image = "icon.png"
 	};
 
