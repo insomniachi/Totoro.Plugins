@@ -76,5 +76,18 @@
     "moduleTypes": [
       "IAnimeProvider"
     ]
+  },
+  {
+    "id": "8fa7a097-dba5-4177-8f06-de7caa2ac580",
+    "name": "Real-Debrid",
+    "version": "1.0.1",
+    "description": "Streams torrents through Real-Debrid, a debrid service: it downloads them on its servers and the player streams its copy.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/RealDebrid-v1.0.1/RealDebrid.totoro-plugin",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.RealDebrid/icon.png",
+    "minTotoroVersion": "2.0.0",
+    "moduleTypes": [
+      "IAnimeProvider"
+    ]
   }
 ]
