@@ -1,9 +1,11 @@
 using System.Globalization;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Totoro.Core.Modules.Anime;
+using Totoro.Core.Modules.Media;
 using Totoro.Core.Modules.Streaming;
 using Totoro.Core.Settings;
 
@@ -96,7 +98,7 @@ public sealed partial class ReAnimeProvider(
 				if (await GetDownloadAsync(video.Key, ct) is { } download)
 				{
 					var audios = string.Join(" & ", video.Distinct().Select(CultureInfo.InvariantCulture.TextInfo.ToTitleCase));
-					servers.Add(new VideoServer($"{download.Resolution} {audios}".Trim(), download.Url));
+					servers.Add(new VideoServer($"{download.Resolution} {audios}".Trim(), download.Url) { Segments = await GetSegmentsAsync(video.Key, ct) });
 				}
 			}
 			catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)
@@ -143,6 +145,46 @@ public sealed partial class ReAnimeProvider(
 		}
 
 		return null;
+	}
+
+	/// <summary>The video's opening and ending, from its embed's chapters; none if it hasn't them.</summary>
+	private async Task<List<MediaSegment>> GetSegmentsAsync(string video, CancellationToken ct)
+	{
+		try
+		{
+			using var client = httpClientFactory.CreateClient("ReAnime");
+			return ParseSegments(await client.GetStringAsync($"{FlixCloud}/e/{video}/__data.json", ct));
+		}
+		catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)
+		{
+			logger.LogWarning(ex, "Couldn't get FlixCloud's chapters for video {Video}", video);
+			return [];
+		}
+	}
+
+	/// <summary>The opening and ending in an embed page's SvelteKit data, e.g. intro_chapter: {start: 0, end: 90} (seconds).</summary>
+	internal static List<MediaSegment> ParseSegments(string json)
+	{
+		using var document = JsonDocument.Parse(json);
+
+		// SvelteKit's devalue format: every value is an index into the node's flat "data" array, whose first item is the page's data.
+		var data = document.RootElement.GetProperty("nodes").EnumerateArray()
+						   .LastOrDefault(x => x.ValueKind == JsonValueKind.Object && x.TryGetProperty("data", out _))
+						   .GetProperty("data");
+
+		JsonElement? At(JsonElement index) =>
+			index.ValueKind == JsonValueKind.Number && index.GetInt32() is var i && i >= 0 && i < data.GetArrayLength() ? data[i] : null;
+
+		double? Seconds(JsonElement chapter, string key) =>
+			chapter.TryGetProperty(key, out var index) && At(index) is { ValueKind: JsonValueKind.Number } value ? value.GetDouble() : null;
+
+		IEnumerable<MediaSegment> Segment(MediaSegmentType type, string key) =>
+			data[0].TryGetProperty(key, out var index) && At(index) is { ValueKind: JsonValueKind.Object } chapter
+			&& Seconds(chapter, "start") is { } start && Seconds(chapter, "end") is { } end && end > start
+				? [new MediaSegment(type, TimeSpan.FromSeconds(start), TimeSpan.FromSeconds(end))]
+				: [];
+
+		return [.. Segment(MediaSegmentType.Opening, "intro_chapter"), .. Segment(MediaSegmentType.Ending, "outro_chapter")];
 	}
 
 	private static (string Slug, string AnilistId) ParseShowId(string showId)

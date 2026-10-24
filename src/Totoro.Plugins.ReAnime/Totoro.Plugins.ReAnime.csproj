@@ -2,4 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Totoro.Plugins.ReAnime</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Totoro.Plugins.Tests" />
+  </ItemGroup>
 </Project>

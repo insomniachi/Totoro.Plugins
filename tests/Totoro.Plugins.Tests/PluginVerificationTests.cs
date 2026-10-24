@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Totoro.Core.Modules.Anime;
+using Totoro.Core.Modules.Media;
 using Totoro.Core.Modules.Streaming;
 using Totoro.Plugins.AnimePahe;
 using Totoro.Plugins.ReAnime;
@@ -146,6 +147,32 @@ public class PluginVerificationTests
 		var servers = await provider.GetServersAsync(episodes.MinBy(x => x.Number)!, CancellationToken.None);
 		Assert.NotEmpty(servers);
 		Assert.All(servers, x => Assert.True(x.Url.IsAbsoluteUri));
+		Assert.Contains(servers, x => x.Segments.Any(s => s.Type == MediaSegmentType.Opening));
+	}
+
+	[Fact]
+	public void ReAnimeProvider_ParseSegments_ReadsChaptersFromSvelteKitData()
+	{
+		// devalue: values are indexes into "data"; -1 is undefined.
+		const string json = """
+			{"type":"data","nodes":[null,{"type":"data","data":[
+				{"intro_chapter":1,"outro_chapter":5,"video_title":4},
+				{"start":2,"end":3,"title":4},0,90,"OP",
+				{"start":6,"end":7},1332,1422.5]}]}
+			""";
+
+		Assert.Equal(
+			[new(MediaSegmentType.Opening, TimeSpan.Zero, TimeSpan.FromSeconds(90)), new(MediaSegmentType.Ending, TimeSpan.FromSeconds(1332), TimeSpan.FromSeconds(1422.5))],
+			ReAnimeProvider.ParseSegments(json));
+		Assert.Empty(ReAnimeProvider.ParseSegments("""{"nodes":[{"type":"data","data":[{"intro_chapter":-1}]}]}"""));
+	}
+
+	[Fact]
+	public void SenshiStream_Segments_SkipsUnknownTimes()
+	{
+		var stream = JsonSerializer.Deserialize<SenshiStream>("""{"intro_start_ms":117033,"intro_end_ms":206997,"outro_start_ms":null,"outro_end_ms":null}""")!;
+
+		Assert.Equal([new(MediaSegmentType.Opening, TimeSpan.FromMilliseconds(117033), TimeSpan.FromMilliseconds(206997))], stream.Segments());
 	}
 
 	[Fact]

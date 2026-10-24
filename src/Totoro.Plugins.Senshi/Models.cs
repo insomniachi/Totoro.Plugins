@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Totoro.Core.Modules.Media;
 
 namespace Totoro.Plugins.Senshi;
 
@@ -26,4 +27,18 @@ public class SenshiStream
 {
 	[JsonPropertyName("url")] public string StreamUrl { get; set; } = string.Empty;
 	[JsonPropertyName("status")] public string Type { get; set; } = string.Empty;
+	[JsonPropertyName("intro_start_ms")] public long? IntroStart { get; set; }
+	[JsonPropertyName("intro_end_ms")] public long? IntroEnd { get; set; }
+	[JsonPropertyName("outro_start_ms")] public long? OutroStart { get; set; }
+	[JsonPropertyName("outro_end_ms")] public long? OutroEnd { get; set; }
+
+	/// <summary>The stream's opening and ending, those Senshi knows (often neither).</summary>
+	public List<MediaSegment> Segments() =>
+	[
+		.. Segment(MediaSegmentType.Opening, IntroStart, IntroEnd),
+		.. Segment(MediaSegmentType.Ending, OutroStart, OutroEnd)
+	];
+
+	private static IEnumerable<MediaSegment> Segment(MediaSegmentType type, long? start, long? end) =>
+		start is { } s && end is { } e && e > s ? [new(type, TimeSpan.FromMilliseconds(s), TimeSpan.FromMilliseconds(e))] : [];
 }
