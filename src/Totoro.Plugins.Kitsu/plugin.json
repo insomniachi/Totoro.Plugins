@@ -1,0 +1,13 @@
+{
+  "id": "d8ae6ad9-3e24-40fe-b79a-8c5d4212dc6e",
+  "name": "Kitsu",
+  "version": "1.0.0",
+  "description": "Kitsu is an anime database and list tracker.",
+  "author": "Totoro",
+  "entryPoint": "Totoro.Plugins.Kitsu.dll",
+  "moduleTypes": [
+    "AnimeDatabase"
+  ],
+  "minAppVersion": "2.0.12",
+  "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Kitsu/icon.png"
+}

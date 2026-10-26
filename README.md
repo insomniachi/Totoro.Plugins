@@ -17,6 +17,8 @@ Plugins in this repository are dynamically loaded at runtime into an isolated `A
 | **TsukiHime** (`Totoro.Plugins.TsukiHime`) | `e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58` | Episode torrents matched by AniList/MyAnimeList id via `api.tsukihime.org`. |
 | **Real-Debrid** (`Totoro.Plugins.RealDebrid`) | `8fa7a097-dba5-4177-8f06-de7caa2ac580` | Streams torrents through the Real-Debrid debrid service (needs an account). |
 | **TorBox** (`Totoro.Plugins.TorBox`) | `33c86adc-7dc0-4fa4-a2bf-993acc66700b` | Streams torrents through the TorBox debrid service (needs an account). |
+| **Shikimori** (`Totoro.Plugins.Shikimori`) | `4833500d-bf61-4600-9f2d-0890c63c38c4` | Anime database and list tracker via `shikimori.io` (ids are MyAnimeList's). |
+| **Kitsu** (`Totoro.Plugins.Kitsu`) | `d8ae6ad9-3e24-40fe-b79a-8c5d4212dc6e` | Anime database and list tracker via `kitsu.app`. |
 
 ---
 

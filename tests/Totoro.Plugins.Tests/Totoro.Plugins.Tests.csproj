@@ -30,6 +30,8 @@
     <ProjectReference Include="..\..\src\Totoro.Plugins.TsukiHime\Totoro.Plugins.TsukiHime.csproj" />
     <ProjectReference Include="..\..\src\Totoro.Plugins.TorBox\Totoro.Plugins.TorBox.csproj" />
     <ProjectReference Include="..\..\src\Totoro.Plugins.RealDebrid\Totoro.Plugins.RealDebrid.csproj" />
+    <ProjectReference Include="..\..\src\Totoro.Plugins.Shikimori\Totoro.Plugins.Shikimori.csproj" />
+    <ProjectReference Include="..\..\src\Totoro.Plugins.Kitsu\Totoro.Plugins.Kitsu.csproj" />
   </ItemGroup>
 
   <ItemGroup>
