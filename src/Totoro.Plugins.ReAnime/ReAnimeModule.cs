@@ -88,9 +88,3 @@ public sealed class Settings : DataContainerConfig
 	[Description("Played first when the episode has separate files for it. Most files have both: pick the track in the player.")]
 	public AudioType Audio { get; set; } = AudioType.Sub;
 }
-
-public enum AudioType
-{
-	[Description("Sub (Japanese, with subtitles)")] Sub,
-	[Description("Dub (English dubbed)")] Dub,
-}

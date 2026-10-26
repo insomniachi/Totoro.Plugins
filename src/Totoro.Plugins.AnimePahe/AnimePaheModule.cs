@@ -43,7 +43,7 @@ public sealed class Settings : DataContainerConfig
 
 	[DisplayName("Audio")]
 	[Description("Used when the episode has it; otherwise the other.")]
-	public AudioLanguage Audio { get; set; } = AudioLanguage.Japanese;
+	public AudioType Audio { get; set; } = AudioType.Sub;
 }
 
 public enum VideoQuality
@@ -51,12 +51,6 @@ public enum VideoQuality
 	[Description("1080p")] FullHd,
 	[Description("720p")] Hd,
 	[Description("360p")] Sd,
-}
-
-public enum AudioLanguage
-{
-	[Description("Japanese, with subtitles")] Japanese,
-	[Description("English (dubbed)")] English,
 }
 
 internal static class SettingsExtensions
@@ -69,5 +63,5 @@ internal static class SettingsExtensions
 	};
 
 	/// <summary>How AnimePahe names it (its buttons' data-audio).</summary>
-	public static string ToCode(this AudioLanguage audio) => audio == AudioLanguage.English ? "eng" : "jpn";
+	public static string ToCode(this AudioType audio) => audio == AudioType.Dub ? "eng" : "jpn";
 }

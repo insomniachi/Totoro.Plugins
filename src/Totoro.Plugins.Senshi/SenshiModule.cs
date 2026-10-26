@@ -45,9 +45,3 @@ public sealed class Settings : DataContainerConfig
 	[Description("Preferred audio type: subbed or dubbed.")]
 	public AudioType Audio { get; set; } = AudioType.Sub;
 }
-
-public enum AudioType
-{
-	[Description("Sub (Japanese, with subtitles)")] Sub,
-	[Description("Dub (English dubbed)")] Dub,
-}

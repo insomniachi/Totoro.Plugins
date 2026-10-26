@@ -208,7 +208,7 @@ public class PluginVerificationTests
 		Assert.Equal("https://nyaa.si/download/5.torrent", sub[1].Url.ToString());
 		Assert.StartsWith("magnet:?xt=urn:btih:3333", sub[0].Url.ToString());
 
-		var dub = TsukiHimeProvider.ToServers(torrents, new Totoro.Plugins.TsukiHime.Settings { Audio = Totoro.Plugins.TsukiHime.AudioType.Dub, Quality = Totoro.Plugins.TsukiHime.VideoQuality.Hd });
+		var dub = TsukiHimeProvider.ToServers(torrents, new Totoro.Plugins.TsukiHime.Settings { Audio = Totoro.Core.Modules.Streaming.AudioType.Dub, Quality = Totoro.Core.Modules.Streaming.VideoQuality.Hd });
 		Assert.Equal("B 1080p (dub)", dub[0].Name);
 	}
 

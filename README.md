@@ -12,9 +12,11 @@ Plugins in this repository are dynamically loaded at runtime into an isolated `A
 |---|---|---|
 | **Senshi** (`Totoro.Plugins.Senshi`) | `c6066fda-8e30-4545-9599-8e6c3e917312` | Stream anime and search catalogs via `senshi.to`. |
 | **SubsPlease** (`Totoro.Plugins.SubsPlease`) | `9b7a71c8-7633-46e8-be5e-288c19ac1330` | Direct torrent schedule and magnet extraction via `subsplease.org`. |
-| **AnimePahe** (`Totoro.Plugins.AnimePahe`) | `5c2f8e1a-7d43-4b96-a0e5-3f9c1b6d8a27` | Search, episodes, and stream link extraction via `animepahe.ru`. |
+| **AnimePahe** (`Totoro.Plugins.AnimePahe`) | `5c2f8e1a-7d43-4b96-a0e5-3f9c1b6d8a27` | Search, episodes, and stream link extraction via `animepahe.pw`. |
 | **ReAnime** (`Totoro.Plugins.ReAnime`) | `1d572b0b-9185-4679-86d7-5e6dfa1bcdcd` | Search, episodes, and FlixCloud file links via `reanime.to`. |
 | **TsukiHime** (`Totoro.Plugins.TsukiHime`) | `e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58` | Episode torrents matched by AniList/MyAnimeList id via `api.tsukihime.org`. |
+| **Real-Debrid** (`Totoro.Plugins.RealDebrid`) | `8fa7a097-dba5-4177-8f06-de7caa2ac580` | Streams torrents through the Real-Debrid debrid service (needs an account). |
+| **TorBox** (`Totoro.Plugins.TorBox`) | `33c86adc-7dc0-4fa4-a2bf-993acc66700b` | Streams torrents through the TorBox debrid service (needs an account). |
 
 ---
 

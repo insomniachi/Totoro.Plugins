@@ -36,20 +36,3 @@ public sealed class Settings : DataContainerConfig
 	[Description("Used when the episode has it; otherwise the best there is.")]
 	public VideoQuality Quality { get; set; } = VideoQuality.FullHd;
 }
-
-public enum VideoQuality
-{
-	[Description("1080p")] FullHd,
-	[Description("720p")] Hd,
-	[Description("480p")] Sd,
-}
-
-internal static class VideoQualityExtensions
-{
-	public static int ToResolution(this VideoQuality quality) => quality switch
-	{
-		VideoQuality.Hd => 720,
-		VideoQuality.Sd => 480,
-		_ => 1080,
-	};
-}
