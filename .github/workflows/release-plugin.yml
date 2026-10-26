@@ -17,6 +17,7 @@ on:
           - TorBox
           - Shikimori
           - Kitsu
+          - KickAssAnime
       version:
         description: 'Version (e.g. 1.0.1) - leave blank to auto-increment patch from current version'
         required: false

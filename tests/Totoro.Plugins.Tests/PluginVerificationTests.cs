@@ -5,6 +5,7 @@ using Totoro.Core.Modules.Anime;
 using Totoro.Core.Modules.Media;
 using Totoro.Core.Modules.Streaming;
 using Totoro.Plugins.AnimePahe;
+using Totoro.Plugins.KickAssAnime;
 using Totoro.Plugins.ReAnime;
 using Totoro.Plugins.RealDebrid;
 using Totoro.Plugins.Senshi;
@@ -30,7 +31,7 @@ public class PluginVerificationTests
 			.Where(f => !f.Contains("bin", StringComparison.OrdinalIgnoreCase) && !f.Contains("obj", StringComparison.OrdinalIgnoreCase))
 			.ToList();
 
-		Assert.Equal(9, manifestFiles.Count);
+		Assert.Equal(10, manifestFiles.Count);
 
 		foreach (var file in manifestFiles)
 		{
@@ -123,6 +124,48 @@ public class PluginVerificationTests
 		Assert.Equal(154587, show.Ids?.Anilist);
 		Assert.NotEmpty(await provider.GetEpisodesAsync(show.Id, CancellationToken.None));
 		Assert.Null(await provider.FindShowAsync(new AnimeId { MyAnimeList = 999999999 }, CancellationToken.None));
+	}
+
+	[Fact]
+	public void KickAssAnimeProvider_ParsePlayer_ReadsManifestAndSubtitles()
+	{
+		var player = new Uri("https://krussdomi.com/cat-player/player?id=1&type=dash");
+		const string html = """
+			<astro-island props="{&quot;manifest&quot;:[0,&quot;https:////bl.krussdomi.com/mpd/1/master.mpd&quot;],&quot;subtitles&quot;:[1,[[0,{&quot;language&quot;:[0,&quot;id&quot;],&quot;filename&quot;:[0,&quot;a_id.vtt&quot;],&quot;name&quot;:[0,&quot;Bahasa Indonesia&quot;],&quot;src&quot;:[0,&quot;https://krussdomi.com/subs/a_id.vtt&quot;]}],[0,{&quot;language&quot;:[0,&quot;en&quot;],&quot;name&quot;:[0,&quot;English&quot;],&quot;src&quot;:[0,&quot;//krussdomi.com/subs/a_en.vtt&quot;]}]]]}">
+			""";
+
+		var server = KickAssAnimeProvider.ParsePlayer("BirdStream", player, html);
+
+		Assert.NotNull(server);
+		Assert.Equal("https://bl.krussdomi.com/mpd/1/master.mpd", server.Url.AbsoluteUri);
+		Assert.Equal("https://krussdomi.com", server.Headers["Origin"]);
+		Assert.Equal(
+			[("English", "en", "https://krussdomi.com/subs/a_en.vtt"), ("Bahasa Indonesia", "id", "https://krussdomi.com/subs/a_id.vtt")],
+			server.Subtitles.Select(x => (x.Name, x.Language, x.Url.AbsoluteUri)));
+		Assert.Null(KickAssAnimeProvider.ParsePlayer("Vid", player, "<html></html>"));
+	}
+
+	[Fact]
+	public async Task KickAssAnimeProvider_Live_SearchesListsAndFindsStreams()
+	{
+		var module = new KickAssAnimeModule();
+		var services = new ServiceCollection();
+		services.AddLogging();
+		module.ConfigureServices(services);
+
+		var sp = services.BuildServiceProvider();
+		var provider = sp.GetRequiredKeyedService<IAnimeProvider>(KickAssAnimeModule.Id);
+		Assert.Equal("KickAssAnime", provider.Name);
+
+		var shows = await provider.SearchAsync("Sousou no Frieren", CancellationToken.None);
+		Assert.Equal("sousou-no-frieren-2d15", shows[0].Id);
+
+		var episodes = await provider.GetEpisodesAsync(shows[0].Id, CancellationToken.None);
+		Assert.Equal(28, episodes.Count);
+
+		var servers = await provider.GetServersAsync(episodes.MinBy(x => x.Number)!, CancellationToken.None);
+		Assert.NotEmpty(servers);
+		Assert.Contains(servers, x => x.Subtitles.FirstOrDefault()?.Language == "en");
 	}
 
 	[Fact]
