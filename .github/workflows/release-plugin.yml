@@ -181,7 +181,7 @@ jobs:
           author = $manifest.author
           downloadUrl = $downloadUrl
           iconUrl = $manifest.iconUrl
-          minTotoroVersion = "2.0.0"
+          minTotoroVersion = if ($manifest.minAppVersion) { $manifest.minAppVersion } else { "2.0.0" }
           # The catalog names the interface ("IAnimeDatabase"), the manifest the type ("AnimeDatabase").
           moduleTypes = @($manifest.moduleTypes | ForEach-Object { "I$_" })
         }

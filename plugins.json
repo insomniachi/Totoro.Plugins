@@ -33,7 +33,7 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/KickAssAnime-v1.0.0/KickAssAnime.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.KickAssAnime/icon.png",
-    "minTotoroVersion": "2.0.0",
+    "minTotoroVersion": "2.0.12",
     "moduleTypes": [
       "IAnimeProvider"
     ]
@@ -46,7 +46,7 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Kitsu-v1.0.0/Kitsu.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Kitsu/icon.png",
-    "minTotoroVersion": "2.0.0",
+    "minTotoroVersion": "2.0.12",
     "moduleTypes": [
       "IAnimeDatabase"
     ]
@@ -59,7 +59,7 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Shikimori-v1.0.0/Shikimori.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Shikimori/icon.png",
-    "minTotoroVersion": "2.0.0",
+    "minTotoroVersion": "2.0.12",
     "moduleTypes": [
       "IAnimeDatabase"
     ]
@@ -72,7 +72,7 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/AnimePahe-v1.0.3/AnimePahe.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.AnimePahe/icon.png",
-    "minTotoroVersion": "2.0.0",
+    "minTotoroVersion": "2.0.12",
     "moduleTypes": [
       "IAnimeProvider"
     ]
@@ -85,7 +85,7 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/ReAnime-v1.0.4/ReAnime.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.ReAnime/icon.png",
-    "minTotoroVersion": "2.0.0",
+    "minTotoroVersion": "2.0.12",
     "moduleTypes": [
       "IAnimeProvider"
     ]
@@ -98,7 +98,7 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Senshi-v1.0.4/Senshi.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Senshi/icon.png",
-    "minTotoroVersion": "2.0.0",
+    "minTotoroVersion": "2.0.12",
     "moduleTypes": [
       "IAnimeProvider"
     ]
@@ -111,7 +111,7 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/SubsPlease-v1.0.3/SubsPlease.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.SubsPlease/icon.png",
-    "minTotoroVersion": "2.0.0",
+    "minTotoroVersion": "2.0.12",
     "moduleTypes": [
       "IAnimeProvider"
     ]
@@ -124,7 +124,7 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/TsukiHime-v1.0.3/TsukiHime.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.TsukiHime/icon.png",
-    "minTotoroVersion": "2.0.0",
+    "minTotoroVersion": "2.0.12",
     "moduleTypes": [
       "IAnimeProvider"
     ]
