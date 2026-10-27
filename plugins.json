@@ -26,19 +26,6 @@
     ]
   },
   {
-    "id": "1d572b0b-9185-4679-86d7-5e6dfa1bcdcd",
-    "name": "ReAnime",
-    "version": "1.0.3",
-    "description": "Re:ANIME streams anime, subtitled and dubbed, as the original files from FlixCloud.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/ReAnime-v1.0.3/ReAnime.totoro-plugin",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.ReAnime/icon.png",
-    "minTotoroVersion": "2.0.0",
-    "moduleTypes": [
-      "IAnimeProvider"
-    ]
-  },
-  {
     "id": "e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58",
     "name": "TsukiHime",
     "version": "1.0.2",
@@ -124,6 +111,19 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/AnimePahe-v1.0.3/AnimePahe.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.AnimePahe/icon.png",
+    "minTotoroVersion": "2.0.0",
+    "moduleTypes": [
+      "IAnimeProvider"
+    ]
+  },
+  {
+    "id": "1d572b0b-9185-4679-86d7-5e6dfa1bcdcd",
+    "name": "ReAnime",
+    "version": "1.0.4",
+    "description": "Re:ANIME streams anime, subtitled and dubbed, as the original files from FlixCloud.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/ReAnime-v1.0.4/ReAnime.totoro-plugin",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.ReAnime/icon.png",
     "minTotoroVersion": "2.0.0",
     "moduleTypes": [
       "IAnimeProvider"
