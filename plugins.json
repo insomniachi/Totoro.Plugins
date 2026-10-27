@@ -26,19 +26,6 @@
     ]
   },
   {
-    "id": "5c2f8e1a-7d43-4b96-a0e5-3f9c1b6d8a27",
-    "name": "AnimePahe",
-    "version": "1.0.2",
-    "description": "AnimePahe streams anime, subtitled and dubbed, from Kwik.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/AnimePahe-v1.0.2/AnimePahe.totoro-plugin",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.AnimePahe/icon.png",
-    "minTotoroVersion": "2.0.0",
-    "moduleTypes": [
-      "IAnimeProvider"
-    ]
-  },
-  {
     "id": "1d572b0b-9185-4679-86d7-5e6dfa1bcdcd",
     "name": "ReAnime",
     "version": "1.0.3",
@@ -124,6 +111,19 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Shikimori-v1.0.0/Shikimori.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Shikimori/icon.png",
+    "minTotoroVersion": "2.0.0",
+    "moduleTypes": [
+      "IAnimeProvider"
+    ]
+  },
+  {
+    "id": "5c2f8e1a-7d43-4b96-a0e5-3f9c1b6d8a27",
+    "name": "AnimePahe",
+    "version": "1.0.3",
+    "description": "AnimePahe streams anime, subtitled and dubbed, from Kwik.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/AnimePahe-v1.0.3/AnimePahe.totoro-plugin",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.AnimePahe/icon.png",
     "minTotoroVersion": "2.0.0",
     "moduleTypes": [
       "IAnimeProvider"
