@@ -182,7 +182,8 @@ jobs:
           downloadUrl = $downloadUrl
           iconUrl = $manifest.iconUrl
           minTotoroVersion = "2.0.0"
-          moduleTypes = @("IAnimeProvider")
+          # The catalog names the interface ("IAnimeDatabase"), the manifest the type ("AnimeDatabase").
+          moduleTypes = @($manifest.moduleTypes | ForEach-Object { "I$_" })
         }
 
         # Replace existing entry if found, otherwise append

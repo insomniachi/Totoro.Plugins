@@ -9,7 +9,7 @@
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.RealDebrid/icon.png",
     "minTotoroVersion": "2.0.0",
     "moduleTypes": [
-      "IAnimeProvider"
+      "ITorrentStreamer"
     ]
   },
   {
@@ -22,7 +22,7 @@
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.TorBox/icon.png",
     "minTotoroVersion": "2.0.0",
     "moduleTypes": [
-      "IAnimeProvider"
+      "ITorrentStreamer"
     ]
   },
   {
@@ -48,7 +48,7 @@
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Kitsu/icon.png",
     "minTotoroVersion": "2.0.0",
     "moduleTypes": [
-      "IAnimeProvider"
+      "IAnimeDatabase"
     ]
   },
   {
@@ -61,7 +61,7 @@
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Shikimori/icon.png",
     "minTotoroVersion": "2.0.0",
     "moduleTypes": [
-      "IAnimeProvider"
+      "IAnimeDatabase"
     ]
   },
   {
