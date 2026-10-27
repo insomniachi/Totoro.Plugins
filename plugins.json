@@ -89,5 +89,18 @@
     "moduleTypes": [
       "IAnimeProvider"
     ]
+  },
+  {
+    "id": "6da3925f-e703-4f69-9999-c17d6fc7942f",
+    "name": "KickAssAnime",
+    "version": "1.0.0",
+    "description": "KickAssAnime streams anime, subtitled and dubbed, with subtitles in many languages.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/KickAssAnime-v1.0.0/KickAssAnime.totoro-plugin",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.KickAssAnime/icon.png",
+    "minTotoroVersion": "2.0.0",
+    "moduleTypes": [
+      "IAnimeProvider"
+    ]
   }
 ]
