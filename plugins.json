@@ -1,18 +1,5 @@
 [
   {
-    "id": "e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58",
-    "name": "TsukiHime",
-    "version": "1.0.2",
-    "description": "TsukiHime indexes anime torrents from Nyaa, NekoBT and TokyoTosho, matched to shows and episodes.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/TsukiHime-v1.0.2/TsukiHime.totoro-plugin",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.TsukiHime/icon.png",
-    "minTotoroVersion": "2.0.0",
-    "moduleTypes": [
-      "IAnimeProvider"
-    ]
-  },
-  {
     "id": "8fa7a097-dba5-4177-8f06-de7caa2ac580",
     "name": "Real-Debrid",
     "version": "1.0.1",
@@ -124,6 +111,19 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/SubsPlease-v1.0.3/SubsPlease.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.SubsPlease/icon.png",
+    "minTotoroVersion": "2.0.0",
+    "moduleTypes": [
+      "IAnimeProvider"
+    ]
+  },
+  {
+    "id": "e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58",
+    "name": "TsukiHime",
+    "version": "1.0.3",
+    "description": "TsukiHime indexes anime torrents from Nyaa, NekoBT and TokyoTosho, matched to shows and episodes.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/TsukiHime-v1.0.3/TsukiHime.totoro-plugin",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.TsukiHime/icon.png",
     "minTotoroVersion": "2.0.0",
     "moduleTypes": [
       "IAnimeProvider"
