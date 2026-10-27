@@ -102,5 +102,18 @@
     "moduleTypes": [
       "IAnimeProvider"
     ]
+  },
+  {
+    "id": "d8ae6ad9-3e24-40fe-b79a-8c5d4212dc6e",
+    "name": "Kitsu",
+    "version": "1.0.0",
+    "description": "Kitsu is an anime database and list tracker.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Kitsu-v1.0.0/Kitsu.totoro-plugin",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Kitsu/icon.png",
+    "minTotoroVersion": "2.0.0",
+    "moduleTypes": [
+      "IAnimeProvider"
+    ]
   }
 ]
