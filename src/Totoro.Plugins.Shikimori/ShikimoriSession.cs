@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Flurl;
@@ -16,11 +17,11 @@ internal sealed class ShikimoriSession(IModuleSettings<Settings> settings, ILogg
 	public const string Site = "https://shikimori.io";
 
 	// The OAuth application's, from shikimori.io/oauth/applications, with Callback as its redirect URI. Shikimori bans
-	// clients whose User-Agent doesn't name their application.
-	// shortcut: empty until an application is registered; sign-in says so and the rest works signed out.
+	// clients whose User-Agent doesn't name their application. The id and secret are baked in at build time (see the
+	// csproj); a build without them signs in to nothing and says so, and the rest works signed out.
 	public const string AppName = "Totoro";
-	public const string ClientId = "";
-	public const string ClientSecret = "";
+	public static readonly string ClientId = BuildMetadata("ShikimoriClientId");
+	public static readonly string ClientSecret = BuildMetadata("ShikimoriClientSecret");
 	public static readonly Uri Callback = new("http://localhost:2222/callback");
 
 	private static readonly JsonSerializerOptions s_graphQl = new(JsonSerializerDefaults.Web);
@@ -34,6 +35,9 @@ internal sealed class ShikimoriSession(IModuleSettings<Settings> settings, ILogg
 	public bool IncludeNsfw => settings.Value.IncludeNsfw;
 
 	public static bool IsRegistered => ClientId.Length > 0 && ClientSecret.Length > 0;
+
+	private static string BuildMetadata(string key) =>
+		typeof(ShikimoriSession).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().FirstOrDefault(a => a.Key == key)?.Value ?? "";
 
 	/// <summary>A request to <paramref name="path"/>, with the user's (current) token if they're signed in.</summary>
 	public async Task<IFlurlRequest> RequestAsync(string path)

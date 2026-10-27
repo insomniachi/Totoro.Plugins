@@ -10,7 +10,7 @@ Shikimori numbers its anime with MyAnimeList's ids, so `AnimeId.Shikimori` is th
 
 ### Signing in
 
-Shikimori requires an OAuth application. Register one at [shikimori.io/oauth/applications](https://shikimori.io/oauth/applications) with `http://localhost:2222/callback` as its redirect URI and the `user_rates` scope, then set `ClientId`, `ClientSecret` and `AppName` (the application's name, which Shikimori requires in the User-Agent) in `ShikimoriSession.cs`. Without them, browsing works and signing in says it can't.
+Shikimori requires an OAuth application. Register one at [shikimori.io/oauth/applications](https://shikimori.io/oauth/applications) with `http://localhost:2222/callback` as its redirect URI and the `user_rates` scope, then set `AppName` in `ShikimoriSession.cs` to the application's name (Shikimori requires it in the User-Agent). The client id and secret stay out of git: releases take them from the `SHIKIMORI_CLIENT_ID` and `SHIKIMORI_CLIENT_SECRET` repository secrets, and local builds from those environment variables or a git-ignored `Totoro.Plugins.Shikimori.csproj.user` setting the same-named properties. Without them, browsing works and signing in says it can't.
 
 ## Debugging with Totoro
 

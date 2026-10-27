@@ -113,6 +113,9 @@ jobs:
 
     - name: Build and Package Plugin
       working-directory: Totoro.Plugins
+      env:
+        SHIKIMORI_CLIENT_ID: ${{ secrets.SHIKIMORI_CLIENT_ID }}
+        SHIKIMORI_CLIENT_SECRET: ${{ secrets.SHIKIMORI_CLIENT_SECRET }}
       run: |
         dotnet build "src/Totoro.Plugins.${{ steps.parse.outputs.plugin_name }}/Totoro.Plugins.${{ steps.parse.outputs.plugin_name }}.csproj" -c Release
 

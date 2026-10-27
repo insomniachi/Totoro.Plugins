@@ -5,4 +5,10 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Totoro.Plugins.Tests" />
   </ItemGroup>
+  <!-- OAuth credentials, kept out of git: CI passes them as environment variables from repository secrets, and local
+       builds read them from the git-ignored Totoro.Plugins.Shikimori.csproj.user (or the same environment variables). -->
+  <ItemGroup>
+    <AssemblyMetadata Include="ShikimoriClientId" Value="$(SHIKIMORI_CLIENT_ID)" />
+    <AssemblyMetadata Include="ShikimoriClientSecret" Value="$(SHIKIMORI_CLIENT_SECRET)" />
+  </ItemGroup>
 </Project>
