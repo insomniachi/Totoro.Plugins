@@ -31,7 +31,7 @@ public class PluginVerificationTests
 			.Where(f => !f.Contains("bin", StringComparison.OrdinalIgnoreCase) && !f.Contains("obj", StringComparison.OrdinalIgnoreCase))
 			.ToList();
 
-		Assert.Equal(10, manifestFiles.Count);
+		Assert.Equal(12, manifestFiles.Count);
 
 		foreach (var file in manifestFiles)
 		{

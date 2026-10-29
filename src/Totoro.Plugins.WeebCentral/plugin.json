@@ -1,0 +1,12 @@
+{
+  "id": "5f2ae848-fafe-41bb-a851-9e22ecfb1e21",
+  "name": "Weeb Central",
+  "version": "1.0.0",
+  "description": "Read manga from Weeb Central, a large English library that keeps up with new chapters.",
+  "author": "Totoro",
+  "entryPoint": "Totoro.Plugins.WeebCentral.dll",
+  "moduleTypes": [
+    "MangaProvider"
+  ],
+  "minAppVersion": "2.2.0"
+}

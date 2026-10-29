@@ -33,6 +33,8 @@
     <ProjectReference Include="..\..\src\Totoro.Plugins.Shikimori\Totoro.Plugins.Shikimori.csproj" />
     <ProjectReference Include="..\..\src\Totoro.Plugins.Kitsu\Totoro.Plugins.Kitsu.csproj" />
     <ProjectReference Include="..\..\src\Totoro.Plugins.KickAssAnime\Totoro.Plugins.KickAssAnime.csproj" />
+    <ProjectReference Include="..\..\src\Totoro.Plugins.WeebCentral\Totoro.Plugins.WeebCentral.csproj" />
+    <ProjectReference Include="..\..\src\Totoro.Plugins.MangaDex\Totoro.Plugins.MangaDex.csproj" />
   </ItemGroup>
 
   <ItemGroup>
