@@ -128,5 +128,19 @@
     "moduleTypes": [
       "IAnimeProvider"
     ]
+  },
+  {
+    "id": "5f2ae848-fafe-41bb-a851-9e22ecfb1e21",
+    "name": "Weeb Central",
+    "version": "1.0.1",
+    "description": "Read manga from Weeb Central, a large English library that keeps up with new chapters.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/WeebCentral-v1.0.1/WeebCentral.totoro-plugin",
+    "sha256": "55a0e581a3139b3e7d65b3723802d9eac7d257a9790edfadfea05306055cd3da",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.WeebCentral/icon.png",
+    "minTotoroVersion": "2.2.0",
+    "moduleTypes": [
+      "IMangaProvider"
+    ]
   }
 ]
