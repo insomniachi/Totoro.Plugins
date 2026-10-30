@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Totoro.Core.Modules.Manga;
+using Totoro.Plugins.MangaFire;
 using Totoro.Plugins.WeebCentral;
 
 namespace Totoro.Plugins.Tests;
@@ -18,6 +19,7 @@ public class MangaSourcePluginTests
 	public void Modules_RegisterKeyedMangaProviders()
 	{
 		Assert.Equal("Weeb Central", Create(new WeebCentralModule(), WeebCentralModule.Id).Name);
+		Assert.Equal("MangaFire", Create(new MangaFireModule(), MangaFireModule.Id).Name);
 	}
 
 	[Fact]
@@ -44,7 +46,54 @@ public class MangaSourcePluginTests
 		Assert.False(WeebCentralProvider.LinksTo(page, new MangaId { Anilist = 7434 }));
 	}
 
+	[Fact]
+	public void MangaFire_Sign_MatchesTheSite()
+	{
+		// Signatures the site accepted.
+		Assert.Equal("8sK3xtqdFds7Xfo", MangaFireProvider.Sign(MangaFireProvider.Canonical("/titles/dkw", [])));
+		var canonical = MangaFireProvider.Canonical("/titles", [("page", "1"), ("keyword", "one piece"), ("languages[]", "en"), ("limit", "3")]);
+		Assert.Equal("/titles?keyword=one piece&languages[0]=en&limit=3&page=1", canonical);
+		Assert.Equal("8sK3xtqdFZfetBhus6bRApNr5zMeEWBTZ95f5YlQeQ2zTkcLLz77bewH4IB-V9RBYc7VE6KQR-8", MangaFireProvider.Sign(canonical));
+	}
+
+	[Fact]
+	public void MangaFire_ToChapters_OnePerNumberOfficialFirst()
+	{
+		var chapters = MangaFireProvider.ToChapters(
+		[
+			new(3, 2, "", "unofficial"),
+			new(2, 2, "Two", "official"),
+			new(1, 1.5f, null, "unofficial"),
+		], "dkw");
+
+		Assert.Equal([1.5f, 2f], chapters.Select(x => x.Number));
+		Assert.Equal("2", chapters[1].Id);
+		Assert.Equal("Chapter 2: Two", chapters[1].Title);
+	}
+
 	// Live: these reach the sites, as the anime providers' live tests do.
+
+	[Fact]
+	public async Task MangaFire_Live_FindsByAniListIdAndReadsPages()
+	{
+		var source = Create(new MangaFireModule(), MangaFireModule.Id);
+
+		var match = await source.FindMangaAsync(new MangaModel { Title = "One Piece", ExternalIds = new MangaId { Anilist = 30013 } }, CancellationToken.None);
+
+		Assert.Equal("dkw", match?.Id);
+		var chapters = await source.GetChaptersAsync(match!.Id, CancellationToken.None);
+		Assert.True(chapters.Count > 1000);
+		var pages = await source.GetPagesAsync(chapters[^1], CancellationToken.None);
+		Assert.NotEmpty(pages);
+		using var client = new HttpClient();
+		using var image = new HttpRequestMessage(HttpMethod.Get, pages[0].Url);
+		foreach (var (name, value) in pages[0].Headers)
+		{
+			image.Headers.Add(name, value);
+		}
+
+		Assert.True((await client.SendAsync(image)).IsSuccessStatusCode);
+	}
 
 	[Fact]
 	public async Task WeebCentral_Live_FindsByAniListIdAndReadsPages()
