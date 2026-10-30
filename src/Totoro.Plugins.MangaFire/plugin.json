@@ -1,7 +1,7 @@
 {
   "id": "f122281d-eadd-43ff-8bf6-96f7c904515e",
   "name": "MangaFire",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Read manga from MangaFire, a large library with official and fan translations.",
   "author": "Totoro",
   "entryPoint": "Totoro.Plugins.MangaFire.dll",

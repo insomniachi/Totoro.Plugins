@@ -142,5 +142,19 @@
     "moduleTypes": [
       "IMangaProvider"
     ]
+  },
+  {
+    "id": "f122281d-eadd-43ff-8bf6-96f7c904515e",
+    "name": "MangaFire",
+    "version": "1.0.1",
+    "description": "Read manga from MangaFire, a large library with official and fan translations.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/MangaFire-v1.0.1/MangaFire.totoro-plugin",
+    "sha256": "d289d862fd6ec895c68cc43a224462b4838f6e71d0074e8f9c60d21bbaa9f875",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.MangaFire/icon.png",
+    "minTotoroVersion": "2.2.0",
+    "moduleTypes": [
+      "IMangaProvider"
+    ]
   }
 ]
