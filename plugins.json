@@ -7,7 +7,7 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/RealDebrid-v1.0.1/RealDebrid.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.RealDebrid/icon.png",
-    "minTotoroVersion": "2.0.0",
+    "minTotoroVersion": "2.0.8",
     "moduleTypes": [
       "ITorrentStreamer"
     ]
@@ -20,7 +20,7 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/TorBox-v1.0.2/TorBox.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.TorBox/icon.png",
-    "minTotoroVersion": "2.0.0",
+    "minTotoroVersion": "2.0.8",
     "moduleTypes": [
       "ITorrentStreamer"
     ]
@@ -33,7 +33,7 @@
     "author": "Totoro",
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/KickAssAnime-v1.0.0/KickAssAnime.totoro-plugin",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.KickAssAnime/icon.png",
-    "minTotoroVersion": "2.0.12",
+    "minTotoroVersion": "2.0.13",
     "moduleTypes": [
       "IAnimeProvider"
     ]

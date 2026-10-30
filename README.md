@@ -45,36 +45,21 @@ When building in a clean CI environment or without a local Totoro clone:
 
 ## Releasing Plugins Separately
 
-Each plugin in this repository has its own independent semantic version (defined in its `plugin.json`). You can release any plugin individually using either of two methods:
+Each plugin in this repository has its own independent semantic version (defined in its `plugin.json`), and is released on its own from GitHub Actions:
 
-### Method 1: Using the GitHub Actions UI (Recommended)
 1. Go to **Actions** → **[Release Plugin](https://github.com/insomniachi/Totoro.Plugins/actions/workflows/release-plugin.yml)**.
 2. Click **Run workflow**.
 3. Select the plugin to release (e.g. `Senshi`, `SubsPlease`, `AnimePahe`, `ReAnime`).
-4. (Optional) Enter the new version number (e.g. `2.0.1`), or leave blank to use the version in `plugin.json`.
+4. (Optional) Enter the new version number (e.g. `2.0.1`), or leave blank to increment the patch number of the latest released version.
 5. (Optional) Enter release notes.
 6. Click **Run workflow**.
 
 The workflow will automatically:
-- Build and package only that plugin into a `.totoro-plugin` archive.
-- Create a GitHub Release with tag `<Plugin>-v<version>` (e.g. `Senshi-v2.0.1`).
-- Attach `<Plugin>.totoro-plugin` to the release.
-- Update `plugins.json` on `main` with the new version and release download URL.
+- Build and package only that plugin into a `.totoro-plugin` archive, against the Totoro release its `minAppVersion` names (tag `v<minAppVersion>`). A plugin that uses anything newer fails to build, so raise `minAppVersion` first.
+- Create a GitHub Release with tag `<Plugin>-v<version>` (e.g. `Senshi-v2.0.1`), with `<Plugin>.totoro-plugin` attached. A version that's already released is refused, never replaced.
+- Update `plugins.json` on `main` with the new version, the download URL and the package's SHA-256, which Totoro checks before installing. If that push fails, the release is deleted, so the run can be repeated.
 
-### Method 2: Using Scoped Git Tags
-Push a tag following the pattern `<PluginName>-v<Version>`:
-
-```powershell
-# Example: release version 2.0.1 of Senshi
-git tag Senshi-v2.0.1
-git push origin Senshi-v2.0.1
-
-# Example: release version 2.1.0 of SubsPlease
-git tag SubsPlease-v2.1.0
-git push origin SubsPlease-v2.1.0
-```
-
-The `Release Plugin` workflow triggers automatically on matching tags and performs the complete release and catalog update process.
+Releases run one at a time.
 
 ---
 
