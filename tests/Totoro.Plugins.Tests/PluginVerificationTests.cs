@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using Totoro.Core.Modules.Anime;
 using Totoro.Core.Modules.Media;
@@ -31,7 +32,7 @@ public class PluginVerificationTests
 			.Where(f => !f.Contains("bin", StringComparison.OrdinalIgnoreCase) && !f.Contains("obj", StringComparison.OrdinalIgnoreCase))
 			.ToList();
 
-		Assert.Equal(11, manifestFiles.Count);
+		Assert.NotEmpty(manifestFiles);
 
 		foreach (var file in manifestFiles)
 		{
@@ -44,6 +45,24 @@ public class PluginVerificationTests
 			Assert.False(string.IsNullOrWhiteSpace(manifest.Version));
 			Assert.False(string.IsNullOrWhiteSpace(manifest.EntryPoint));
 		}
+	}
+
+	[Fact]
+	public void ReleaseWorkflow_ListsEveryPluginAlphabetically()
+	{
+		var repoRoot = FindPluginsRepoRoot();
+		var workflow = File.ReadAllText(Path.Combine(repoRoot, ".github", "workflows", "release-plugin.yml"));
+		var options = Regex.Match(workflow, @"options:\s*\n((?:\s+- \S+\s*\n)+)").Groups[1].Value
+			.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+			.Select(x => x.TrimStart('-', ' '))
+			.ToList();
+		var plugins = Directory.GetDirectories(Path.Combine(repoRoot, "src"), "Totoro.Plugins.*")
+			.Where(x => File.Exists(Path.Combine(x, "plugin.json")))
+			.Select(x => Path.GetFileName(x)["Totoro.Plugins.".Length..])
+			.Order(StringComparer.OrdinalIgnoreCase)
+			.ToList();
+
+		Assert.Equal(plugins, options);
 	}
 
 	[Fact]

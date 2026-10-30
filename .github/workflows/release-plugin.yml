@@ -7,19 +7,20 @@ on:
         description: 'Plugin to release'
         required: true
         type: choice
+        # Every plugin in src, alphabetical (PluginVerificationTests checks both).
         options:
-          - Senshi
-          - SubsPlease
           - AnimePahe
-          - ReAnime
-          - TsukiHime
-          - RealDebrid
-          - TorBox
-          - Shikimori
-          - Kitsu
           - KickAssAnime
-          - WeebCentral
+          - Kitsu
           - MangaFire
+          - RealDebrid
+          - ReAnime
+          - Senshi
+          - Shikimori
+          - SubsPlease
+          - TorBox
+          - TsukiHime
+          - WeebCentral
       version:
         description: 'Version (e.g. 1.0.1) - leave blank to auto-increment patch from current version'
         required: false
