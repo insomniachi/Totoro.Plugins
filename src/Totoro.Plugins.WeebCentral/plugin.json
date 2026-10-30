@@ -8,5 +8,6 @@
   "moduleTypes": [
     "MangaProvider"
   ],
-  "minAppVersion": "2.2.0"
+  "minAppVersion": "2.2.0",
+  "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.WeebCentral/icon.png"
 }

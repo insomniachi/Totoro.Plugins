@@ -1,7 +1,5 @@
-using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Totoro.Core.Modules.Manga;
-using Totoro.Plugins.MangaDex;
 using Totoro.Plugins.WeebCentral;
 
 namespace Totoro.Plugins.Tests;
@@ -20,7 +18,6 @@ public class MangaSourcePluginTests
 	public void Modules_RegisterKeyedMangaProviders()
 	{
 		Assert.Equal("Weeb Central", Create(new WeebCentralModule(), WeebCentralModule.Id).Name);
-		Assert.Equal("MangaDex", Create(new MangaDexModule(), MangaDexModule.Id).Name);
 	}
 
 	[Fact]
@@ -47,25 +44,6 @@ public class MangaSourcePluginTests
 		Assert.False(WeebCentralProvider.LinksTo(page, new MangaId { Anilist = 7434 }));
 	}
 
-	[Fact]
-	public void MangaDex_ToChapters_LeavesOutExternalAndDuplicates()
-	{
-		using var json = JsonDocument.Parse("""
-			[
-			  {"id":"a","attributes":{"chapter":"1","title":"Dog & Chainsaw","volume":"1","translatedLanguage":"en","pages":53,"externalUrl":null}},
-			  {"id":"b","attributes":{"chapter":"1","title":null,"volume":"1","translatedLanguage":"en","pages":50,"externalUrl":null}},
-			  {"id":"c","attributes":{"chapter":"2","title":"","volume":null,"translatedLanguage":"en","pages":1,"externalUrl":"https://mangaplus.shueisha.co.jp/"}},
-			  {"id":"d","attributes":{"chapter":"3","title":"","volume":null,"translatedLanguage":"en","pages":0,"externalUrl":null}}
-			]
-			""");
-
-		var chapters = MangaDexProvider.ToChapters(json.RootElement.EnumerateArray(), "m");
-
-		var chapter = Assert.Single(chapters);
-		Assert.Equal("a", chapter.Id);
-		Assert.Equal("Dog & Chainsaw", chapter.Title);
-	}
-
 	// Live: these reach the sites, as the anime providers' live tests do.
 
 	[Fact]
@@ -78,19 +56,6 @@ public class MangaSourcePluginTests
 		Assert.Equal("01J76XY7KT7J224EBK6J816Y1Q", match?.Id);
 		var chapters = await source.GetChaptersAsync(match!.Id, CancellationToken.None);
 		Assert.True(chapters.Count > 200);
-		Assert.NotEmpty(await source.GetPagesAsync(chapters[0], CancellationToken.None));
-	}
-
-	[Fact]
-	public async Task MangaDex_Live_FindsByAniListIdAndReadsPages()
-	{
-		var source = Create(new MangaDexModule(), MangaDexModule.Id);
-
-		var match = await source.FindMangaAsync(new MangaModel { Title = "Chainsaw Man", ExternalIds = new MangaId { Anilist = 105778 } }, CancellationToken.None);
-
-		Assert.Equal("a77742b1-befd-49a4-bff5-1ad4e6b0ef7b", match?.Id);
-		var chapters = await source.GetChaptersAsync(match!.Id, CancellationToken.None);
-		Assert.True(chapters.Count > 50);
 		Assert.NotEmpty(await source.GetPagesAsync(chapters[0], CancellationToken.None));
 	}
 }
