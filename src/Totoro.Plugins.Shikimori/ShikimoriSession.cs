@@ -107,9 +107,9 @@ internal sealed class ShikimoriSession(IModuleSettings<Settings> settings, ILogg
 		}
 	}
 
-	public void SignOut()
+	public async Task SignOutAsync()
 	{
-		_lock.Wait();
+		await _lock.WaitAsync();
 		try
 		{
 			settings.Value.Auth = null;

@@ -24,7 +24,7 @@
 
     <!-- Otherwise (e.g. standalone build / CI), consume Totoro.Core via NuGet -->
     <PackageReference Include="Totoro.Core"
-                      Version="2.0.0"
+                      Version="2.1.0"
                       Condition="'$(TotoroRepoRoot)' == '' or !Exists('$(TotoroRepoRoot)\src\Totoro.Core\Totoro.Core.csproj')"
                       ExcludeAssets="runtime" />
   </ItemGroup>

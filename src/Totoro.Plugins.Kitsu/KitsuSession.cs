@@ -86,9 +86,9 @@ internal sealed class KitsuSession(IModuleSettings<Settings> settings, ILogger<K
 		}
 	}
 
-	public void SignOut()
+	public async Task SignOutAsync()
 	{
-		_lock.Wait();
+		await _lock.WaitAsync();
 		try
 		{
 			settings.Value.Auth = null;

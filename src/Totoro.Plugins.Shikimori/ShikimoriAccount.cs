@@ -74,8 +74,5 @@ internal sealed class ShikimoriAccount(
 		}
 	}
 
-	public void SignOut()
-	{
-		session.SignOut();
-	}
+	public Task SignOutAsync() => session.SignOutAsync();
 }

@@ -69,8 +69,5 @@ internal sealed class KitsuAccount(KitsuSession session, IDialogService dialogs,
 		}
 	}
 
-	public void SignOut()
-	{
-		session.SignOut();
-	}
+	public Task SignOutAsync() => session.SignOutAsync();
 }
