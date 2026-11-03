@@ -39,19 +39,6 @@
     ]
   },
   {
-    "id": "4833500d-bf61-4600-9f2d-0890c63c38c4",
-    "name": "Shikimori",
-    "version": "1.0.0",
-    "description": "Shikimori is an anime database and list tracker. It numbers its anime with MyAnimeList's ids, so what's saved about an anime carries over between them.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Shikimori-v1.0.0/Shikimori.totoro-plugin",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Shikimori/icon.png",
-    "minTotoroVersion": "2.0.12",
-    "moduleTypes": [
-      "IAnimeDatabase"
-    ]
-  },
-  {
     "id": "5c2f8e1a-7d43-4b96-a0e5-3f9c1b6d8a27",
     "name": "AnimePahe",
     "version": "1.0.3",
@@ -153,6 +140,20 @@
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Kitsu-v1.0.1/Kitsu.totoro-plugin",
     "sha256": "3d9c0bc6b5af7a769418cf4bc1837c95d454ed4ac62e19063ad1ec4c2e624705",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Kitsu/icon.png",
+    "minTotoroVersion": "2.2.5",
+    "moduleTypes": [
+      "IAnimeDatabase"
+    ]
+  },
+  {
+    "id": "4833500d-bf61-4600-9f2d-0890c63c38c4",
+    "name": "Shikimori",
+    "version": "1.0.1",
+    "description": "Shikimori is an anime database and list tracker. It numbers its anime with MyAnimeList's ids, so what's saved about an anime carries over between them.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Shikimori-v1.0.1/Shikimori.totoro-plugin",
+    "sha256": "765b7b998bf255007031f191673d456db325d91d3a452057b86fcc6f2f94ce9e",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Shikimori/icon.png",
     "minTotoroVersion": "2.2.5",
     "moduleTypes": [
       "IAnimeDatabase"
