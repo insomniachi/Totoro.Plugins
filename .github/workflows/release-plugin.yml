@@ -50,7 +50,7 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         path: Totoro.Plugins
         fetch-depth: 0
@@ -122,14 +122,14 @@ jobs:
         "totoro_ref=v$minAppVersion" >> $env:GITHUB_OUTPUT
 
     - name: Checkout Totoro Core
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         repository: insomniachi/Totoro
         ref: ${{ steps.parse.outputs.totoro_ref }}
         path: Totoro
 
     - name: Setup .NET 10
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '10.0.x'
 
