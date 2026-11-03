@@ -1,7 +1,7 @@
 {
   "id": "d8ae6ad9-3e24-40fe-b79a-8c5d4212dc6e",
   "name": "Kitsu",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Kitsu is an anime database and list tracker.",
   "author": "Totoro",
   "entryPoint": "Totoro.Plugins.Kitsu.dll",
