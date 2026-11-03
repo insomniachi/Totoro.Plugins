@@ -53,6 +53,8 @@ jobs:
       uses: actions/checkout@v5
       with:
         path: Totoro.Plugins
+        # The branch tip when this run starts, not when it was queued, so it sees catalog updates from earlier releases.
+        ref: ${{ github.ref_name }}
         fetch-depth: 0
 
     - name: Parse Plugin and Version
@@ -246,7 +248,8 @@ jobs:
         if ($LASTEXITCODE -eq 0) { git push origin main }
         if ($LASTEXITCODE -ne 0) {
           # Undone, so a re-run releases the same version rather than leaving this one out of the catalog.
-          Write-Error "Couldn't push the catalog; deleting release $tag."
+          # Not Write-Error: under Actions' pwsh it ends the script before the delete runs.
+          Write-Host "::error::Couldn't push the catalog; deleting release $tag."
           gh release delete $tag --cleanup-tag --yes
           exit 1
         }
