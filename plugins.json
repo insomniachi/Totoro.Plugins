@@ -13,19 +13,6 @@
     ]
   },
   {
-    "id": "33c86adc-7dc0-4fa4-a2bf-993acc66700b",
-    "name": "TorBox",
-    "version": "1.0.2",
-    "description": "Streams torrents through TorBox, a debrid service: it downloads them on its servers and the player streams its copy.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/TorBox-v1.0.2/TorBox.totoro-plugin",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.TorBox/icon.png",
-    "minTotoroVersion": "2.0.8",
-    "moduleTypes": [
-      "ITorrentStreamer"
-    ]
-  },
-  {
     "id": "6da3925f-e703-4f69-9999-c17d6fc7942f",
     "name": "KickAssAnime",
     "version": "1.0.0",
@@ -143,6 +130,20 @@
     "minTotoroVersion": "2.2.5",
     "moduleTypes": [
       "IAnimeDatabase"
+    ]
+  },
+  {
+    "id": "33c86adc-7dc0-4fa4-a2bf-993acc66700b",
+    "name": "TorBox",
+    "version": "1.0.3",
+    "description": "Streams torrents through TorBox, a debrid service: it downloads them on its servers and the player streams its copy.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/TorBox-v1.0.3/TorBox.totoro-plugin",
+    "sha256": "06f62c3d31acb069c76b54b4069033243305eda71290ff7ae1630c269b27b63f",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.TorBox/icon.png",
+    "minTotoroVersion": "2.0.8",
+    "moduleTypes": [
+      "ITorrentStreamer"
     ]
   }
 ]
