@@ -1,0 +1,13 @@
+{
+  "id": "45389725-d0a0-4426-87b0-255e86901fc8",
+  "name": "Gotaku",
+  "version": "1.0.0",
+  "description": "Gotaku streams anime, soft-subbed, hard-subbed and dubbed, with intro and outro times.",
+  "author": "Totoro",
+  "entryPoint": "Totoro.Plugins.Gotaku.dll",
+  "moduleTypes": [
+    "AnimeProvider"
+  ],
+  "minAppVersion": "2.3.1",
+  "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Gotaku/icon.png"
+}

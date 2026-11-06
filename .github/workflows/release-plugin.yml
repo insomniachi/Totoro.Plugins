@@ -10,6 +10,7 @@ on:
         # Every plugin in src, alphabetical (PluginVerificationTests checks both).
         options:
           - AnimePahe
+          - Gotaku
           - KickAssAnime
           - Kitsu
           - RealDebrid

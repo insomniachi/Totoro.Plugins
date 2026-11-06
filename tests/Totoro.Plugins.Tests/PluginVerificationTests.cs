@@ -6,6 +6,7 @@ using Totoro.Core.Modules.Anime;
 using Totoro.Core.Modules.Media;
 using Totoro.Core.Modules.Streaming;
 using Totoro.Plugins.AnimePahe;
+using Totoro.Plugins.Gotaku;
 using Totoro.Plugins.KickAssAnime;
 using Totoro.Plugins.ReAnime;
 using Totoro.Plugins.RealDebrid;
@@ -185,6 +186,78 @@ public class PluginVerificationTests
 		var servers = await provider.GetServersAsync(episodes.MinBy(x => x.Number)!, CancellationToken.None);
 		Assert.NotEmpty(servers);
 		Assert.Contains(servers, x => x.Subtitles.FirstOrDefault()?.Language == "en");
+	}
+
+	[Fact]
+	public void GotakuCrypto_DecryptsSegmentPrefixAndRewritesPlaylists()
+	{
+		// A TS segment whose first 100 bytes are encrypted, as the site's are, under the path-only counter.
+		var key = Enumerable.Range(0, 32).Select(i => (byte)i).ToArray();
+		const string url = "https://cdn.example/a/b/seg-1.ts?t=1";
+		var segment = Enumerable.Range(0, 188 * 3).Select(i => i % 188 == 0 ? (byte)0x47 : (byte)i).ToArray();
+		var encrypted = segment.ToArray();
+		GotakuCrypto.XorKeystream(encrypted.AsSpan(0, 100), key, GotakuCrypto.Counter(url, fullUrl: false));
+		Assert.False(GotakuCrypto.LooksLikeMedia(encrypted));
+
+		GotakuCrypto.DecryptSegment(encrypted, key, url, 100);
+		Assert.Equal(segment, encrypted);
+
+		var playlist = GotakuProxy.RewritePlaylist("#EXTM3U\n#EXT-X-KEY:METHOD=AES-128,URI=\"key.bin\"\nseg-1.ts\n", new Uri("https://cdn.example/a/b/index.m3u8"), "abc", 100);
+		var lines = playlist.Split('\n');
+		Assert.Contains("u=https%3A%2F%2Fcdn.example%2Fa%2Fb%2Fkey.bin\"", lines[1]);
+		Assert.DoesNotContain("&k=", lines[1]);
+		Assert.Matches(@"^http://127\.0\.0\.1:\d+/seg-1\.ts\?u=https%3A%2F%2Fcdn\.example%2Fa%2Fb%2Fseg-1\.ts&k=abc&sb=100$", lines[2]);
+	}
+
+	[Fact]
+	public void GotakuKeyStore_ParsesOnlyAWholeCapture()
+	{
+		var seed = string.Join(',', GotakuKeys.Default.Seed);
+		var keys = GotakuKeyStore.Parse($$"""{"version":"11","seed":[{{seed}}],"info":"api-seal|v2"}""");
+		Assert.NotNull(keys);
+		Assert.Equal(("11", "api-seal|v2"), (keys.Version, keys.Info));
+		Assert.Equal(GotakuKeys.Default.Seed, keys.Seed);
+
+		Assert.Null(GotakuKeyStore.Parse(null));
+		Assert.Null(GotakuKeyStore.Parse("""{"version":"11","seed":[1,2,3],"info":"x"}"""));
+		Assert.Null(GotakuKeyStore.Parse($$"""{"version":"999","seed":[{{seed}}],"info":"x"}"""));
+		Assert.Null(GotakuKeyStore.Parse($$"""{"version":"11","seed":[{{seed.Replace("30,", "300,")}}],"info":"x"}"""));
+		Assert.Null(GotakuKeyStore.Parse("not json"));
+	}
+
+	[Fact]
+	public async Task GotakuProvider_Live_SearchesListsAndPlaysAStream()
+	{
+		var module = new GotakuModule();
+		var services = new ServiceCollection();
+		services.AddLogging();
+		module.ConfigureServices(services);
+
+		var sp = services.BuildServiceProvider();
+		var provider = sp.GetRequiredKeyedService<IAnimeProvider>(GotakuModule.Id);
+		Assert.Equal("Gotaku", provider.Name);
+
+		var shows = await provider.SearchAsync("Frieren: Beyond Journey's End", CancellationToken.None);
+		Assert.Equal("vbhgad", shows[0].Id);
+
+		var episodes = await provider.GetEpisodesAsync(shows[0].Id, CancellationToken.None);
+		Assert.True(episodes.Count >= 28);
+
+		var servers = await provider.GetServersAsync(episodes.MinBy(x => x.Number)!, CancellationToken.None);
+		Assert.NotEmpty(servers);
+
+		// The local stream decrypts all the way down to a segment a player can read.
+		using var http = new HttpClient();
+		var url = servers[0].Url;
+		for (var depth = 0; depth < 3 && url.AbsolutePath.EndsWith(".m3u8"); depth++)
+		{
+			var lines = (await http.GetStringAsync(url)).Split('\n');
+			Assert.StartsWith("#EXTM3U", lines[0]);
+			url = new Uri(lines.First(x => x.StartsWith("http://127.0.0.1")).Trim());
+		}
+
+		var segment = await http.GetByteArrayAsync(url);
+		Assert.True(GotakuCrypto.LooksLikeMedia(segment), $"{url} isn't media");
 	}
 
 	[Fact]
