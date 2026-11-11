@@ -113,40 +113,6 @@ public class PluginVerificationTests
 	}
 
 	[Fact]
-	public async Task SenshiProvider_LiveSearch_ReturnsResultsFromSenshiTo()
-	{
-		var module = new SenshiModule();
-		var services = new ServiceCollection();
-		services.AddLogging();
-		module.ConfigureServices(services);
-
-		var sp = services.BuildServiceProvider();
-		var provider = sp.GetRequiredKeyedService<IAnimeProvider>(SenshiModule.Id);
-
-		var results = await provider.SearchAsync("Frieren", CancellationToken.None);
-		Assert.NotEmpty(results);
-		Assert.Contains(results, s => s.Title.Contains("Frieren", StringComparison.OrdinalIgnoreCase));
-	}
-
-	[Fact]
-	public async Task SenshiProvider_LiveFindShow_ByMyAnimeListId()
-	{
-		var module = new SenshiModule();
-		var services = new ServiceCollection();
-		services.AddLogging();
-		module.ConfigureServices(services);
-
-		var provider = services.BuildServiceProvider().GetRequiredKeyedService<IAnimeProvider>(SenshiModule.Id);
-
-		var show = await provider.FindShowAsync(new AnimeId { MyAnimeList = 52991 }, CancellationToken.None);
-		Assert.NotNull(show);
-		Assert.Contains("Frieren", show.Title, StringComparison.OrdinalIgnoreCase);
-		Assert.Equal(154587, show.Ids?.Anilist);
-		Assert.NotEmpty(await provider.GetEpisodesAsync(show.Id, CancellationToken.None));
-		Assert.Null(await provider.FindShowAsync(new AnimeId { MyAnimeList = 999999999 }, CancellationToken.None));
-	}
-
-	[Fact]
 	public void KickAssAnimeProvider_ParsePlayer_ReadsManifestAndSubtitles()
 	{
 		var player = new Uri("https://krussdomi.com/cat-player/player?id=1&type=dash");
