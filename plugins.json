@@ -149,11 +149,11 @@
   {
     "id": "45389725-d0a0-4426-87b0-255e86901fc8",
     "name": "Gotaku",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Gotaku streams anime, soft-subbed, hard-subbed and dubbed, with intro and outro times.",
     "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Gotaku-v1.0.0/Gotaku.totoro-plugin",
-    "sha256": "343138561b31029e965057d3e3318240178701bae0dd7d5ce19f36f294c1a899",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Gotaku-v1.0.1/Gotaku.totoro-plugin",
+    "sha256": "0cacffd2856e8d7aa1467e39dea26ae12cbdc4b50de8ad9e8da91f3699a3c1c9",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Gotaku/icon.png",
     "minTotoroVersion": "2.3.1",
     "moduleTypes": [

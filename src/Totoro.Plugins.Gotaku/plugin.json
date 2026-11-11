@@ -1,7 +1,7 @@
 {
   "id": "45389725-d0a0-4426-87b0-255e86901fc8",
   "name": "Gotaku",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Gotaku streams anime, soft-subbed, hard-subbed and dubbed, with intro and outro times.",
   "author": "Totoro",
   "entryPoint": "Totoro.Plugins.Gotaku.dll",
