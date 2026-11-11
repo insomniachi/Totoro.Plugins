@@ -215,6 +215,7 @@ public sealed partial class GotakuProvider(
 
 	private sealed record ManifestSubtitle(string? Url, string? Language, string? Lang, string? Label, string? Name);
 
-	[GeneratedRegex(@"data-manifest-base=""(?<base>[^""]+)""\s+data-manifest-stamp=""(?<stamp>[^""]+)""")]
+	// Other attributes (data-captions-base, as of November 2026) can sit between the two.
+	[GeneratedRegex(@"data-manifest-base=""(?<base>[^""]+)""[^>]*?data-manifest-stamp=""(?<stamp>[^""]+)""")]
 	private static partial Regex ManifestAttributes();
 }
