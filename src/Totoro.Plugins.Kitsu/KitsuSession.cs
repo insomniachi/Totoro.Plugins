@@ -71,27 +71,17 @@ internal sealed class KitsuSession(IModuleSettings<Settings> settings, ILogger<K
 	/// <summary>Signs in with the user's Kitsu email (or name) and password. Kitsu's API has no other way to.</summary>
 	public async Task SignInAsync(string username, string password)
 	{
-		var token = await RequestTokenAsync(new { grant_type = "password", username, password });
-
-		await _lock.WaitAsync();
-		try
-		{
-			settings.Value.Auth = token;
-			settings.Save();
-			_userId = null;
-		}
-		finally
-		{
-			_lock.Release();
-		}
+		await SetAuthAsync(await RequestTokenAsync(new { grant_type = "password", username, password }));
 	}
 
-	public async Task SignOutAsync()
+	public Task SignOutAsync() => SetAuthAsync(null);
+
+	private async Task SetAuthAsync(KitsuToken? token)
 	{
 		await _lock.WaitAsync();
 		try
 		{
-			settings.Value.Auth = null;
+			settings.Value.Auth = token;
 			settings.Save();
 			_userId = null;
 		}

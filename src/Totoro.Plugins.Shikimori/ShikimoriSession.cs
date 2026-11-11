@@ -73,46 +73,35 @@ internal sealed class ShikimoriSession(IModuleSettings<Settings> settings, ILogg
 
 	public async Task<long> GetUserIdAsync(CancellationToken ct = default)
 	{
-		return _userId ??= (await QueryAsync<ShikiUser?>("{ currentUser { id nickname avatarUrl } }", "currentUser", ct))?.Id
-						   ?? throw new InvalidOperationException("Not signed in to Shikimori");
+		return _userId ??= (await GetUserAsync(ct))?.Id ?? throw new InvalidOperationException("Not signed in to Shikimori");
 	}
 
-	public async Task<ShikiUser?> GetUserAsync()
+	public Task<ShikiUser?> GetUserAsync(CancellationToken ct = default)
 	{
-		return await QueryAsync<ShikiUser?>("{ currentUser { id nickname avatarUrl } }", "currentUser");
+		return QueryAsync<ShikiUser?>("{ currentUser { id nickname avatarUrl } }", "currentUser", ct);
 	}
 
 	/// <summary>Finishes signing in with the code Shikimori's sign-in page redirected with.</summary>
 	public async Task SignInAsync(string code)
 	{
-		var token = await RequestTokenAsync(new
+		await SetAuthAsync(await RequestTokenAsync(new
 		{
 			grant_type = "authorization_code",
 			client_id = ClientId,
 			client_secret = ClientSecret,
 			code,
 			redirect_uri = Callback.ToString(),
-		});
-
-		await _lock.WaitAsync();
-		try
-		{
-			settings.Value.Auth = token;
-			settings.Save();
-			_userId = null;
-		}
-		finally
-		{
-			_lock.Release();
-		}
+		}));
 	}
 
-	public async Task SignOutAsync()
+	public Task SignOutAsync() => SetAuthAsync(null);
+
+	private async Task SetAuthAsync(ShikimoriToken? token)
 	{
 		await _lock.WaitAsync();
 		try
 		{
-			settings.Value.Auth = null;
+			settings.Value.Auth = token;
 			settings.Save();
 			_userId = null;
 		}
