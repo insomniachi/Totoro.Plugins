@@ -1,0 +1,15 @@
+<Project>
+  <!--
+    A plugin with settings editors of its own (Totoro.UI's IPropertyEditor) builds against WinUI. In its .csproj:
+      <TargetFramework>net11.0-windows10.0.26100.0</TargetFramework>
+      <UseWinUI>true</UseWinUI>
+    It then references Totoro.UI, which (like Totoro.Core and WinUI) comes from the app at runtime, not the plugin's folder.
+    Only with the Totoro repository beside this one: Totoro.UI has no NuGet package yet.
+  -->
+  <ItemGroup Condition="'$(IsPluginProject)' == 'true' and '$(UseWinUI)' == 'true'">
+    <ProjectReference Include="$(TotoroRepoRoot)\src\Totoro.UI\Totoro.UI.csproj"
+                      Condition="'$(TotoroRepoRoot)' != ''"
+                      Private="false"
+                      ExcludeAssets="runtime" />
+  </ItemGroup>
+</Project>
