@@ -6,6 +6,7 @@ using Totoro.Core.Modules.Anime;
 using Totoro.Core.Modules.Media;
 using Totoro.Core.Modules.Streaming;
 using Totoro.Plugins.AnimePahe;
+using Totoro.Plugins.AniPM;
 using Totoro.Plugins.Gotaku;
 using Totoro.Plugins.KickAssAnime;
 using Totoro.Plugins.ReAnime;
@@ -227,6 +228,75 @@ public class PluginVerificationTests
 	}
 
 	[Fact]
+	public void AniPMProvider_ReadsSkipTimesAndEpisodeNumbers()
+	{
+		var segments = AniPMProvider.Segments(new(new(1.15, 88.7), new(0, 0)));
+		Assert.Equal([new MediaSegment(MediaSegmentType.Opening, TimeSpan.FromSeconds(1.15), TimeSpan.FromSeconds(88.7))], segments);
+		Assert.Empty(AniPMProvider.Segments(null));
+		Assert.Equal(("1", "12.5"), (AniPMProvider.Number(1), AniPMProvider.Number(12.5)));
+	}
+
+	[Fact]
+	public void AniPMProxy_RewritesPlaylistsAndCurlOutputParses()
+	{
+		var master = AniPMProxy.RewritePlaylist(
+			"#EXTM3U\n#EXT-X-MEDIA:TYPE=SUBTITLES,NAME=\"English\",URI=\"https://media.settlar.io/s\"\n#EXT-X-STREAM-INF:BANDWIDTH=1\nhttps://media.settlar.io/v\n",
+			new Uri("https://media.settlar.io/m"), subtitles: false).Split('\n');
+		Assert.Matches(@"URI=""http://127\.0\.0\.1:\d+/subtitles\.m3u8\?u=https%3A%2F%2Fmedia\.settlar\.io%2Fs""$", master[1]);
+		Assert.Matches(@"^http://127\.0\.0\.1:\d+/playlist\.m3u8\?u=https%3A%2F%2Fmedia\.settlar\.io%2Fv$", master[3]);
+		Assert.Matches(@"^http://127\.0\.0\.1:\d+/segment\.vtt\?u=https%3A%2F%2Fmedia\.settlar\.io%2Fa%2Fseg1$",
+			AniPMProxy.RewritePlaylist("#EXTM3U\n#EXTINF:6,\nseg1", new Uri("https://media.settlar.io/a/variant"), subtitles: true).Split('\n')[2]);
+
+		var (status, type, body) = Curl.Parse("HTTP/1.1 307 Temporary Redirect\r\nLocation: /x\r\n\r\nHTTP/2 200\r\ncontent-type: video/mp2t\r\n\r\nGTS"u8.ToArray());
+		Assert.Equal((200, "video/mp2t", "GTS"), (status, type, System.Text.Encoding.ASCII.GetString(body)));
+	}
+
+	[Fact]
+	public async Task AniPMProvider_Live_SearchesListsAndPlaysAStream()
+	{
+		var module = new AniPMModule();
+		var services = new ServiceCollection();
+		services.AddLogging();
+		services.AddSingleton<Totoro.Core.Web.IWebPageLoader, CurlWebPageLoader>();
+		module.ConfigureServices(services);
+
+		var sp = services.BuildServiceProvider();
+		var provider = sp.GetRequiredKeyedService<IAnimeProvider>(AniPMModule.Id);
+		Assert.Equal("AniPM", provider.Name);
+
+		var shows = await provider.SearchAsync("Frieren: Beyond Journey's End", CancellationToken.None);
+		Assert.Equal("settlar/6351", shows[0].Id);
+		Assert.Equal(154587, shows[0].Ids?.Anilist);
+
+		var found = await provider.FindShowAsync(new AnimeId { Anilist = 154587 }, CancellationToken.None);
+		Assert.Equal("anilist/154587", found?.Id);
+
+		var episodes = await provider.GetEpisodesAsync(shows[0].Id, CancellationToken.None);
+		Assert.True(episodes.Count >= 28);
+
+		var servers = await provider.GetServersAsync(episodes.MinBy(x => x.Number)!, CancellationToken.None);
+		Assert.Equal(["Sub", "Hard Sub", "Dub"], servers.Select(x => x.Name));
+		Assert.Contains(servers[0].Segments, x => x.Type == MediaSegmentType.Opening);
+		Assert.Equal("en", servers[0].Subtitles[0].Language);
+
+		// The local stream plays all the way down to an MPEG-TS segment, and its subtitles load.
+		using var http = new HttpClient();
+		Assert.StartsWith("WEBVTT", await http.GetStringAsync(servers[0].Subtitles[0].Url));
+
+		var url = servers[0].Url;
+		var body = await http.GetByteArrayAsync(url);
+		for (var depth = 0; depth < 2; depth++)
+		{
+			var lines = System.Text.Encoding.UTF8.GetString(body).Split('\n');
+			Assert.StartsWith("#EXTM3U", lines[0]);
+			url = new Uri(url, lines.First(x => x.Trim().Length > 0 && !x.StartsWith('#')).Trim());
+			body = await http.GetByteArrayAsync(url);
+		}
+
+		Assert.Equal(0x47, body[0]);
+	}
+
+	[Fact]
 	public async Task ReAnimeProvider_Live_SearchesListsAndResolvesAFile()
 	{
 		var module = new ReAnimeModule();
@@ -440,6 +510,16 @@ public class PluginVerificationTests
 		var error = await Assert.ThrowsAsync<TorrentStreamException>(() => streamer.StreamAsync(new Uri("magnet:?xt=urn:btih:2"), TorrentFile.LargestVideo, null,
 																									  CancellationToken.None));
 		Assert.Equal("Real-Debrid: bad token", error.Message);
+	}
+
+	/// <summary>Loads pages as Totoro's browser would, as far as Settlar's Cloudflare can tell.</summary>
+	private sealed class CurlWebPageLoader : Totoro.Core.Web.IWebPageLoader
+	{
+		public async Task<Totoro.Core.Web.WebPage> LoadAsync(Uri url, Uri? referrer, CancellationToken ct)
+		{
+			var (_, type, body) = await Curl.GetAsync(url, referrer?.AbsoluteUri, ct);
+			return new Totoro.Core.Web.WebPage(url, type ?? "text/plain", System.Text.Encoding.UTF8.GetString(body));
+		}
 	}
 
 	private sealed class DummyWebPageLoader : Totoro.Core.Web.IWebPageLoader

@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Debug with Totoro": {
+      "commandName": "Executable",
+      "executablePath": "..\\..\\..\\Totoro\\src\\Totoro\\bin\\x64\\Debug\\net10.0-windows10.0.19041.0\\Totoro.exe",
+      "commandLineArgs": "--plugin-dir \"bin\\Debug\\net10.0\""
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "d3180556-f773-4265-ac9d-b3f3be98ce6a",
+  "name": "AniPM",
+  "version": "1.0.0",
+  "description": "AniPM streams anime, subtitled, hard-subbed and dubbed, with intro and outro times.",
+  "author": "Totoro",
+  "entryPoint": "Totoro.Plugins.AniPM.dll",
+  "moduleTypes": [
+    "AnimeProvider"
+  ],
+  "minAppVersion": "2.3.1",
+  "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.AniPM/icon.png"
+}

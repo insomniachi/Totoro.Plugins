@@ -16,6 +16,7 @@ Plugins in this repository are dynamically loaded at runtime into an isolated `A
 | **ReAnime** (`Totoro.Plugins.ReAnime`) | `1d572b0b-9185-4679-86d7-5e6dfa1bcdcd` | Search, episodes, and FlixCloud file links via `reanime.to`. |
 | **TsukiHime** (`Totoro.Plugins.TsukiHime`) | `e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58` | Episode torrents matched by AniList/MyAnimeList id via `api.tsukihime.org`. |
 | **KickAssAnime** (`Totoro.Plugins.KickAssAnime`) | `6da3925f-e703-4f69-9999-c17d6fc7942f` | Search, episodes, and HLS/DASH streams with subtitles via `kaa.lt`. |
+| **AniPM** (`Totoro.Plugins.AniPM`) | `d3180556-f773-4265-ac9d-b3f3be98ce6a` | Search (also by AniList id), episodes, and soft-sub, hard-sub and dub HLS streams with intro/outro times via `ani.pm`, played through a local proxy. |
 | **Gotaku** (`Totoro.Plugins.Gotaku`) | `45389725-d0a0-4426-87b0-255e86901fc8` | Search, episodes, and decrypted HLS streams (soft sub, hard sub, dub) with intro/outro times via `gotaku.to`. |
 | **Real-Debrid** (`Totoro.Plugins.RealDebrid`) | `8fa7a097-dba5-4177-8f06-de7caa2ac580` | Streams torrents through the Real-Debrid debrid service (needs an account). |
 | **TorBox** (`Totoro.Plugins.TorBox`) | `33c86adc-7dc0-4fa4-a2bf-993acc66700b` | Streams torrents through the TorBox debrid service (needs an account). |
