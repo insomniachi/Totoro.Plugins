@@ -81,8 +81,8 @@ public class ReAnimeModule : IModule<Settings>
 public sealed class Settings : DataContainerConfig
 {
 	[DisplayName("Site")]
-	[Description("Re:ANIME's address (reanime.to, reanime.cz or reanime.wtf). Change it if the site has moved.")]
-	public string Site { get; set; } = "https://reanime.to";
+	[Description("Re:ANIME's address (reanime.cz or reanime.wtf). Change it if the site has moved.")]
+	public string Site { get; set; } = "https://reanime.cz";
 
 	[DisplayName("Audio")]
 	[Description("Played first when the episode has separate files for it. Most files have both: pick the track in the player.")]

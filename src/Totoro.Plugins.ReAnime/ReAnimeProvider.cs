@@ -35,9 +35,10 @@ public sealed partial class ReAnimeProvider(
 		_settings = (Settings)settings;
 	}
 
-	private string Site => Uri.TryCreate(_settings.Site.Trim().TrimEnd('/'), UriKind.Absolute, out var site)
+	// reanime.to now redirects every path to reanime.cz's home page, so saved settings that still name it go to .cz.
+	private string Site => Uri.TryCreate(_settings.Site.Trim().TrimEnd('/'), UriKind.Absolute, out var site) && site.Host != "reanime.to"
 		? site.ToString().TrimEnd('/')
-		: "https://reanime.to";
+		: "https://reanime.cz";
 
 	public async Task<List<ProviderShow>> SearchAsync(string query, CancellationToken ct)
 	{
