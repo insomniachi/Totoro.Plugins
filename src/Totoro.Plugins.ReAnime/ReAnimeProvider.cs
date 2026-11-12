@@ -23,8 +23,6 @@ public sealed partial class ReAnimeProvider(
 	IModuleSettings<Settings> moduleSettings,
 	ILogger<ReAnimeProvider> logger) : IAnimeProvider
 {
-	private const string FlixCloud = "https://flixcloud.cc";
-
 	public Guid Id => ReAnimeModule.Id;
 
 	public string Name => "Re:ANIME";
@@ -44,11 +42,20 @@ public sealed partial class ReAnimeProvider(
 	public async Task<List<ProviderShow>> SearchAsync(string query, CancellationToken ct)
 	{
 		var response = await GetJsonAsync<SearchResponse>($"{Site}/api/v1/search?q={Uri.EscapeDataString(query)}&limit=36&offset=0", $"{Site}/search", ct);
+
+		// It also lists shows with nothing to watch yet (unreleased, shorts it hasn't got), which its site hides.
+		var results = (response?.Results ?? []).Where(x => x.Title?.Name is { Length: > 0 } && (x.Subbed > 0 || x.Dubbed > 0)).ToList();
+
+		// Some (Frieren's, those it got from TMDB) come without their AniList id, which only their details have.
+		var anilistIds = await Task.WhenAll(results.Select(async x => x.AnilistId > 0
+			? x.AnilistId
+			: (await GetJsonAsync<Anime>($"{Site}/api/v1/anime/{Uri.EscapeDataString(x.AnimeId)}", $"{Site}/anime/{x.AnimeId}", ct))?.AnilistId ?? 0));
+
 		return
 		[
-			.. (response?.Results ?? [])
-				// It also lists shows with nothing to watch yet (unreleased, shorts it hasn't got), which its site hides.
-				.Where(x => x.AnilistId > 0 && x.Title?.Name is { Length: > 0 } && (x.Subbed > 0 || x.Dubbed > 0))
+			.. results
+				.Zip(anilistIds, (x, anilistId) => x with { AnilistId = anilistId })
+				.Where(x => x.AnilistId > 0)
 				.Select(x => new ProviderShow(
 					$"{x.AnimeId}:{x.AnilistId}",
 					x.Title!.Name!,
@@ -83,9 +90,9 @@ public sealed partial class ReAnimeProvider(
 		var response = await GetJsonAsync<ServerList>($"{Site}/api/flix/{anilistId}/{episode.Id}", $"{Site}/watch/{slug}?ep={episode.Id}", ct);
 		var audio = _settings.Audio == AudioType.Dub ? "dub" : "sub";
 
-		// Servers (HD-1, HD-2) and audio types are ways to play the same video, whose id is in the embed's address.
+		// Servers (HD-1, HD-2, H-SUB) and audio types are ways to play the same video, the embed's address without its query.
 		var videos = (response?.Servers ?? [])
-					 .Select(x => (Video: EmbedId().Match(x.DataLink ?? "") is { Success: true } match ? match.Groups["id"].Value : null, x.DataType))
+					 .Select(x => (Video: Embed().Match(x.DataLink ?? "") is { Success: true } match ? match.Value : null, x.DataType))
 					 .Where(x => x.Video is not null)
 					 .OrderByDescending(x => x.DataType == audio)
 					 .GroupBy(x => x.Video!, x => x.DataType ?? "");
@@ -111,12 +118,13 @@ public sealed partial class ReAnimeProvider(
 	}
 
 	/// <summary>The video's file once FlixCloud has it ready; null if it has no download.</summary>
+	/// <param name="video">Its embed, e.g. https://flixcloud.cc/e/rjyccuaq8h5n, whose download page is on the same host.</param>
 	private async Task<(Uri Url, string Resolution)?> GetDownloadAsync(string video, CancellationToken ct)
 	{
 		using var client = httpClientFactory.CreateClient("ReAnime");
 
 		// The download page's SvelteKit data: the file's id, a token for it, and the server it's on.
-		var data = await client.GetStringAsync($"{FlixCloud}/d/{video}/__data.json", ct);
+		var data = await client.GetStringAsync($"{Embed().Replace(video, "${host}/d/${id}")}/__data.json", ct);
 		var fileId = FileId().Match(data);
 		var token = Jwt().Match(data);
 		if (!fileId.Success || !token.Success)
@@ -124,7 +132,7 @@ public sealed partial class ReAnimeProvider(
 			return null;
 		}
 
-		var server = FetchServer().Match(data) is { Success: true } match ? match.Value : FlixCloud;
+		var server = FetchServer().Match(data) is { Success: true } match ? match.Value : Embed().Match(video).Groups["host"].Value;
 		var query = $"{fileId.Value}?token={token.Value}";
 
 		// Progress events (Server-Sent Events) until it's ready; they don't end on their own.
@@ -153,7 +161,7 @@ public sealed partial class ReAnimeProvider(
 		try
 		{
 			using var client = httpClientFactory.CreateClient("ReAnime");
-			return ParseSegments(await client.GetStringAsync($"{FlixCloud}/e/{video}/__data.json", ct));
+			return ParseSegments(await client.GetStringAsync($"{video}/__data.json", ct));
 		}
 		catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)
 		{
@@ -244,8 +252,8 @@ public sealed partial class ReAnimeProvider(
 	/// <param name="DataType">"sub" or "dub".</param>
 	private sealed record Server(string? DataLink, string? DataType);
 
-	[GeneratedRegex(@"/e/(?<id>[a-z0-9]+)")]
-	private static partial Regex EmbedId();
+	[GeneratedRegex(@"(?<host>https://[^/?#]+)/e/(?<id>[a-z0-9]+)")]
+	private static partial Regex Embed();
 
 	[GeneratedRegex(@"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")]
 	private static partial Regex FileId();
@@ -256,7 +264,7 @@ public sealed partial class ReAnimeProvider(
 	[GeneratedRegex(@"https://fetch\d*\.flixcloud\.cc")]
 	private static partial Regex FetchServer();
 
-	[GeneratedRegex(@"\d{3,4}p")]
+	[GeneratedRegex(@"\d{3,4}p(?![a-zA-Z])", RegexOptions.IgnoreCase)]
 	private static partial Regex Resolution();
 
 	[GeneratedRegex(@"""status"":\s*""(?<status>\w+)""")]
