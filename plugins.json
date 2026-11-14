@@ -93,20 +93,6 @@
     ]
   },
   {
-    "id": "4833500d-bf61-4600-9f2d-0890c63c38c4",
-    "name": "Shikimori",
-    "version": "1.0.1",
-    "description": "Shikimori is an anime database and list tracker. It numbers its anime with MyAnimeList's ids, so what's saved about an anime carries over between them.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Shikimori-v1.0.1/Shikimori.totoro-plugin",
-    "sha256": "765b7b998bf255007031f191673d456db325d91d3a452057b86fcc6f2f94ce9e",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Shikimori/icon.png",
-    "minTotoroVersion": "2.2.5",
-    "moduleTypes": [
-      "IAnimeDatabase"
-    ]
-  },
-  {
     "id": "33c86adc-7dc0-4fa4-a2bf-993acc66700b",
     "name": "TorBox",
     "version": "1.0.3",
@@ -160,6 +146,20 @@
     "minTotoroVersion": "2.0.12",
     "moduleTypes": [
       "IAnimeProvider"
+    ]
+  },
+  {
+    "id": "4833500d-bf61-4600-9f2d-0890c63c38c4",
+    "name": "Shikimori",
+    "version": "1.0.2",
+    "description": "Shikimori is an anime database and list tracker. It numbers its anime with MyAnimeList's ids, so what's saved about an anime carries over between them.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Shikimori-v1.0.2/Shikimori.totoro-plugin",
+    "sha256": "346d64289820ce812f56bb3501a302baa4216d4f6a672839476ff284f16c7d48",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Shikimori/icon.png",
+    "minTotoroVersion": "2.3.13",
+    "moduleTypes": [
+      "IAnimeDatabase"
     ]
   }
 ]

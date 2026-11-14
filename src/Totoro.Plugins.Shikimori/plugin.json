@@ -1,7 +1,7 @@
 {
   "id": "4833500d-bf61-4600-9f2d-0890c63c38c4",
   "name": "Shikimori",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Shikimori is an anime database and list tracker. It numbers its anime with MyAnimeList's ids, so what's saved about an anime carries over between them.",
   "author": "Totoro",
   "entryPoint": "Totoro.Plugins.Shikimori.dll",
