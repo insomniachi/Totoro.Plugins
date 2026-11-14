@@ -45,7 +45,10 @@ public class AnimeDatabasePluginTests
 		Assert.Contains(anime.Related, x => x.Relation == AnimeRelationType.Sequel);
 		Assert.NotEmpty(anime.Genres);
 
-		Assert.NotEmpty(await provider.GetCharactersAsync(JujutsuKaisenMal));
+		// From AniList, by MyAnimeList id: with AniList's ids, for their pages.
+		var characters = await provider.GetCharactersAsync(JujutsuKaisenMal);
+		Assert.NotEmpty(characters);
+		Assert.All(characters, x => Assert.True(x.Id > 0));
 		// ani.zip, by MyAnimeList id; it also lists a special.
 		Assert.True((await provider.GetEpisodesAsync(anime)).Count >= 24);
 	}
@@ -84,7 +87,9 @@ public class AnimeDatabasePluginTests
 		Assert.Contains(anime.Related, x => x.Relation == AnimeRelationType.Sequel);
 
 		// From AniList, by the AniList id ani.zip maps the Kitsu id to.
-		Assert.NotEmpty(await provider.GetCharactersAsync(DemonSlayerKitsu));
+		var characters = await provider.GetCharactersAsync(DemonSlayerKitsu);
+		Assert.NotEmpty(characters);
+		Assert.All(characters, x => Assert.True(x.Id > 0));
 		// From ani.zip, by Kitsu id.
 		Assert.Equal(26, (await provider.GetEpisodesAsync(anime)).Count);
 	}

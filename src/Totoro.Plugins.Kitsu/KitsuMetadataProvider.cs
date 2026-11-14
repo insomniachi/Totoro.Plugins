@@ -107,7 +107,7 @@ internal class KitsuMetadataProvider(KitsuSession session, ILogger<KitsuMetadata
 			return [];
 		}
 
-		const string query = "query ($id: Int) { Media(id: $id, type: ANIME) { characters(sort: ROLE) { nodes { name { full } image { large } description(asHtml: true) gender } } } }";
+		const string query = "query ($id: Int) { Media(id: $id, type: ANIME) { characters(sort: ROLE) { nodes { id name { full } image { large } description(asHtml: true) gender } } } }";
 		var response = await "https://graphql.anilist.co".PostJsonAsync(new { query, variables = new { id = anilistId } }).ReceiveJson<JsonObject>();
 		var characters = response["data"]?["Media"]?["characters"]?["nodes"]?.AsArray() ?? [];
 
@@ -115,6 +115,8 @@ internal class KitsuMetadataProvider(KitsuSession session, ILogger<KitsuMetadata
 		[
 			.. characters.OfType<JsonNode>().Select(x => new CharacterModel
 			{
+				// AniList's: its character page loads them by it.
+				Id = (long?)x["id"] ?? 0,
 				Name = (string?)x["name"]?["full"] ?? "",
 				Image = Uri.TryCreate((string?)x["image"]?["large"], UriKind.Absolute, out var uri) ? uri : null,
 				Description = (string?)x["description"] ?? "",

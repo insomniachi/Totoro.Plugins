@@ -12,10 +12,6 @@ internal sealed record ShikiPoster(string? OriginalUrl);
 
 internal sealed record ShikiRelated(string RelationKind, ShikiAnime? Anime);
 
-internal sealed record ShikiCharacter(string Name, ShikiPoster? Poster, string? DescriptionHtml);
-
-internal sealed record ShikiCharacterRole(ShikiCharacter? Character);
-
 internal sealed record ShikiUserRate(long Id, string Status, int Score, int Episodes, int Rewatches, string? Text, DateTimeOffset? UpdatedAt, ShikiAnime? Anime = null);
 
 internal sealed record ShikiAnime(
@@ -38,8 +34,7 @@ internal sealed record ShikiAnime(
 	ShikiName[]? Studios,
 	string? Url,
 	ShikiUserRate? UserRate,
-	ShikiRelated[]? Related,
-	ShikiCharacterRole[]? CharacterRoles);
+	ShikiRelated[]? Related);
 
 internal static class ShikimoriConverter
 {

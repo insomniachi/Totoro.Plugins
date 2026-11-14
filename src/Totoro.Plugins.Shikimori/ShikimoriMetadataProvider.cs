@@ -1,3 +1,5 @@
+using System.Text.Json.Nodes;
+using Flurl.Http;
 using Microsoft.Extensions.Logging;
 using Totoro.Core.Modules.Anime;
 using static Totoro.Plugins.Shikimori.ShikimoriConverter;
@@ -89,18 +91,25 @@ internal class ShikimoriMetadataProvider(ShikimoriSession session, ILogger<Shiki
 		return anime.GetEpisodesAsync();
 	}
 
+	/// <summary>
+	/// From AniList, by MyAnimeList id (Shikimori's are MyAnimeList's): with AniList's ids, so each opens on its own page
+	/// (and that page lists the anime they're in), as with the other databases.
+	/// </summary>
 	public async Task<List<CharacterModel>> GetCharactersAsync(long animeId)
 	{
-		var anime = await session.QueryAsync<List<ShikiAnime>>(
-			$"{{ animes(ids: \"{animeId}\", limit: 1) {{ id name characterRoles {{ character {{ name poster {{ originalUrl }} descriptionHtml }} }} }} }}", "animes");
+		const string query = "query ($id: Int) { Media(idMal: $id, type: ANIME) { characters(sort: ROLE) { nodes { id name { full } image { large } description(asHtml: true) gender } } } }";
+		var response = await "https://graphql.anilist.co".PostJsonAsync(new { query, variables = new { id = animeId } }).ReceiveJson<JsonObject>();
+		var characters = response["data"]?["Media"]?["characters"]?["nodes"]?.AsArray() ?? [];
 
 		return
 		[
-			.. (anime.FirstOrDefault()?.CharacterRoles ?? []).Select(x => x.Character).OfType<ShikiCharacter>().Select(x => new CharacterModel
+			.. characters.OfType<JsonNode>().Select(x => new CharacterModel
 			{
-				Name = x.Name,
-				Image = Uri.TryCreate(x.Poster?.OriginalUrl, UriKind.Absolute, out var uri) ? uri : null,
-				Description = x.DescriptionHtml ?? "",
+				Id = (long?)x["id"] ?? 0,
+				Name = (string?)x["name"]?["full"] ?? "",
+				Image = Uri.TryCreate((string?)x["image"]?["large"], UriKind.Absolute, out var uri) ? uri : null,
+				Description = (string?)x["description"] ?? "",
+				Gender = (string?)x["gender"] ?? "",
 			})
 		];
 	}
