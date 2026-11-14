@@ -79,20 +79,6 @@
     ]
   },
   {
-    "id": "d8ae6ad9-3e24-40fe-b79a-8c5d4212dc6e",
-    "name": "Kitsu",
-    "version": "1.0.1",
-    "description": "Kitsu is an anime database and list tracker.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Kitsu-v1.0.1/Kitsu.totoro-plugin",
-    "sha256": "3d9c0bc6b5af7a769418cf4bc1837c95d454ed4ac62e19063ad1ec4c2e624705",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Kitsu/icon.png",
-    "minTotoroVersion": "2.2.5",
-    "moduleTypes": [
-      "IAnimeDatabase"
-    ]
-  },
-  {
     "id": "33c86adc-7dc0-4fa4-a2bf-993acc66700b",
     "name": "TorBox",
     "version": "1.0.3",
@@ -157,6 +143,20 @@
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Shikimori-v1.0.2/Shikimori.totoro-plugin",
     "sha256": "346d64289820ce812f56bb3501a302baa4216d4f6a672839476ff284f16c7d48",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Shikimori/icon.png",
+    "minTotoroVersion": "2.3.13",
+    "moduleTypes": [
+      "IAnimeDatabase"
+    ]
+  },
+  {
+    "id": "d8ae6ad9-3e24-40fe-b79a-8c5d4212dc6e",
+    "name": "Kitsu",
+    "version": "1.0.2",
+    "description": "Kitsu is an anime database and list tracker.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Kitsu-v1.0.2/Kitsu.totoro-plugin",
+    "sha256": "764764f1120d4719f8a43279406e05d744cfae92db3808d71ea34e0a57ce8857",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Kitsu/icon.png",
     "minTotoroVersion": "2.3.13",
     "moduleTypes": [
       "IAnimeDatabase"
