@@ -66,6 +66,15 @@ Releases run one at a time.
 
 ---
 
+## Contributing
+
+Keep the docs in step with the code, in the same change:
+- **New plugin**: add it to [Included Plugins](#included-plugins) (name, project, ID from its `plugin.json`, what it does).
+- **New feature**: update this README wherever it describes what changed.
+- **New package**: if its license asks for a notice, or the code is ported from another project, add it to [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+
+---
+
 ## Installing Plugins in Totoro
 
 - **In-App Store**: In Totoro, open **Plugins** from the main menu to browse the catalog and click **Install** or **Update**.
