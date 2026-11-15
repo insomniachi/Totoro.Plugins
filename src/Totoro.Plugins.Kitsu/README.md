@@ -19,11 +19,11 @@ Kitsu's API only signs in with a password (OAuth's password grant), so Totoro as
 ### Option 1: Visual Studio / Rider (F5 Debug)
 1. Set `Totoro.Plugins.Kitsu` as the startup project or launch it.
 2. Select the `Debug with Totoro` profile in `Properties/launchSettings.json`.
-3. Press **F5**. Totoro launches and dynamically loads Kitsu from this project's `bin/` directory via `--plugin-dir "bin\Debug\net10.0"`.
+3. Press **F5**. Totoro launches and dynamically loads Kitsu from this project's `bin/` directory via `--plugin-dir "bin\Debug\net11.0"`.
 
 ### Option 2: Command Line
 ```powershell
-Totoro.exe --plugin-dir "C:\path\to\plugins\Totoro.Plugins.Kitsu\bin\Debug\net10.0"
+Totoro.exe --plugin-dir "C:\path\to\plugins\Totoro.Plugins.Kitsu\bin\Debug\net11.0"
 ```
 
 ## Packaging & Distribution

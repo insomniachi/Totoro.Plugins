@@ -22,6 +22,7 @@ Plugins in this repository are dynamically loaded at runtime into an isolated `A
 | **TorBox** (`Totoro.Plugins.TorBox`) | `33c86adc-7dc0-4fa4-a2bf-993acc66700b` | Streams torrents through the TorBox debrid service (needs an account). |
 | **Shikimori** (`Totoro.Plugins.Shikimori`) | `4833500d-bf61-4600-9f2d-0890c63c38c4` | Anime database and list tracker via `shikimori.io` (ids are MyAnimeList's). |
 | **Kitsu** (`Totoro.Plugins.Kitsu`) | `d8ae6ad9-3e24-40fe-b79a-8c5d4212dc6e` | Anime database and list tracker via `kitsu.app`. |
+| **Weeb Central** (`Totoro.Plugins.WeebCentral`) | `5f2ae848-fafe-41bb-a851-9e22ecfb1e21` | Manga search, chapters and pages via `weebcentral.com`, matched by AniList/MyAnimeList links. |
 
 ---
 
@@ -35,12 +36,12 @@ If this repository is cloned alongside the Totoro repository in the same parent 
 ### 2. Press F5 to Debug in Visual Studio
 Each plugin project in `src/` contains a preconfigured `Properties/launchSettings.json` profile:
 - Press **F5** in Visual Studio with any plugin project as the startup project.
-- Visual Studio starts `Totoro.exe` with `--plugin-dir "bin\Debug\net10.0"`.
+- Visual Studio starts `Totoro.exe` with `--plugin-dir "bin\Debug\net11.0"`.
 - You can set breakpoints inside the plugin's C# code, inspect DI services, and debug in real time.
 
 ### 3. Standalone Build / CI
 When building in a clean CI environment or without a local Totoro clone:
-- `Directory.Build.props` automatically falls back to the published `Totoro.Core` NuGet package (`>= 2.0.0`).
+- `Directory.Build.props` automatically falls back to the published `Totoro.Core` NuGet package (`2.1.0`).
 - Runtime host assemblies are excluded from plugin packages (`ExcludeAssets="runtime"`), keeping distribution packages lightweight.
 
 ---
@@ -67,5 +68,11 @@ Releases run one at a time.
 
 ## Installing Plugins in Totoro
 
-- **In-App Store**: In Totoro, open **Test → Plugins** to browse the catalog and click **Install** or **Update**.
+- **In-App Store**: In Totoro, open **Plugins** from the main menu to browse the catalog and click **Install** or **Update**.
 - **Manual**: Extract any `.totoro-plugin` zip into `%LocalAppData%\Totoro\Plugins\<PluginName>\`.
+
+---
+
+## License
+
+MIT, see [LICENSE](LICENSE). Some plugins are ported from Apache-2.0 code; see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

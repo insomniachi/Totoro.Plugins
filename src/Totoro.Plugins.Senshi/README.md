@@ -17,11 +17,11 @@ This plugin implements `IAnimeProvider` and `IModule<Settings>` from `Totoro.Cor
 ### Option 2: Command Line / Environment Variable
 Run Totoro with:
 ```powershell
-Totoro.exe --plugin-dir "C:\path\to\plugins\Totoro.Plugins.Senshi\bin\Debug\net10.0"
+Totoro.exe --plugin-dir "C:\path\to\plugins\Totoro.Plugins.Senshi\bin\Debug\net11.0"
 ```
 Or set the environment variable:
 ```powershell
-$env:TOTORO_PLUGIN_DIRS="C:\path\to\plugins\Totoro.Plugins.Senshi\bin\Debug\net10.0"
+$env:TOTORO_PLUGIN_DIRS="C:\path\to\plugins\Totoro.Plugins.Senshi\bin\Debug\net11.0"
 ```
 
 ## Packaging & Distribution
