@@ -20,19 +20,19 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v7
       with:
         path: Totoro.Plugins
 
     # Beside this repository, so the plugins build against it as they do locally.
     - name: Checkout Totoro Core
-      uses: actions/checkout@v5
+      uses: actions/checkout@v7
       with:
         repository: insomniachi/Totoro
         path: Totoro
 
     - name: Setup .NET 11
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: '11.0.x'
 

@@ -50,7 +50,7 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v7
       with:
         path: Totoro.Plugins
         # The branch tip when this run starts, not when it was queued, so it sees catalog updates from earlier releases.
@@ -124,14 +124,14 @@ jobs:
         "totoro_ref=v$minAppVersion" >> $env:GITHUB_OUTPUT
 
     - name: Checkout Totoro Core
-      uses: actions/checkout@v5
+      uses: actions/checkout@v7
       with:
         repository: insomniachi/Totoro
         ref: ${{ steps.parse.outputs.totoro_ref }}
         path: Totoro
 
     - name: Setup .NET 11
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: '11.0.x'
 
