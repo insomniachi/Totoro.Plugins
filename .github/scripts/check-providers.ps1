@@ -23,7 +23,8 @@ foreach ($plugin in $plugins) {
     $working = $false
     # Sites have bad minutes, so a failure gets one retry before it counts.
     foreach ($attempt in 1..2) {
-        $output = dotnet test $Project -c Release --no-build --filter "FullyQualifiedName~.$($plugin)Provider_Live_" | Tee-Object -Variable output
+        # Tee, not assign: the run's log shows why a test failed.
+        dotnet test $Project -c Release --no-build --filter "FullyQualifiedName~.$($plugin)Provider_Live_" | Tee-Object -Variable output
         if ($LASTEXITCODE -eq 0) { $working = $true; break }
     }
 
