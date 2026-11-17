@@ -10,21 +10,22 @@ Plugins in this repository are dynamically loaded at runtime into an isolated `A
 
 ### Anime streaming
 
-| Plugin | ID | Description |
-|---|---|---|
-| **Senshi** (`Totoro.Plugins.Senshi`) | `c6066fda-8e30-4545-9599-8e6c3e917312` | Stream anime and search catalogs via `senshi.to`. |
-| **AnimePahe** (`Totoro.Plugins.AnimePahe`) | `5c2f8e1a-7d43-4b96-a0e5-3f9c1b6d8a27` | Search, episodes, and stream link extraction via `animepahe.pw`. |
-| **ReAnime** (`Totoro.Plugins.ReAnime`) | `1d572b0b-9185-4679-86d7-5e6dfa1bcdcd` | Search, episodes, and FlixCloud file links via `reanime.cz`. |
-| **KickAssAnime** (`Totoro.Plugins.KickAssAnime`) | `6da3925f-e703-4f69-9999-c17d6fc7942f` | Search, episodes, and HLS/DASH streams with subtitles via `kaa.lt`. |
-| **AniPM** (`Totoro.Plugins.AniPM`) | `d3180556-f773-4265-ac9d-b3f3be98ce6a` | Search (also by AniList id), episodes, and soft-sub, hard-sub and dub HLS streams with intro/outro times via `ani.pm`, played through a local proxy. |
-| **Gotaku** (`Totoro.Plugins.Gotaku`) | `45389725-d0a0-4426-87b0-255e86901fc8` | Search, episodes, and decrypted HLS streams (soft sub, hard sub, dub) with intro/outro times via `gotaku.to`. |
+Status comes from each provider's live test (search, episodes, streams; in WebView2, as Totoro runs them, for plugins that load pages in a browser), run weekly by [Check Providers](https://github.com/insomniachi/Totoro.Plugins/actions/workflows/check-providers.yml). Last checked: <!-- provider-check -->never<!-- /provider-check -->.
+
+| Plugin | ID | Description | Status |
+|---|---|---|---|
+| **AnimePahe** (`Totoro.Plugins.AnimePahe`) | `5c2f8e1a-7d43-4b96-a0e5-3f9c1b6d8a27` | Search, episodes, and stream link extraction via `animepahe.pw`. | ⏳ Not run yet |
+| **ReAnime** (`Totoro.Plugins.ReAnime`) | `1d572b0b-9185-4679-86d7-5e6dfa1bcdcd` | Search, episodes, and FlixCloud file links via `reanime.cz`. | ⏳ Not run yet |
+| **KickAssAnime** (`Totoro.Plugins.KickAssAnime`) | `6da3925f-e703-4f69-9999-c17d6fc7942f` | Search, episodes, and HLS/DASH streams with subtitles via `kaa.lt`. | ⏳ Not run yet |
+| **AniPM** (`Totoro.Plugins.AniPM`) | `d3180556-f773-4265-ac9d-b3f3be98ce6a` | Search (also by AniList id), episodes, and soft-sub, hard-sub and dub HLS streams with intro/outro times via `ani.pm`, played through a local proxy. | ⏳ Not run yet |
+| **Gotaku** (`Totoro.Plugins.Gotaku`) | `45389725-d0a0-4426-87b0-255e86901fc8` | Search, episodes, and decrypted HLS streams (soft sub, hard sub, dub) with intro/outro times via `gotaku.to`. | ⏳ Not run yet |
 
 ### Torrents
 
-| Plugin | ID | Description |
-|---|---|---|
-| **SubsPlease** (`Totoro.Plugins.SubsPlease`) | `9b7a71c8-7633-46e8-be5e-288c19ac1330` | Direct torrent schedule and magnet extraction via `subsplease.org`. |
-| **TsukiHime** (`Totoro.Plugins.TsukiHime`) | `e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58` | Episode torrents matched by AniList/MyAnimeList id via `api.tsukihime.org`. |
+| Plugin | ID | Description | Status |
+|---|---|---|---|
+| **SubsPlease** (`Totoro.Plugins.SubsPlease`) | `9b7a71c8-7633-46e8-be5e-288c19ac1330` | Direct torrent schedule and magnet extraction via `subsplease.org`. | ⏳ Not run yet |
+| **TsukiHime** (`Totoro.Plugins.TsukiHime`) | `e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58` | Episode torrents matched by AniList/MyAnimeList id via `api.tsukihime.org`. | ⏳ Not run yet |
 
 ### Debrid services
 
@@ -72,16 +73,16 @@ When building in a clean CI environment or without a local Totoro clone:
 
 Each plugin in this repository has its own independent semantic version (defined in its `plugin.json`), and is released on its own from GitHub Actions:
 
-1. Go to **Actions** → **[Release Plugin](https://github.com/insomniachi/Totoro.Plugins/actions/workflows/release-plugin.yml)**.
+1. Go to **Actions** â†’ **[Release Plugin](https://github.com/insomniachi/Totoro.Plugins/actions/workflows/release-plugin.yml)**.
 2. Click **Run workflow**.
-3. Select the plugin to release (e.g. `Senshi`, `SubsPlease`, `AnimePahe`, `ReAnime`).
+3. Select the plugin to release (e.g. `SubsPlease`, `AnimePahe`, `ReAnime`).
 4. (Optional) Enter the new version number (e.g. `2.0.1`), or leave blank to increment the patch number of the latest released version.
 5. (Optional) Enter release notes.
 6. Click **Run workflow**.
 
 The workflow will automatically:
 - Build and package only that plugin into a `.totoro-plugin` archive, against the Totoro release its `minAppVersion` names (tag `v<minAppVersion>`). A plugin that uses anything newer fails to build, so raise `minAppVersion` first.
-- Create a GitHub Release with tag `<Plugin>-v<version>` (e.g. `Senshi-v2.0.1`), with `<Plugin>.totoro-plugin` attached. A version that's already released is refused, never replaced.
+- Create a GitHub Release with tag `<Plugin>-v<version>` (e.g. `SubsPlease-v2.0.1`), with `<Plugin>.totoro-plugin` attached. A version that's already released is refused, never replaced.
 - Update `plugins.json` on `main` with the new version, the download URL and the package's SHA-256, which Totoro checks before installing. If that push fails, the release is deleted, so the run can be repeated.
 
 Releases run one at a time.
@@ -99,7 +100,7 @@ Totoro reads its catalog from the official [`plugins.json`](plugins.json) by def
    - an `iconUrl` in your repository, e.g. `https://raw.githubusercontent.com/<you>/<repo>/main/src/<Project>/icon.png`.
    Add its name to the workflow's `plugin` choices (alphabetical).
 4. **Enable Actions**: a fork starts with them off; turn them on in your repository's **Actions** tab. The workflow asks for write access itself, to create the release and update `plugins.json` on `main`.
-5. **Release it**: run **Actions → Release Plugin** as above. It builds the package, attaches it to a release in *your* repository, and adds it to your `plugins.json` with its download URL and SHA-256.
+5. **Release it**: run **Actions â†’ Release Plugin** as above. It builds the package, attaches it to a release in *your* repository, and adds it to your `plugins.json` with its download URL and SHA-256.
 6. **Point Totoro at it**: in Totoro, open **Plugins**, click the **Plugin repository** button (the store icon, next to **Install from file**) and set **Plugin repository** to your catalog's raw URL:
    ```text
    https://raw.githubusercontent.com/<you>/<repo>/main/plugins.json
@@ -114,6 +115,7 @@ The catalog can be any `plugins.json` served over HTTP(S), so a repository on an
 
 Keep the docs in step with the code, in the same change:
 - **New plugin**: add it to [Included Plugins](#included-plugins) (name, project, ID from its `plugin.json`, what it does).
+- **New anime provider**: give it a live test named `<Plugin>Provider_Live_*` and a Status cell in its table; the weekly check finds it by that name.
 - **New feature**: update this README wherever it describes what changed.
 - **New package**: if its license asks for a notice, or the code is ported from another project, add it to [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 

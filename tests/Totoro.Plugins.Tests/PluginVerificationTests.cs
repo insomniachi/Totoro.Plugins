@@ -11,7 +11,6 @@ using Totoro.Plugins.Gotaku;
 using Totoro.Plugins.KickAssAnime;
 using Totoro.Plugins.ReAnime;
 using Totoro.Plugins.RealDebrid;
-using Totoro.Plugins.Senshi;
 using Totoro.Plugins.SubsPlease;
 using Totoro.Plugins.TorBox;
 using Totoro.Plugins.TsukiHime;
@@ -68,21 +67,6 @@ public class PluginVerificationTests
 	}
 
 	[Fact]
-	public void SenshiModule_RegistersKeyedAnimeProvider()
-	{
-		var module = new SenshiModule();
-		var services = new ServiceCollection();
-		services.AddLogging();
-		module.ConfigureServices(services);
-
-		var sp = services.BuildServiceProvider();
-		var provider = sp.GetKeyedService<IAnimeProvider>(SenshiModule.Id);
-
-		Assert.NotNull(provider);
-		Assert.Equal("Senshi", provider.Name);
-	}
-
-	[Fact]
 	public void SubsPleaseModule_RegistersKeyedAnimeProvider()
 	{
 		var module = new SubsPleaseModule();
@@ -111,6 +95,34 @@ public class PluginVerificationTests
 
 		Assert.NotNull(provider);
 		Assert.Equal("AnimePahe", provider.Name);
+	}
+
+	// Live tests are named <Plugin>Provider_Live_*: the weekly provider check runs them by that name.
+
+	[Fact]
+	public Task SubsPleaseProvider_Live_SearchesListsAndFindsTorrents() =>
+		SearchListsAndFindsStreamsAsync(new SubsPleaseModule(), SubsPleaseModule.Id, "Sousou no Frieren");
+
+	[Fact]
+	public Task AnimePaheProvider_Live_SearchesListsAndFindsStreams() =>
+		SearchListsAndFindsStreamsAsync(new AnimePaheModule(), AnimePaheModule.Id, "Sousou no Frieren");
+
+	private static async Task SearchListsAndFindsStreamsAsync(Core.Modules.IModule module, Guid id, string query)
+	{
+		var services = new ServiceCollection();
+		services.AddLogging();
+		// A browser, as Totoro gives plugins, for those that load pages in one.
+		services.AddSingleton<Totoro.Core.Web.IWebPageLoader>(BrowserPageLoader.Shared);
+		module.ConfigureServices(services);
+		var provider = services.BuildServiceProvider().GetRequiredKeyedService<IAnimeProvider>(id);
+
+		// These providers log and return nothing on failure, so every step must find something.
+		var shows = await provider.SearchAsync(query, CancellationToken.None);
+		Assert.NotEmpty(shows);
+		var episodes = await provider.GetEpisodesAsync(shows[0].Id, CancellationToken.None);
+		Assert.NotEmpty(episodes);
+		var servers = await provider.GetServersAsync(episodes.MinBy(x => x.Number)!, CancellationToken.None);
+		Assert.NotEmpty(servers);
 	}
 
 	[Fact]
@@ -336,14 +348,6 @@ public class PluginVerificationTests
 			[new(MediaSegmentType.Opening, TimeSpan.Zero, TimeSpan.FromSeconds(90)), new(MediaSegmentType.Ending, TimeSpan.FromSeconds(1332), TimeSpan.FromSeconds(1422.5))],
 			ReAnimeProvider.ParseSegments(json));
 		Assert.Empty(ReAnimeProvider.ParseSegments("""{"nodes":[{"type":"data","data":[{"intro_chapter":-1}]}]}"""));
-	}
-
-	[Fact]
-	public void SenshiStream_Segments_SkipsUnknownTimes()
-	{
-		var stream = JsonSerializer.Deserialize<SenshiStream>("""{"intro_start_ms":117033,"intro_end_ms":206997,"outro_start_ms":null,"outro_end_ms":null}""")!;
-
-		Assert.Equal([new(MediaSegmentType.Opening, TimeSpan.FromMilliseconds(117033), TimeSpan.FromMilliseconds(206997))], stream.Segments());
 	}
 
 	[Fact]

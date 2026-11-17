@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net11.0</TargetFramework>
+    <!-- Windows: plugins that load pages in a browser are tested in WebView2, as Totoro runs them (BrowserPageLoader). -->
+    <TargetFramework>net11.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
@@ -13,6 +15,7 @@
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="11.0.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3719.77" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,7 +26,6 @@
                       Version="2.0.0"
                       Condition="'$(TotoroRepoRoot)' == '' or !Exists('$(TotoroRepoRoot)\src\Totoro.Core\Totoro.Core.csproj')" />
 
-    <ProjectReference Include="..\..\src\Totoro.Plugins.Senshi\Totoro.Plugins.Senshi.csproj" />
     <ProjectReference Include="..\..\src\Totoro.Plugins.SubsPlease\Totoro.Plugins.SubsPlease.csproj" />
     <ProjectReference Include="..\..\src\Totoro.Plugins.AnimePahe\Totoro.Plugins.AnimePahe.csproj" />
     <ProjectReference Include="..\..\src\Totoro.Plugins.ReAnime\Totoro.Plugins.ReAnime.csproj" />
