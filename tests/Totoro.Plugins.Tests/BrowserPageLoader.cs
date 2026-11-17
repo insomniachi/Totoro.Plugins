@@ -8,14 +8,18 @@ namespace Totoro.Plugins.Tests;
 /// <summary>
 /// Totoro's page loader for tests: a hidden WebView2 (Edge's engine), as the app uses, on its own UI thread, so live tests
 /// of plugins that load pages in a browser reach the sites as the app does. Unlike the app, there's no one to do a
-/// site's bot check by hand: one that doesn't pass by itself throws a <see cref="WebPageException"/> naming it a bot check.
+/// site's bot check by hand: one that doesn't pass by itself, or a block, throws a <see cref="WebPageException"/> saying so
+/// (<see cref="TurnedAway"/>).
 /// </summary>
 internal sealed class BrowserPageLoader : IWebPageLoader
 {
 	public static BrowserPageLoader Shared { get; } = new();
 
-	/// <summary>In the message a load fails with when a site's bot check doesn't pass by itself.</summary>
-	public const string BotCheck = "bot check didn't pass";
+	/// <summary>
+	/// In the message a load fails with when Cloudflare turns the test away (a bot check that doesn't pass by itself, or
+	/// a block, e.g. of a data center's addresses): that says nothing about the plugin, so the provider check doesn't call it broken.
+	/// </summary>
+	public const string TurnedAway = "turned away by the site's bot protection";
 
 	private static readonly TimeSpan s_automaticCheck = TimeSpan.FromSeconds(15);
 	private static readonly TimeSpan s_loadTimeout = TimeSpan.FromSeconds(30);
@@ -92,14 +96,14 @@ internal sealed class BrowserPageLoader : IWebPageLoader
 
 			if (page.Check)
 			{
-				throw new WebPageException($"{url.Host}'s {BotCheck} by itself.");
+				throw new WebPageException($"{url.Host}'s bot check didn't pass by itself ({TurnedAway}).");
 			}
 
 			page = await NavigateAsync(browser, url, referrer, ct);
 		}
 
 		return page.Blocked
-			? throw new WebPageException($"{url.Host} refused the request (Cloudflare blocked it).")
+			? throw new WebPageException($"{url.Host} refused the request: Cloudflare blocked it ({TurnedAway}).")
 			: new WebPage(new Uri(page.Url), page.Type, page.Content);
 	}, ct);
 

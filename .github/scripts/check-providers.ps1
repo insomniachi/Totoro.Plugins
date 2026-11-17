@@ -28,9 +28,9 @@ foreach ($plugin in $plugins) {
         if ($LASTEXITCODE -eq 0) { $working = $true; break }
     }
 
-    # A bot check only a person could pass (BrowserPageLoader.BotCheck) says nothing about the plugin.
+    # The site's bot protection turning the runner away (BrowserPageLoader.TurnedAway) says nothing about the plugin.
     $status = if ($working) { "✅ Working" }
-              elseif ($output -match "bot check didn't pass") { "⚠️ Unverified (site's bot check)" }
+              elseif ($output -match "turned away by the site's bot protection") { "⚠️ Unverified (site blocks the check)" }
               else { $broken += $plugin; "❌ Broken" }
     $row = "(?m)^(\| \*\*[^|]*\*\* \(``Totoro\.Plugins\.$plugin``\) \|.*\|) [^|]* \|\r?$"
     if ($readmeText -notmatch $row) { throw "README has no Status cell for $plugin." }
