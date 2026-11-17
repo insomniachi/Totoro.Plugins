@@ -10,22 +10,22 @@ Plugins in this repository are dynamically loaded at runtime into an isolated `A
 
 ### Anime streaming
 
-Status comes from each provider's live test (search, episodes, streams; in WebView2, as Totoro runs them, for plugins that load pages in a browser), run weekly by [Check Providers](https://github.com/insomniachi/Totoro.Plugins/actions/workflows/check-providers.yml). Last checked: <!-- provider-check -->never<!-- /provider-check -->.
+Status comes from each provider's live test (search, episodes, streams; in WebView2, as Totoro runs them, for plugins that load pages in a browser), run weekly by [Check Providers](https://github.com/insomniachi/Totoro.Plugins/actions/workflows/check-providers.yml). Last checked: <!-- provider-check -->2026-11-17<!-- /provider-check -->.
 
 | Plugin | ID | Description | Status |
 |---|---|---|---|
-| **AnimePahe** (`Totoro.Plugins.AnimePahe`) | `5c2f8e1a-7d43-4b96-a0e5-3f9c1b6d8a27` | Search, episodes, and stream link extraction via `animepahe.pw`. | ⏳ Not run yet |
-| **ReAnime** (`Totoro.Plugins.ReAnime`) | `1d572b0b-9185-4679-86d7-5e6dfa1bcdcd` | Search, episodes, and FlixCloud file links via `reanime.cz`. | ⏳ Not run yet |
-| **KickAssAnime** (`Totoro.Plugins.KickAssAnime`) | `6da3925f-e703-4f69-9999-c17d6fc7942f` | Search, episodes, and HLS/DASH streams with subtitles via `kaa.lt`. | ⏳ Not run yet |
-| **AniPM** (`Totoro.Plugins.AniPM`) | `d3180556-f773-4265-ac9d-b3f3be98ce6a` | Search (also by AniList id), episodes, and soft-sub, hard-sub and dub HLS streams with intro/outro times via `ani.pm`, played through a local proxy. | ⏳ Not run yet |
-| **Gotaku** (`Totoro.Plugins.Gotaku`) | `45389725-d0a0-4426-87b0-255e86901fc8` | Search, episodes, and decrypted HLS streams (soft sub, hard sub, dub) with intro/outro times via `gotaku.to`. | ⏳ Not run yet |
+| **AnimePahe** (`Totoro.Plugins.AnimePahe`) | `5c2f8e1a-7d43-4b96-a0e5-3f9c1b6d8a27` | Search, episodes, and stream link extraction via `animepahe.pw`. | ❌ Broken |
+| **ReAnime** (`Totoro.Plugins.ReAnime`) | `1d572b0b-9185-4679-86d7-5e6dfa1bcdcd` | Search, episodes, and FlixCloud file links via `reanime.cz`. | ✅ Working |
+| **KickAssAnime** (`Totoro.Plugins.KickAssAnime`) | `6da3925f-e703-4f69-9999-c17d6fc7942f` | Search, episodes, and HLS/DASH streams with subtitles via `kaa.lt`. | ✅ Working |
+| **AniPM** (`Totoro.Plugins.AniPM`) | `d3180556-f773-4265-ac9d-b3f3be98ce6a` | Search (also by AniList id), episodes, and soft-sub, hard-sub and dub HLS streams with intro/outro times via `ani.pm`, played through a local proxy. | ✅ Working |
+| **Gotaku** (`Totoro.Plugins.Gotaku`) | `45389725-d0a0-4426-87b0-255e86901fc8` | Search, episodes, and decrypted HLS streams (soft sub, hard sub, dub) with intro/outro times via `gotaku.to`. | ✅ Working |
 
 ### Torrents
 
 | Plugin | ID | Description | Status |
 |---|---|---|---|
-| **SubsPlease** (`Totoro.Plugins.SubsPlease`) | `9b7a71c8-7633-46e8-be5e-288c19ac1330` | Direct torrent schedule and magnet extraction via `subsplease.org`. | ⏳ Not run yet |
-| **TsukiHime** (`Totoro.Plugins.TsukiHime`) | `e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58` | Episode torrents matched by AniList/MyAnimeList id via `api.tsukihime.org`. | ⏳ Not run yet |
+| **SubsPlease** (`Totoro.Plugins.SubsPlease`) | `9b7a71c8-7633-46e8-be5e-288c19ac1330` | Direct torrent schedule and magnet extraction via `subsplease.org`. | ✅ Working |
+| **TsukiHime** (`Totoro.Plugins.TsukiHime`) | `e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58` | Episode torrents matched by AniList/MyAnimeList id via `api.tsukihime.org`. | ✅ Working |
 
 ### Debrid services
 
