@@ -190,7 +190,8 @@ jobs:
         }
 
         $manifest = Get-Content "src/Totoro.Plugins.$plugin/plugin.json" -Raw | ConvertFrom-Json
-        $downloadUrl = "https://github.com/insomniachi/Totoro.Plugins/releases/download/$tag/$plugin.totoro-plugin"
+        # This repository's release, so a fork's catalog points at its own packages.
+        $downloadUrl = "https://github.com/${{ github.repository }}/releases/download/$tag/$plugin.totoro-plugin"
 
         $newEntry = [PSCustomObject]@{
           id = $manifest.id

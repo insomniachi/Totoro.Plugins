@@ -66,6 +66,28 @@ Releases run one at a time.
 
 ---
 
+## Running Your Own Plugin Repository
+
+Totoro reads its catalog from the official [`plugins.json`](plugins.json) by default. To publish plugins from a repository of your own:
+
+1. **Fork** this repository on GitHub (or copy it into a new one, keeping `.github/workflows`, `Directory.Build.props` and `plugins.json`).
+2. **Trim the catalog**: in `plugins.json`, keep the entries you want to offer (an empty list `[]` to start fresh). Delete the projects in `src/` you don't want, and remove them from the `plugin` choices in `.github/workflows/release-plugin.yml`.
+3. **Add your plugin**: copy a project in `src/` that does the same kind of thing (e.g. `Totoro.Plugins.SubsPlease` for an anime provider), rename it, and in its `plugin.json` give it:
+   - a new `id` (a fresh GUID: `[guid]::NewGuid()` in PowerShell), its `name`, `author`, `description`, `version` and `minAppVersion`;
+   - an `iconUrl` in your repository, e.g. `https://raw.githubusercontent.com/<you>/<repo>/main/src/<Project>/icon.png`.
+   Add its name to the workflow's `plugin` choices (alphabetical).
+4. **Enable Actions**: a fork starts with them off; turn them on in your repository's **Actions** tab. The workflow asks for write access itself, to create the release and update `plugins.json` on `main`.
+5. **Release it**: run **Actions → Release Plugin** as above. It builds the package, attaches it to a release in *your* repository, and adds it to your `plugins.json` with its download URL and SHA-256.
+6. **Point Totoro at it**: in Totoro, open **Plugins**, click the **Plugin repository** button (the store icon, next to **Install from file**) and set **Plugin repository** to your catalog's raw URL:
+   ```text
+   https://raw.githubusercontent.com/<you>/<repo>/main/plugins.json
+   ```
+   The catalog reloads when the box loses focus. Clear the box to go back to the official catalog.
+
+The catalog can be any `plugins.json` served over HTTP(S), so a repository on another host works too, as long as each entry's `downloadUrl` points at its `.totoro-plugin` package. Totoro checks a package against its `sha256` before installing it.
+
+---
+
 ## Contributing
 
 Keep the docs in step with the code, in the same change:
