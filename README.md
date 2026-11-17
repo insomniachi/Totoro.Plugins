@@ -8,20 +8,42 @@ Plugins in this repository are dynamically loaded at runtime into an isolated `A
 
 ## Included Plugins
 
+### Anime streaming
+
 | Plugin | ID | Description |
 |---|---|---|
 | **Senshi** (`Totoro.Plugins.Senshi`) | `c6066fda-8e30-4545-9599-8e6c3e917312` | Stream anime and search catalogs via `senshi.to`. |
-| **SubsPlease** (`Totoro.Plugins.SubsPlease`) | `9b7a71c8-7633-46e8-be5e-288c19ac1330` | Direct torrent schedule and magnet extraction via `subsplease.org`. |
 | **AnimePahe** (`Totoro.Plugins.AnimePahe`) | `5c2f8e1a-7d43-4b96-a0e5-3f9c1b6d8a27` | Search, episodes, and stream link extraction via `animepahe.pw`. |
 | **ReAnime** (`Totoro.Plugins.ReAnime`) | `1d572b0b-9185-4679-86d7-5e6dfa1bcdcd` | Search, episodes, and FlixCloud file links via `reanime.cz`. |
-| **TsukiHime** (`Totoro.Plugins.TsukiHime`) | `e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58` | Episode torrents matched by AniList/MyAnimeList id via `api.tsukihime.org`. |
 | **KickAssAnime** (`Totoro.Plugins.KickAssAnime`) | `6da3925f-e703-4f69-9999-c17d6fc7942f` | Search, episodes, and HLS/DASH streams with subtitles via `kaa.lt`. |
 | **AniPM** (`Totoro.Plugins.AniPM`) | `d3180556-f773-4265-ac9d-b3f3be98ce6a` | Search (also by AniList id), episodes, and soft-sub, hard-sub and dub HLS streams with intro/outro times via `ani.pm`, played through a local proxy. |
 | **Gotaku** (`Totoro.Plugins.Gotaku`) | `45389725-d0a0-4426-87b0-255e86901fc8` | Search, episodes, and decrypted HLS streams (soft sub, hard sub, dub) with intro/outro times via `gotaku.to`. |
+
+### Torrents
+
+| Plugin | ID | Description |
+|---|---|---|
+| **SubsPlease** (`Totoro.Plugins.SubsPlease`) | `9b7a71c8-7633-46e8-be5e-288c19ac1330` | Direct torrent schedule and magnet extraction via `subsplease.org`. |
+| **TsukiHime** (`Totoro.Plugins.TsukiHime`) | `e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58` | Episode torrents matched by AniList/MyAnimeList id via `api.tsukihime.org`. |
+
+### Debrid services
+
+| Plugin | ID | Description |
+|---|---|---|
 | **Real-Debrid** (`Totoro.Plugins.RealDebrid`) | `8fa7a097-dba5-4177-8f06-de7caa2ac580` | Streams torrents through the Real-Debrid debrid service (needs an account). |
 | **TorBox** (`Totoro.Plugins.TorBox`) | `33c86adc-7dc0-4fa4-a2bf-993acc66700b` | Streams torrents through the TorBox debrid service (needs an account). |
+
+### Trackers
+
+| Plugin | ID | Description |
+|---|---|---|
 | **Shikimori** (`Totoro.Plugins.Shikimori`) | `4833500d-bf61-4600-9f2d-0890c63c38c4` | Anime database and list tracker via `shikimori.io` (ids are MyAnimeList's). |
 | **Kitsu** (`Totoro.Plugins.Kitsu`) | `d8ae6ad9-3e24-40fe-b79a-8c5d4212dc6e` | Anime database and list tracker via `kitsu.app`. |
+
+### Manga
+
+| Plugin | ID | Description |
+|---|---|---|
 | **Weeb Central** (`Totoro.Plugins.WeebCentral`) | `5f2ae848-fafe-41bb-a851-9e22ecfb1e21` | Manga search, chapters and pages via `weebcentral.com`, matched by AniList/MyAnimeList links. |
 
 ---
