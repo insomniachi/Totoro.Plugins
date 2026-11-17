@@ -14,7 +14,7 @@ Status comes from each provider's live test (search, episodes, streams; in WebVi
 
 | Plugin | ID | Description | Status |
 |---|---|---|---|
-| **AnimePahe** (`Totoro.Plugins.AnimePahe`) | `5c2f8e1a-7d43-4b96-a0e5-3f9c1b6d8a27` | Search, episodes, and stream link extraction via `animepahe.pw`. | ❌ Broken |
+| **AnimePahe** (`Totoro.Plugins.AnimePahe`) | `5c2f8e1a-7d43-4b96-a0e5-3f9c1b6d8a27` | Search, episodes, and stream link extraction via `animepahe.pw`. | ⚠️ Unverified (site blocks the check) |
 | **ReAnime** (`Totoro.Plugins.ReAnime`) | `1d572b0b-9185-4679-86d7-5e6dfa1bcdcd` | Search, episodes, and FlixCloud file links via `reanime.cz`. | ✅ Working |
 | **KickAssAnime** (`Totoro.Plugins.KickAssAnime`) | `6da3925f-e703-4f69-9999-c17d6fc7942f` | Search, episodes, and HLS/DASH streams with subtitles via `kaa.lt`. | ✅ Working |
 | **AniPM** (`Totoro.Plugins.AniPM`) | `d3180556-f773-4265-ac9d-b3f3be98ce6a` | Search (also by AniList id), episodes, and soft-sub, hard-sub and dub HLS streams with intro/outro times via `ani.pm`, played through a local proxy. | ✅ Working |
