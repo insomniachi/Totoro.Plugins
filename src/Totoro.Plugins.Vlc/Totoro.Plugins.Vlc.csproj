@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Totoro.Plugins.Vlc</RootNamespace>
+    <TargetFramework>net11.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <PlatformTarget>x64</PlatformTarget>
+    <!-- x64 libvlc only, as the app is -->
+    <VlcWindowsX86Enabled>false</VlcWindowsX86Enabled>
+    <VlcWindowsArm64Enabled>false</VlcWindowsArm64Enabled>
+    <!-- Collection expressions are only a problem for trimmed/AOT builds, and the app isn't trimmed (as in the app) -->
+    <NoWarn>$(NoWarn);CsWinRT1032</NoWarn>
+    <!-- No resources (PRI) of its own: the app reads its own only -->
+    <AppxGeneratePriEnabled>false</AppxGeneratePriEnabled>
+  </PropertyGroup>
+  <!--
+    The Windows App SDK puts a library's files in a folder named after it, for a PRI's sake: they go beside the plugin's
+    DLL instead, where the app and libvlc look for them (icon.png, libvlc\win-x64).
+  -->
+  <Target Name="FlattenContent" AfterTargets="AddProcessedXamlFilesToCopyLocal">
+    <ItemGroup>
+      <_FlatContent Include="@(_AllChildProjectItemsWithTargetPath)" Condition="$([System.String]::Copy('%(_AllChildProjectItemsWithTargetPath.TargetPath)').StartsWith('$(MSBuildProjectName)\'))" />
+      <_AllChildProjectItemsWithTargetPath Remove="@(_FlatContent)" />
+      <_AllChildProjectItemsWithTargetPath Include="@(_FlatContent)" TargetPath="$([System.String]::Copy('%(_FlatContent.TargetPath)').Substring($([MSBuild]::Add($(MSBuildProjectName.Length), 1))))" />
+    </ItemGroup>
+  </Target>
+  <ItemGroup>
+    <PackageReference Include="LibVLCSharp.WinUI" Version="3.10.2" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.24" />
+    <!-- WinUI's types, to compile against: the app's, at runtime -->
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.6.5" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2957" />
+  </ItemGroup>
+  <!--
+    It plays in the app's player window (Totoro.UI's WindowMediaPlayer). Referenced here rather than with UseWinUI (see
+    Directory.Build.targets): the plugin has no XAML of its own, and UseWinUI would put its files (icon, libvlc) in a
+    subfolder named after it, for a PRI the app never reads.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="$(TotoroRepoRoot)\src\Totoro.UI\Totoro.UI.csproj" Condition="'$(TotoroRepoRoot)' != ''" Private="false" ExcludeAssets="runtime" />
+  </ItemGroup>
+  <Target Name="NeedsTotoroRepository" BeforeTargets="ResolveProjectReferences" Condition="'$(TotoroRepoRoot)' == ''">
+    <Error Text="The VLC plugin builds against Totoro.UI, which has no NuGet package: clone the Totoro repository beside this one." />
+  </Target>
+  <!-- Only libvlc's own assemblies go with it: the rest (WinUI, Windows' projections...) are the app's -->
+  <Target Name="CopyOnlyVlcAssemblies" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="!$([System.String]::Copy('%(ReferenceCopyLocalPaths.NuGetPackageId)').StartsWith('LibVLCSharp')) and !$([System.String]::Copy('%(ReferenceCopyLocalPaths.NuGetPackageId)').StartsWith('SharpDX'))" />
+    </ItemGroup>
+  </Target>
+  <!--
+    libvlc, without what playing doesn't need (import libraries, encoding and streaming out, visualizations, network
+    discovery). Its license (LGPL-2.1) and where its source is go with it, as the LGPL asks; the package has neither.
+  -->
+  <ItemGroup>
+    <VlcWindowsX64ExcludeFiles Include="libvlc.lib;libvlccore.lib;plugins\access_output\%2A;plugins\stream_out\%2A;plugins\mux\%2A;plugins\visualization\%2A;plugins\services_discovery\%2A;plugins\video_splitter\%2A" />
+    <None Remove="COPYING.LIB;NOTICE.txt" />
+    <Content Include="COPYING.LIB" Link="libvlc\win-x64\COPYING.LIB" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="NOTICE.txt" Link="libvlc\win-x64\NOTICE.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

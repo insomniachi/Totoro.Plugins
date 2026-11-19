@@ -1,0 +1,13 @@
+{
+  "id": "c4e8a1b2-7f3d-4a96-8e05-2b9d6f1c3a74",
+  "name": "VLC",
+  "version": "1.0.0",
+  "description": "Plays videos in Totoro's own window with libvlc, VLC's engine: it plays what Windows' player doesn't, ASS subtitles included.",
+  "author": "Totoro",
+  "entryPoint": "Totoro.Plugins.Vlc.dll",
+  "moduleTypes": [
+    "MediaPlayer"
+  ],
+  "minAppVersion": "2.4.3",
+  "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Vlc/icon.png"
+}

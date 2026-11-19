@@ -20,6 +20,7 @@ on:
           - SubsPlease
           - TorBox
           - TsukiHime
+          - Vlc
           - WeebCentral
       version:
         description: 'Version (e.g. 1.0.1) - leave blank to auto-increment patch from current version'

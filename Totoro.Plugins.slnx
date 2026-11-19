@@ -11,6 +11,7 @@
     <Project Path="src/Totoro.Plugins.SubsPlease/Totoro.Plugins.SubsPlease.csproj" />
     <Project Path="src/Totoro.Plugins.TorBox/Totoro.Plugins.TorBox.csproj" />
     <Project Path="src/Totoro.Plugins.TsukiHime/Totoro.Plugins.TsukiHime.csproj" />
+    <Project Path="src/Totoro.Plugins.Vlc/Totoro.Plugins.Vlc.csproj" />
     <Project Path="src/Totoro.Plugins.WeebCentral/Totoro.Plugins.WeebCentral.csproj" />
   </Folder>
   <Folder Name="/tests/">

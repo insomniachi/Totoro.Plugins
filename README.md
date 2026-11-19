@@ -47,6 +47,12 @@ Status comes from each provider's live test (search, episodes, streams; in WebVi
 |---|---|---|
 | **Weeb Central** (`Totoro.Plugins.WeebCentral`) | `5f2ae848-fafe-41bb-a851-9e22ecfb1e21` | Manga search, chapters and pages via `weebcentral.com`, matched by AniList/MyAnimeList links. |
 
+### Media players
+
+| Plugin | ID | Description |
+|---|---|---|
+| **VLC** (`Totoro.Plugins.Vlc`) | `c4e8a1b2-7f3d-4a96-8e05-2b9d6f1c3a74` | Plays in Totoro's own player window with libvlc (VLC's engine), which was built into the app before 2.4.3. Ships libvlc (LGPL-2.1), so it builds against `Totoro.UI` and needs the Totoro repository beside this one. |
+
 ---
 
 ## Development & Debugging Workflow
@@ -66,6 +72,7 @@ Each plugin project in `src/` contains a preconfigured `Properties/launchSetting
 When building in a clean CI environment or without a local Totoro clone:
 - `Directory.Build.props` automatically falls back to the published `Totoro.Core` NuGet package (`2.1.0`).
 - Runtime host assemblies are excluded from plugin packages (`ExcludeAssets="runtime"`), keeping distribution packages lightweight.
+- Plugins that build against `Totoro.UI` (VLC) need the Totoro repository: it has no NuGet package. The release workflow checks it out beside this one.
 
 ---
 
