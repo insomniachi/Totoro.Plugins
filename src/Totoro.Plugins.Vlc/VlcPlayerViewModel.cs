@@ -16,9 +16,12 @@ internal sealed partial class VlcPlayerViewModel(int volume, PlayerAspectRatio a
 	private bool _isStarting;
 	// Playing again from the end, off the UI thread: closing waits for it before freeing the player.
 	private Task _replaying = Task.CompletedTask;
+	private const string StartingStatus = "Starting the player…";
 	private VideoSurface? _surface;
 	// The swap chain's options, kept to start libvlc again on the next play if it failed to start.
 	private string[]? _swapChainOptions;
+	// libvlc starting, from the swap chain's Initialized; a play that retries a failed start waits for it.
+	private Task _starting = Task.CompletedTask;
 
 	/// <summary>libvlc's player; null until <see cref="InitializeAsync"/>.</summary>
 	[ObservableProperty] public partial MediaPlayer? MediaPlayer { get; private set; }
@@ -27,7 +30,7 @@ internal sealed partial class VlcPlayerViewModel(int volume, PlayerAspectRatio a
 	public override UIElement CreateVideoView()
 	{
 		var surface = _surface = new VideoSurface();
-		surface.Initialized += (_, options) => _ = InitializeAsync(options);
+		surface.Initialized += (_, options) => _starting = InitializeAsync(options);
 		surface.Failed += (_, ex) =>
 		{
 			_logger.LogError(ex, "Couldn't make the video's swap chain");
@@ -51,10 +54,9 @@ internal sealed partial class VlcPlayerViewModel(int volume, PlayerAspectRatio a
 
 		_isStarting = true;
 		_swapChainOptions = swapChainOptions;
-		var showedStarting = !LibVlcLoader.IsLoaded;
-		if (showedStarting)
+		if (!LibVlcLoader.IsLoaded)
 		{
-			ShowStatus("Starting the player…");
+			ShowStatus(StartingStatus);
 		}
 
 		LibVLC libVlc;
@@ -92,7 +94,8 @@ internal sealed partial class VlcPlayerViewModel(int volume, PlayerAspectRatio a
 		}
 
 		_libVlc = libVlc;
-		if (showedStarting)
+		// Only its own status: the app may have shown another meanwhile.
+		if (Status == StartingStatus)
 		{
 			ShowStatus(null);
 		}
@@ -115,10 +118,20 @@ internal sealed partial class VlcPlayerViewModel(int volume, PlayerAspectRatio a
 
 	protected override async Task PlayCoreAsync(Uri uri, IEnumerable<string> options, TimeSpan start)
 	{
-		// libvlc failed to start: tried again now.
-		if (MediaPlayer is null && _swapChainOptions is { } swapChainOptions)
+		// The player didn't start (libvlc, or the swap chain before it, failed): tried again now.
+		if (MediaPlayer is null && !IsClosed)
 		{
-			await InitializeAsync(swapChainOptions);
+			if (_swapChainOptions is { } swapChainOptions)
+			{
+				_starting = InitializeAsync(swapChainOptions);
+			}
+			else
+			{
+				// Starts libvlc (setting _starting) if the swap chain's made this time.
+				_surface?.Retry();
+			}
+
+			await _starting;
 		}
 
 		if (MediaPlayer is not { } player)

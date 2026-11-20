@@ -10,7 +10,9 @@ namespace Totoro.Plugins.Vlc;
 internal static class LibVlcLoader
 {
 	private static readonly Lock s_lock = new();
+	private const long RetryAfterMs = 60_000;
 	private static Task? s_loading;
+	private static long s_startedAt;
 
 	/// <summary>libvlc's folder, in the plugin's.</summary>
 	public static string Directory { get; } = Path.Combine(Path.GetDirectoryName(typeof(LibVlcLoader).Assembly.Location)!, "libvlc", "win-x64");
@@ -23,13 +25,15 @@ internal static class LibVlcLoader
 	/// <summary>Loads libvlc, waiting for it; on a background thread.</summary>
 	public static void Load() => Loading().GetAwaiter().GetResult();
 
-	// A load that failed is tried again (the failure is logged by whoever waited for it), not kept for the session.
+	// A load that failed is tried again (the failure is logged by whoever waited for it), not kept for the session; but
+	// not until a while after the last try, so a lasting failure (a broken install) isn't a seconds-long scan every play.
 	private static Task Loading()
 	{
 		lock (s_lock)
 		{
-			if (s_loading is null || s_loading.IsFaulted)
+			if (s_loading is null || (s_loading.IsFaulted && Environment.TickCount64 - s_startedAt > RetryAfterMs))
 			{
+				s_startedAt = Environment.TickCount64;
 				s_loading = Task.Run(LoadPlugins);
 			}
 

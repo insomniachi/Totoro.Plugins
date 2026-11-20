@@ -22,6 +22,8 @@ internal sealed class VideoSurface
 	private SharpDX.Direct3D11.Device? _device;
 	private SwapChain1? _swapChain;
 	private SwapChain2? _swapChain2;
+	private bool _isDestroyed;
+	private bool _hasFailed;
 
 	public VideoSurface()
 	{
@@ -50,8 +52,9 @@ internal sealed class VideoSurface
 
 	private void Create()
 	{
-		// Not while it has no size (e.g. collapsed): a swap chain can't be 0 wide or high.
-		if (Panel.ActualWidth == 0 || Panel.ActualHeight == 0)
+		// Not while it has no size (e.g. collapsed): a swap chain can't be 0 wide or high. Not once freed for good (a
+		// resize as the window closes), nor again on every resize once it failed: Retry tries again.
+		if (Panel.ActualWidth == 0 || Panel.ActualHeight == 0 || _isDestroyed || _hasFailed)
 		{
 			return;
 		}
@@ -62,7 +65,8 @@ internal sealed class VideoSurface
 		}
 		catch (Exception ex)
 		{
-			Destroy();
+			Release();
+			_hasFailed = true;
 			Failed?.Invoke(this, ex);
 			return;
 		}
@@ -147,8 +151,24 @@ internal sealed class VideoSurface
 		}
 	}
 
-	/// <summary>Frees the swap chain; only once libvlc's player that draws into it is freed. On the UI thread.</summary>
+	/// <summary>Frees the swap chain for good; only once libvlc's player that draws into it is freed. On the UI thread.</summary>
 	public void Destroy()
+	{
+		_isDestroyed = true;
+		Release();
+	}
+
+	/// <summary>Tries again to make the swap chain, if making it failed (raising Initialized or Failed). On the UI thread.</summary>
+	public void Retry()
+	{
+		if (_hasFailed && !_isDestroyed)
+		{
+			_hasFailed = false;
+			Create();
+		}
+	}
+
+	private void Release()
 	{
 		_swapChain2?.Dispose();
 		_swapChain2 = null;
