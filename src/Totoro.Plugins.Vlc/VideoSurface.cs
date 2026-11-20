@@ -37,7 +37,7 @@ internal sealed class VideoSurface
 			}
 		};
 		Panel.CompositionScaleChanged += (_, _) => UpdateScale();
-		Panel.Unloaded += (_, _) => Destroy();
+		// Not destroyed on Unloaded: libvlc draws into it until its player is freed, so the view model destroys it then.
 	}
 
 	public SwapChainPanel Panel { get; } = new();
@@ -45,14 +45,37 @@ internal sealed class VideoSurface
 	/// <summary>Raised once there's a swap chain, with the options that have libvlc draw into it.</summary>
 	public event EventHandler<string[]>? Initialized;
 
+	/// <summary>Raised when the swap chain couldn't be made: libvlc has nothing to draw into.</summary>
+	public event EventHandler<Exception>? Failed;
+
 	private void Create()
 	{
-		// Not while it has no size (e.g. collapsed).
-		if (Panel.ActualHeight == 0)
+		// Not while it has no size (e.g. collapsed): a swap chain can't be 0 wide or high.
+		if (Panel.ActualWidth == 0 || Panel.ActualHeight == 0)
 		{
 			return;
 		}
 
+		try
+		{
+			CreateSwapChain();
+		}
+		catch (Exception ex)
+		{
+			Destroy();
+			Failed?.Invoke(this, ex);
+			return;
+		}
+
+		Initialized?.Invoke(this,
+		[
+			$"--winrt-d3dcontext=0x{_device!.ImmediateContext.NativePointer:x}",
+			$"--winrt-swapchain=0x{_swapChain!.NativePointer:x}",
+		]);
+	}
+
+	private void CreateSwapChain()
+	{
 		using var factory = new Factory2(false);
 		_device = CreateDevice(factory, DeviceCreationFlags.BgraSupport | DeviceCreationFlags.VideoSupport)
 			?? CreateDevice(factory, DeviceCreationFlags.BgraSupport)
@@ -84,11 +107,6 @@ internal sealed class VideoSurface
 		_swapChain2 = _swapChain.QueryInterface<SwapChain2>();
 		UpdateScale();
 		UpdateSize();
-		Initialized?.Invoke(this,
-		[
-			$"--winrt-d3dcontext=0x{_device.ImmediateContext.NativePointer:x}",
-			$"--winrt-swapchain=0x{_swapChain.NativePointer:x}",
-		]);
 	}
 
 	private static SharpDX.Direct3D11.Device? CreateDevice(Factory2 factory, DeviceCreationFlags flags)
@@ -108,25 +126,17 @@ internal sealed class VideoSurface
 		return null;
 	}
 
-	private void UpdateSize()
+	private unsafe void UpdateSize()
 	{
 		if (_swapChain is null)
 		{
 			return;
 		}
 
-		var size = Marshal.AllocHGlobal(sizeof(int));
-		try
-		{
-			Marshal.WriteInt32(size, (int)(Panel.ActualWidth * Panel.CompositionScaleX));
-			_swapChain.SetPrivateData(s_swapChainWidth, sizeof(int), size);
-			Marshal.WriteInt32(size, (int)(Panel.ActualHeight * Panel.CompositionScaleY));
-			_swapChain.SetPrivateData(s_swapChainHeight, sizeof(int), size);
-		}
-		finally
-		{
-			Marshal.FreeHGlobal(size);
-		}
+		var width = (int)(Panel.ActualWidth * Panel.CompositionScaleX);
+		var height = (int)(Panel.ActualHeight * Panel.CompositionScaleY);
+		_swapChain.SetPrivateData(s_swapChainWidth, sizeof(int), (IntPtr)(&width));
+		_swapChain.SetPrivateData(s_swapChainHeight, sizeof(int), (IntPtr)(&height));
 	}
 
 	private void UpdateScale()
@@ -137,14 +147,22 @@ internal sealed class VideoSurface
 		}
 	}
 
-	private void Destroy()
+	/// <summary>Frees the swap chain; only once libvlc's player that draws into it is freed. On the UI thread.</summary>
+	public void Destroy()
 	{
 		_swapChain2?.Dispose();
 		_swapChain2 = null;
 		if (_swapChain is not null)
 		{
-			using var native = ComObject.As<SwapChainPanelNative>(Panel);
-			native.SwapChain = null;
+			try
+			{
+				using var native = ComObject.As<SwapChainPanelNative>(Panel);
+				native.SwapChain = null;
+			}
+			catch (Exception)
+			{
+				// The window's gone (this runs as it closes): the panel lets go of the swap chain with it.
+			}
 		}
 
 		_swapChain?.Dispose();

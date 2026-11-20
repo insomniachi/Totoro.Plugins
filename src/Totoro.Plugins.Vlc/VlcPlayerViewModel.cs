@@ -16,6 +16,9 @@ internal sealed partial class VlcPlayerViewModel(int volume, PlayerAspectRatio a
 	private bool _isStarting;
 	// Playing again from the end, off the UI thread: closing waits for it before freeing the player.
 	private Task _replaying = Task.CompletedTask;
+	private VideoSurface? _surface;
+	// The swap chain's options, kept to start libvlc again on the next play if it failed to start.
+	private string[]? _swapChainOptions;
 
 	/// <summary>libvlc's player; null until <see cref="InitializeAsync"/>.</summary>
 	[ObservableProperty] public partial MediaPlayer? MediaPlayer { get; private set; }
@@ -23,8 +26,15 @@ internal sealed partial class VlcPlayerViewModel(int volume, PlayerAspectRatio a
 	/// <summary>The swap chain libvlc draws into, which starts libvlc once it's made.</summary>
 	public override UIElement CreateVideoView()
 	{
-		var surface = new VideoSurface();
+		var surface = _surface = new VideoSurface();
 		surface.Initialized += (_, options) => _ = InitializeAsync(options);
+		surface.Failed += (_, ex) =>
+		{
+			_logger.LogError(ex, "Couldn't make the video's swap chain");
+			ShowStatus("Couldn't start the player.", isError: true);
+			// Plays waiting on it go on (and do nothing, there being no player) rather than waiting for ever.
+			Initialized.TrySetResult();
+		};
 		return surface.Panel;
 	}
 
@@ -40,7 +50,9 @@ internal sealed partial class VlcPlayerViewModel(int volume, PlayerAspectRatio a
 		}
 
 		_isStarting = true;
-		if (!LibVlcLoader.IsLoaded)
+		_swapChainOptions = swapChainOptions;
+		var showedStarting = !LibVlcLoader.IsLoaded;
+		if (showedStarting)
 		{
 			ShowStatus("Starting the player…");
 		}
@@ -60,6 +72,8 @@ internal sealed partial class VlcPlayerViewModel(int volume, PlayerAspectRatio a
 		{
 			_logger.LogError(ex, "Couldn't start libvlc");
 			ShowStatus("Couldn't start the player.", isError: true);
+			// Tried again on the next play.
+			_isStarting = false;
 			// Plays waiting on it go on (and do nothing, there being no player) rather than waiting for ever.
 			Initialized.TrySetResult();
 			return;
@@ -78,7 +92,7 @@ internal sealed partial class VlcPlayerViewModel(int volume, PlayerAspectRatio a
 		}
 
 		_libVlc = libVlc;
-		if (Status == "Starting the player…")
+		if (showedStarting)
 		{
 			ShowStatus(null);
 		}
@@ -101,6 +115,12 @@ internal sealed partial class VlcPlayerViewModel(int volume, PlayerAspectRatio a
 
 	protected override async Task PlayCoreAsync(Uri uri, IEnumerable<string> options, TimeSpan start)
 	{
+		// libvlc failed to start: tried again now.
+		if (MediaPlayer is null && _swapChainOptions is { } swapChainOptions)
+		{
+			await InitializeAsync(swapChainOptions);
+		}
+
 		if (MediaPlayer is not { } player)
 		{
 			return;
@@ -121,7 +141,9 @@ internal sealed partial class VlcPlayerViewModel(int volume, PlayerAspectRatio a
 	{
 		if (MediaPlayer is { IsSeekable: true } player)
 		{
-			var time = Math.Clamp((long)position.TotalMilliseconds, 0, Math.Max(0, player.Length - 1000));
+			// A second short of the end, when the length is known (it's -1 or 0 for live streams and before it loads).
+			var end = player.Length > 0 ? player.Length - 1000 : long.MaxValue;
+			var time = Math.Clamp((long)position.TotalMilliseconds, 0, Math.Max(0, end));
 			player.Time = time;
 			OnTime(TimeSpan.FromMilliseconds(time));
 		}
@@ -158,8 +180,9 @@ internal sealed partial class VlcPlayerViewModel(int volume, PlayerAspectRatio a
 		var subtitle = player.Spu;
 		var spus = player.SpuDescription;
 		// libvlc calls the subtitle files it was given "Track N"; they're its last subtitle tracks, in the order given.
-		// shortcut: assumes the video's own subtitle tracks are all listed before them, true of files and HLS once loaded;
-		// match by libvlc's media tracks if a stream ever adds its own later.
+		// shortcut: assumes the video's own subtitle tracks are all listed before them, true of files and HLS once loaded,
+		// and that every file loaded (one that fails shifts the names: libvlc doesn't say which slave a track came from);
+		// match by libvlc's media tracks if a stream ever adds its own later, or that mislabelling shows up.
 		var firstFile = spus.Count(x => x.Id >= 0) - Subtitles.Count;
 		return
 		[
@@ -233,21 +256,23 @@ internal sealed partial class VlcPlayerViewModel(int volume, PlayerAspectRatio a
 
 	protected override async Task CloseEngineAsync()
 	{
-		if (MediaPlayer is not { } player)
+		if (MediaPlayer is { } player)
 		{
-			return;
+			MediaPlayer = null;
+			var libVlc = _libVlc;
+			_libVlc = null;
+			// No new replay starts now (MediaPlayer is null); one under way finishes before the player's freed.
+			await _replaying;
+			await Task.Run(() =>
+			{
+				player.Stop();
+				player.Dispose();
+				libVlc?.Dispose();
+			});
 		}
 
-		MediaPlayer = null;
-		var libVlc = _libVlc;
-		_libVlc = null;
-		// No new replay starts now (MediaPlayer is null); one under way finishes before the player's freed.
-		await _replaying;
-		await Task.Run(() =>
-		{
-			player.Stop();
-			player.Dispose();
-			libVlc?.Dispose();
-		});
+		// Only now that libvlc no longer draws into it (back on the UI thread).
+		_surface?.Destroy();
+		_surface = null;
 	}
 }

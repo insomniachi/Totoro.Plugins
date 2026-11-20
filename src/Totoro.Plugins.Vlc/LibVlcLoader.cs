@@ -9,18 +9,33 @@ namespace Totoro.Plugins.Vlc;
 /// </summary>
 internal static class LibVlcLoader
 {
-	private static readonly Lazy<Task> s_loading = new(() => Task.Run(LoadPlugins));
+	private static readonly Lock s_lock = new();
+	private static Task? s_loading;
 
 	/// <summary>libvlc's folder, in the plugin's.</summary>
 	public static string Directory { get; } = Path.Combine(Path.GetDirectoryName(typeof(LibVlcLoader).Assembly.Location)!, "libvlc", "win-x64");
 
-	public static bool IsLoaded => s_loading.IsValueCreated && s_loading.Value.IsCompleted;
+	public static bool IsLoaded => s_loading is { IsCompletedSuccessfully: true };
 
 	/// <summary>Starts loading libvlc in the background, if it isn't already.</summary>
-	public static void Preload() => _ = s_loading.Value;
+	public static void Preload() => _ = Loading();
 
 	/// <summary>Loads libvlc, waiting for it; on a background thread.</summary>
-	public static void Load() => s_loading.Value.GetAwaiter().GetResult();
+	public static void Load() => Loading().GetAwaiter().GetResult();
+
+	// A load that failed is tried again (the failure is logged by whoever waited for it), not kept for the session.
+	private static Task Loading()
+	{
+		lock (s_lock)
+		{
+			if (s_loading is null || s_loading.IsFaulted)
+			{
+				s_loading = Task.Run(LoadPlugins);
+			}
+
+			return s_loading;
+		}
+	}
 
 	private static void LoadPlugins()
 	{
