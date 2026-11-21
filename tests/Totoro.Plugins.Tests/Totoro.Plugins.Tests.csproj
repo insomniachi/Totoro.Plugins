@@ -44,4 +44,14 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <!--
+    WebView2's package references its WPF control too, which wants WPF's WindowsBase (MSB3277 against .NET's): the tests
+    use its WinForms one only.
+  -->
+  <Target Name="DropWebView2Wpf" BeforeTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <Reference Remove="@(Reference)" Condition="'%(Filename)' == 'Microsoft.Web.WebView2.Wpf'" />
+    </ItemGroup>
+  </Target>
+
 </Project>

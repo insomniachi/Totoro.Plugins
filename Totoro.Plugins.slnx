@@ -1,20 +1,51 @@
 <Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
   <Folder Name="/src/">
-    <Project Path="src/Totoro.Plugins.AnimePahe/Totoro.Plugins.AnimePahe.csproj" />
-    <Project Path="src/Totoro.Plugins.AniPM/Totoro.Plugins.AniPM.csproj" />
-    <Project Path="src/Totoro.Plugins.Gotaku/Totoro.Plugins.Gotaku.csproj" />
-    <Project Path="src/Totoro.Plugins.KickAssAnime/Totoro.Plugins.KickAssAnime.csproj" />
-    <Project Path="src/Totoro.Plugins.Kitsu/Totoro.Plugins.Kitsu.csproj" />
-    <Project Path="src/Totoro.Plugins.ReAnime/Totoro.Plugins.ReAnime.csproj" />
-    <Project Path="src/Totoro.Plugins.RealDebrid/Totoro.Plugins.RealDebrid.csproj" />
-    <Project Path="src/Totoro.Plugins.Shikimori/Totoro.Plugins.Shikimori.csproj" />
-    <Project Path="src/Totoro.Plugins.SubsPlease/Totoro.Plugins.SubsPlease.csproj" />
-    <Project Path="src/Totoro.Plugins.TorBox/Totoro.Plugins.TorBox.csproj" />
-    <Project Path="src/Totoro.Plugins.TsukiHime/Totoro.Plugins.TsukiHime.csproj" />
-    <Project Path="src/Totoro.Plugins.Vlc/Totoro.Plugins.Vlc.csproj" />
-    <Project Path="src/Totoro.Plugins.WeebCentral/Totoro.Plugins.WeebCentral.csproj" />
+    <Project Path="src/Totoro.Plugins.AnimePahe/Totoro.Plugins.AnimePahe.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/Totoro.Plugins.AniPM/Totoro.Plugins.AniPM.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/Totoro.Plugins.Gotaku/Totoro.Plugins.Gotaku.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/Totoro.Plugins.KickAssAnime/Totoro.Plugins.KickAssAnime.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/Totoro.Plugins.Kitsu/Totoro.Plugins.Kitsu.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/Totoro.Plugins.ReAnime/Totoro.Plugins.ReAnime.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/Totoro.Plugins.RealDebrid/Totoro.Plugins.RealDebrid.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/Totoro.Plugins.Shikimori/Totoro.Plugins.Shikimori.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/Totoro.Plugins.SubsPlease/Totoro.Plugins.SubsPlease.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/Totoro.Plugins.TorBox/Totoro.Plugins.TorBox.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/Totoro.Plugins.TsukiHime/Totoro.Plugins.TsukiHime.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/Totoro.Plugins.Vlc/Totoro.Plugins.Vlc.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/Totoro.Plugins.WeebCentral/Totoro.Plugins.WeebCentral.csproj">
+      <Platform Project="x64" />
+    </Project>
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/Totoro.Plugins.Tests/Totoro.Plugins.Tests.csproj" />
+    <Project Path="tests/Totoro.Plugins.Tests/Totoro.Plugins.Tests.csproj">
+      <Platform Project="x64" />
+    </Project>
   </Folder>
 </Solution>

@@ -9,6 +9,23 @@
     <IsPluginProject Condition="$(MSBuildProjectName.StartsWith('Totoro.Plugins.')) and !$(MSBuildProjectName.EndsWith('.Tests'))">true</IsPluginProject>
   </PropertyGroup>
 
+  <!-- x64 only, as the app is. Outputs stay in bin\<Configuration>\ (no x64 folder), where packaging and releases look. -->
+  <PropertyGroup>
+    <Platforms>x64</Platforms>
+    <Platform Condition="'$(Platform)' == '' or '$(Platform)' == 'AnyCPU'">x64</Platform>
+    <PlatformTarget>x64</PlatformTarget>
+    <AppendPlatformToOutputPath>false</AppendPlatformToOutputPath>
+    <!-- A solution build passes its platform on to projects outside it (Totoro.Core, Totoro.UI), rather than none -->
+    <ShouldUnsetParentConfigurationAndPlatform>false</ShouldUnsetParentConfigurationAndPlatform>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <!-- Referenced projects (Totoro.Core and Totoro.UI too) build x64 as well; AdditionalProperties, not SetPlatform,
+         which a solution build drops for projects outside the solution -->
+    <ProjectReference>
+      <AdditionalProperties>Platform=x64</AdditionalProperties>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+
   <!-- Auto-detect sibling or subfolder Totoro repository for ProjectReference vs PackageReference -->
   <PropertyGroup>
     <TotoroRepoRoot Condition="'$(TotoroRepoRoot)' == '' and Exists('$(MSBuildThisFileDirectory)..\Totoro\src\Totoro.Core\Totoro.Core.csproj')">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\Totoro'))</TotoroRepoRoot>

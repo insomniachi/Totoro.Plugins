@@ -12,4 +12,12 @@
                       Private="false"
                       ExcludeAssets="runtime" />
   </ItemGroup>
+
+  <!--
+    Totoro's projects aren't in this solution: they're built as on their own, not as part of a solution build (in which
+    Totoro.UI would build Totoro.Core without a platform, so AnyCPU), so each is built once, x64.
+  -->
+  <ItemGroup Condition="'$(TotoroRepoRoot)' != ''">
+    <ProjectReference Update="$(TotoroRepoRoot)\src\**\*.csproj" GlobalPropertiesToRemove="%(GlobalPropertiesToRemove);CurrentSolutionConfigurationContents;BuildingSolutionFile" />
+  </ItemGroup>
 </Project>
