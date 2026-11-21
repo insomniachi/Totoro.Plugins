@@ -109,20 +109,6 @@
     ]
   },
   {
-    "id": "d3180556-f773-4265-ac9d-b3f3be98ce6a",
-    "name": "AniPM",
-    "version": "1.0.1",
-    "description": "AniPM streams anime, subtitled, hard-subbed and dubbed, with intro and outro times.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/AniPM-v1.0.1/AniPM.totoro-plugin",
-    "sha256": "83f5c4d867ce65a54bfb6ea0a1edd4a6c34978c4b83f1aadea4f4f0ee927eac6",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.AniPM/icon.png",
-    "minTotoroVersion": "2.3.1",
-    "moduleTypes": [
-      "IAnimeProvider"
-    ]
-  },
-  {
     "id": "45389725-d0a0-4426-87b0-255e86901fc8",
     "name": "Gotaku",
     "version": "1.0.2",
@@ -176,6 +162,20 @@
     "minTotoroVersion": "2.4.3",
     "moduleTypes": [
       "IMediaPlayer"
+    ]
+  },
+  {
+    "id": "d3180556-f773-4265-ac9d-b3f3be98ce6a",
+    "name": "AniPM",
+    "version": "1.0.2",
+    "description": "AniPM streams anime, subtitled, hard-subbed and dubbed, with intro and outro times.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/AniPM-v1.0.2/AniPM.totoro-plugin",
+    "sha256": "b35a2f60a93eb968dddbd556c29d01c89a94019b65b19c7d3977838712037390",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.AniPM/icon.png",
+    "minTotoroVersion": "2.3.1",
+    "moduleTypes": [
+      "IAnimeProvider"
     ]
   }
 ]
