@@ -41,20 +41,6 @@
     ]
   },
   {
-    "id": "33c86adc-7dc0-4fa4-a2bf-993acc66700b",
-    "name": "TorBox",
-    "version": "1.0.4",
-    "description": "Streams torrents through TorBox, a debrid service: it downloads them on its servers and the player streams its copy.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/TorBox-v1.0.4/TorBox.totoro-plugin",
-    "sha256": "7786190affdbf33a6d1890588ba1fe009d709afabefcb456b6e9834d9110ef15",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.TorBox/icon.png",
-    "minTotoroVersion": "2.0.8",
-    "moduleTypes": [
-      "ITorrentStreamer"
-    ]
-  },
-  {
     "id": "c4e8a1b2-7f3d-4a96-8e05-2b9d6f1c3a74",
     "name": "VLC",
     "version": "1.0.1",
@@ -178,6 +164,20 @@
     "minTotoroVersion": "2.3.13",
     "moduleTypes": [
       "IAnimeDatabase"
+    ]
+  },
+  {
+    "id": "33c86adc-7dc0-4fa4-a2bf-993acc66700b",
+    "name": "TorBox",
+    "version": "1.0.5",
+    "description": "Streams torrents through TorBox, a debrid service: it downloads them on its servers and the player streams its copy.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/TorBox-v1.0.5/TorBox.totoro-plugin",
+    "sha256": "2cf1a6a2733edee8f061af79eb92b0e846a3cac06f6df9b109e41fb3ee90c126",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.TorBox/icon.png",
+    "minTotoroVersion": "2.0.8",
+    "moduleTypes": [
+      "ITorrentStreamer"
     ]
   }
 ]
