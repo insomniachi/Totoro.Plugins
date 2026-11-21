@@ -23,9 +23,7 @@ internal class KitsuMetadataProvider(KitsuSession session, ILogger<KitsuMetadata
 
 	public async Task<AnimeModel> GetAnimeAsync(long id)
 	{
-		var request = (await session.RequestAsync($"anime/{id}")).WithAnimeFields("mediaRelationships.destination")
-																   .SetQueryParam("fields[mediaRelationships]", "role,destination");
-		var document = await session.GetAsync(request);
+		var document = await GetWithRelatedAsync(await session.RequestAsync($"anime/{id}"));
 		return document.Data.FirstOrDefault() is { } anime
 			? KitsuConverter.ConvertModel(anime, document)
 			: throw new InvalidOperationException($"Kitsu has no anime {id}");
@@ -165,9 +163,7 @@ internal class KitsuMetadataProvider(KitsuSession session, ILogger<KitsuMetadata
 			var anime = await FindAsync(x => x.SetQueryParam("filter[season]", season.SeasonName.ToString().ToLowerInvariant())
 											  .SetQueryParam("filter[seasonYear]", season.Year)
 											  .SetQueryParam("sort", "-userCount")
-											  .SetQueryParam("page[offset]", offset)
-											  .WithAnimeFields("mediaRelationships.destination")
-											  .SetQueryParam("fields[mediaRelationships]", "role,destination"), ct);
+											  .SetQueryParam("page[offset]", offset), ct, withRelated: true);
 			result.AddRange(anime);
 			if (anime.Count < PageSize)
 			{
@@ -192,17 +188,36 @@ internal class KitsuMetadataProvider(KitsuSession session, ILogger<KitsuMetadata
 	}
 
 	/// <summary>A page of anime, filtered by <paramref name="filter"/>, which can also ask for more fields.</summary>
-	private async Task<List<AnimeModel>> FindAsync(Action<IFlurlRequest> filter, CancellationToken ct = default)
+	/// <param name="withRelated">Whether to include each one's related anime (see <see cref="GetWithRelatedAsync"/>).</param>
+	private async Task<List<AnimeModel>> FindAsync(Action<IFlurlRequest> filter, CancellationToken ct = default, bool withRelated = false)
 	{
-		var request = (await session.RequestAsync("anime")).WithAnimeFields().SetQueryParam("page[limit]", PageSize);
+		var request = (await session.RequestAsync("anime")).SetQueryParam("page[limit]", PageSize);
 		filter(request);
-		var document = await session.GetAsync(request, ct);
+		var document = withRelated ? await GetWithRelatedAsync(request, ct) : await session.GetAsync(request.WithAnimeFields(), ct);
 		// R18 is the rating Kitsu gives hentai. Not filtered by Kitsu: its filter also drops the many anime with no rating.
 		return
 		[
 			.. document.Data.Where(x => session.IncludeNsfw || (string?)x["attributes"]?["ageRating"] != "R18")
 					   .Select(x => KitsuConverter.ConvertModel(x, document))
 		];
+	}
+
+	/// <summary>
+	/// The anime with their related anime. Kitsu fails some requests for related anime with a 500 (e.g. Spring 2019's
+	/// fourth page by user count), when an anime's relations are broken on its side: then they come without them.
+	/// </summary>
+	private async Task<KitsuDocument> GetWithRelatedAsync(IFlurlRequest request, CancellationToken ct = default)
+	{
+		try
+		{
+			return await session.GetAsync(request.WithAnimeFields("mediaRelationships.destination")
+												 .SetQueryParam("fields[mediaRelationships]", "role,destination"), ct);
+		}
+		catch (FlurlHttpException ex) when (ex.StatusCode == 500)
+		{
+			logger.LogWarning(ex, "Kitsu failed to return related anime; loading without them");
+			return await session.GetAsync(request.WithAnimeFields().RemoveQueryParam("fields[mediaRelationships]"), ct);
+		}
 	}
 
 	private async Task<Dictionary<string, string>> LoadCategoriesAsync()

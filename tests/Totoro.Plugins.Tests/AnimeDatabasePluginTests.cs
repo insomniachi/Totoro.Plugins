@@ -113,6 +113,27 @@ public class AnimeDatabasePluginTests
 	}
 
 	[Fact]
+	public async Task Kitsu_RelatedAnimeFailing_LoadsThePageWithoutThem()
+	{
+		// Faked: Kitsu answers some pages with a 500 when asked for their related anime.
+		using var http = new Flurl.Http.Testing.HttpTest();
+		http.ForCallsTo("https://kitsu.io/api/edge/anime*")
+			.RespondWith("", 500)
+			.RespondWith("""{"data":[{"id":"7","type":"anime","attributes":{"canonicalTitle":"Seven"}}]}""");
+		var provider = Kitsu().GetRequiredKeyedService<IAnimeMetadataProvider>(KitsuModule.Id);
+
+		var season = await provider.GetSeasonAnimeAsync(new Season(AnimeSeason.Spring, 2019), CancellationToken.None);
+
+		Assert.Equal([7], season.Select(x => x.Id));
+		Assert.Equal(2, http.CallLog.Count);
+		// The URLs as sent: the request itself is changed for the retry.
+		var sent = http.CallLog.Select(x => Uri.UnescapeDataString(x.HttpRequestMessage.RequestUri!.Query)).ToList();
+		Assert.Contains("include=mappings,categories,mediaRelationships.destination", sent[0]);
+		Assert.Contains("include=mappings,categories&", sent[1]);
+		Assert.DoesNotContain("fields[mediaRelationships]", sent[1]);
+	}
+
+	[Fact]
 	public async Task Kitsu_Live_SignInReachesKitsuPastCloudflare()
 	{
 		var session = Kitsu().GetRequiredService<KitsuSession>();
