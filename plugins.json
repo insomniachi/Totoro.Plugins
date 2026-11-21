@@ -80,20 +80,6 @@
     ]
   },
   {
-    "id": "45389725-d0a0-4426-87b0-255e86901fc8",
-    "name": "Gotaku",
-    "version": "1.0.1",
-    "description": "Gotaku streams anime, soft-subbed, hard-subbed and dubbed, with intro and outro times.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Gotaku-v1.0.1/Gotaku.totoro-plugin",
-    "sha256": "0cacffd2856e8d7aa1467e39dea26ae12cbdc4b50de8ad9e8da91f3699a3c1c9",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Gotaku/icon.png",
-    "minTotoroVersion": "2.3.1",
-    "moduleTypes": [
-      "IAnimeProvider"
-    ]
-  },
-  {
     "id": "1d572b0b-9185-4679-86d7-5e6dfa1bcdcd",
     "name": "ReAnime",
     "version": "1.0.7",
@@ -172,6 +158,20 @@
     "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/AniPM-v1.0.1/AniPM.totoro-plugin",
     "sha256": "83f5c4d867ce65a54bfb6ea0a1edd4a6c34978c4b83f1aadea4f4f0ee927eac6",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.AniPM/icon.png",
+    "minTotoroVersion": "2.3.1",
+    "moduleTypes": [
+      "IAnimeProvider"
+    ]
+  },
+  {
+    "id": "45389725-d0a0-4426-87b0-255e86901fc8",
+    "name": "Gotaku",
+    "version": "1.0.2",
+    "description": "Gotaku streams anime, soft-subbed, hard-subbed and dubbed, with intro and outro times.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Gotaku-v1.0.2/Gotaku.totoro-plugin",
+    "sha256": "95da90584fa8ce6f507218eaf14e1a06dc6efeb43bd069c388a70f1705101d18",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Gotaku/icon.png",
     "minTotoroVersion": "2.3.1",
     "moduleTypes": [
       "IAnimeProvider"
