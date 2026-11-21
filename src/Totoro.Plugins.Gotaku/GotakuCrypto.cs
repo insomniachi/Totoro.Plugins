@@ -88,10 +88,12 @@ internal static class GotakuCrypto
 		}
 
 		var n = Math.Min(length, data.Length);
+		// Only the start is decrypted and checked (LooksLikeMedia reads its first 4 packets), not the whole segment copied.
+		var head = data.AsSpan(0, Math.Min(data.Length, Math.Max(n, 188 * 4)));
 		byte[]? first = null;
 		foreach (var fullUrl in new[] { true, false })
 		{
-			var attempt = data.ToArray();
+			var attempt = head.ToArray();
 			XorKeystream(attempt.AsSpan(0, n), keySeed, Counter(url, fullUrl));
 			if (LooksLikeMedia(attempt))
 			{

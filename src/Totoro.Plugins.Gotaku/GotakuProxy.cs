@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -9,7 +10,7 @@ namespace Totoro.Plugins.Gotaku;
 /// <summary>
 /// Serves Gotaku's streams on localhost, decrypted: its playlists are encrypted whole and its segments' first bytes, so
 /// no player can open them as they are. Stateless: each URL carries what it needs in its query (u: the upstream URL,
-/// k: the manifest's keySeed, sb: how many of a segment's bytes are encrypted, m=1: a playlist), so it serves any
+/// k: the manifest's keySeed, sb: how many of a segment's bytes are encrypted, m=1: a playlist, s: u's signature), so it serves any
 /// number of episodes at once. Every request is answered whole and the connection closed.
 /// </summary>
 internal static partial class GotakuProxy
@@ -44,8 +45,17 @@ internal static partial class GotakuProxy
 
 		// The file name stays at the end of the path, so players can tell the format from it.
 		var name = playlist ? "playlist.m3u8" : Path.GetFileName(url.AbsolutePath) is { Length: > 0 } file ? file : "file";
-		return new Uri($"http://127.0.0.1:{Port()}/{Uri.EscapeDataString(name)}?{query}{(playlist ? "&m=1" : "")}");
+		return new Uri($"http://127.0.0.1:{Port()}/{Uri.EscapeDataString(name)}?{query}{(playlist ? "&m=1" : "")}&s={Sign(url.AbsoluteUri)}");
 	}
+
+	// Only URLs the proxy made itself are fetched (signed with a key of this run's), so a web page can't use it to reach
+	// anything else from this machine.
+	private static readonly byte[] s_signingKey = RandomNumberGenerator.GetBytes(32);
+
+	private static string Sign(string url) => Convert.ToHexString(HMACSHA256.HashData(s_signingKey, Encoding.UTF8.GetBytes(url)));
+
+	private static bool IsSigned(string url, string? signature) =>
+		signature is not null && CryptographicOperations.FixedTimeEquals(Encoding.ASCII.GetBytes(Sign(url)), Encoding.ASCII.GetBytes(signature));
 
 	private static int Port()
 	{
@@ -86,7 +96,7 @@ internal static partial class GotakuProxy
 			using var timeout = new CancellationTokenSource(TimeSpan.FromMinutes(1));
 			var target = await ReadTargetAsync(stream, timeout.Token);
 			var query = target is null ? null : HttpUtility.ParseQueryString(target.Query);
-			if (query?["u"] is not { } u || !Uri.TryCreate(u, UriKind.Absolute, out var url) || url.Scheme != Uri.UriSchemeHttps)
+			if (query?["u"] is not { } u || !IsSigned(u, query["s"]) || !Uri.TryCreate(u, UriKind.Absolute, out var url) || url.Scheme != Uri.UriSchemeHttps)
 			{
 				await WriteAsync(stream, HttpStatusCode.BadRequest, "text/plain", "Bad request"u8.ToArray(), timeout.Token);
 				return;
@@ -132,6 +142,23 @@ internal static partial class GotakuProxy
 		catch (Exception ex) when (ex is IOException or SocketException or HttpRequestException or OperationCanceledException)
 		{
 			// The player went away or the CDN failed; it asks again if it still wants it.
+		}
+		catch (Exception)
+		{
+			// What it fetched didn't decrypt or parse (a bad key, a malformed playlist): answered, not dropped.
+			await TryWriteErrorAsync(stream);
+		}
+	}
+
+	private static async Task TryWriteErrorAsync(NetworkStream stream)
+	{
+		try
+		{
+			using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+			await WriteAsync(stream, HttpStatusCode.BadGateway, "text/plain", [], timeout.Token);
+		}
+		catch (Exception ex) when (ex is IOException or SocketException or OperationCanceledException)
+		{
 		}
 	}
 

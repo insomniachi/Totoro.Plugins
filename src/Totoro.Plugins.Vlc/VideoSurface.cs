@@ -38,7 +38,12 @@ internal sealed class VideoSurface
 				UpdateSize();
 			}
 		};
-		Panel.CompositionScaleChanged += (_, _) => UpdateScale();
+		Panel.CompositionScaleChanged += (_, _) =>
+		{
+			UpdateScale();
+			// The size in pixels changes with the scale too.
+			UpdateSize();
+		};
 		// Not destroyed on Unloaded: libvlc draws into it until its player is freed, so the view model destroys it then.
 	}
 

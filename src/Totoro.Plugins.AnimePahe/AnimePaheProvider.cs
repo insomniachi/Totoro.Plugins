@@ -97,17 +97,19 @@ public sealed partial class AnimePaheProvider(
 	{
 		using var json = await GetJsonAsync($"api?m=search&q={Uri.EscapeDataString(query)}", ct);
 		List<(string, string, string)> shows = [];
+		List<(string, string, string)> found = [];
 		foreach (var item in Items(json))
 		{
 			if (item.TryGetProperty("id", out var id) && item.TryGetProperty("session", out var session) &&
 				item.TryGetProperty("title", out var title) && title.GetString() is { Length: > 0 } name)
 			{
 				var animeId = id.ToString();
-				sessions.Set(animeId, session.GetString() ?? "", name);
+				found.Add((animeId, session.GetString() ?? "", name));
 				shows.Add((animeId, name, item.TryGetProperty("poster", out var poster) ? poster.GetString() ?? "" : ""));
 			}
 		}
 
+		sessions.Set(found);
 		return shows;
 	}
 

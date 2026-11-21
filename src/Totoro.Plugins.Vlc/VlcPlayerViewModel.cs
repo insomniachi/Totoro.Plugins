@@ -269,6 +269,9 @@ internal sealed partial class VlcPlayerViewModel(int volume, PlayerAspectRatio a
 
 	protected override async Task CloseEngineAsync()
 	{
+		// libvlc still starting on the swap chain: it ends what it made once it sees the window closed, before the swap
+		// chain's freed below.
+		await _starting;
 		if (MediaPlayer is { } player)
 		{
 			MediaPlayer = null;

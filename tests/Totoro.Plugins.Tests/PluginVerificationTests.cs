@@ -183,9 +183,9 @@ public class PluginVerificationTests
 
 		var playlist = GotakuProxy.RewritePlaylist("#EXTM3U\n#EXT-X-KEY:METHOD=AES-128,URI=\"key.bin\"\nseg-1.ts\n", new Uri("https://cdn.example/a/b/index.m3u8"), "abc", 100);
 		var lines = playlist.Split('\n');
-		Assert.Contains("u=https%3A%2F%2Fcdn.example%2Fa%2Fb%2Fkey.bin\"", lines[1]);
+		Assert.Matches("u=https%3A%2F%2Fcdn.example%2Fa%2Fb%2Fkey.bin&s=[0-9A-F]{64}\"", lines[1]);
 		Assert.DoesNotContain("&k=", lines[1]);
-		Assert.Matches(@"^http://127\.0\.0\.1:\d+/seg-1\.ts\?u=https%3A%2F%2Fcdn\.example%2Fa%2Fb%2Fseg-1\.ts&k=abc&sb=100$", lines[2]);
+		Assert.Matches(@"^http://127\.0\.0\.1:\d+/seg-1\.ts\?u=https%3A%2F%2Fcdn\.example%2Fa%2Fb%2Fseg-1\.ts&k=abc&sb=100&s=[0-9A-F]{64}$", lines[2]);
 	}
 
 	[Fact]

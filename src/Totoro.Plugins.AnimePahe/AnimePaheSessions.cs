@@ -25,17 +25,28 @@ public sealed class AnimePaheSessions
 		}
 	}
 
-	public void Set(string id, string session, string title)
+	/// <summary>Keeps each show's session (e.g. a search's results), saving once if any changed.</summary>
+	public void Set(IEnumerable<(string Id, string Session, string Title)> shows)
 	{
 		lock (_lock)
 		{
 			var entries = Load();
-			if (entries.GetValueOrDefault(id) == new Entry(session, title))
+			var changed = false;
+			foreach (var (id, session, title) in shows)
+			{
+				var entry = new Entry(session, title);
+				if (entries.GetValueOrDefault(id) != entry)
+				{
+					entries[id] = entry;
+					changed = true;
+				}
+			}
+
+			if (!changed)
 			{
 				return;
 			}
 
-			entries[id] = new Entry(session, title);
 			Directory.CreateDirectory(Path.GetDirectoryName(_path)!);
 			File.WriteAllText(_path, JsonSerializer.Serialize(entries));
 		}

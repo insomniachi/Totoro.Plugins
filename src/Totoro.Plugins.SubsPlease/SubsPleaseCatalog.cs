@@ -48,7 +48,14 @@ internal static class SubsPleaseCatalog
 
 			if (File.Exists(file) && DateTime.Now - File.GetLastWriteTime(file) < s_maxAge)
 			{
-				return s_shows = JsonSerializer.Deserialize<List<CatalogShow>>(await File.ReadAllTextAsync(file, ct)) ?? [];
+				try
+				{
+					return s_shows = JsonSerializer.Deserialize<List<CatalogShow>>(await File.ReadAllTextAsync(file, ct)) ?? [];
+				}
+				catch (JsonException)
+				{
+					// Cut short (e.g. the app closed while writing it): downloaded again.
+				}
 			}
 
 			try

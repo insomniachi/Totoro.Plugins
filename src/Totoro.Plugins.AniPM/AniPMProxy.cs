@@ -88,6 +88,18 @@ internal static partial class AniPMProxy
 		{
 			// The player went away or the CDN failed; it asks again if it still wants it.
 		}
+		catch (Exception)
+		{
+			// What it fetched didn't parse (a malformed playlist): answered, not dropped.
+			try
+			{
+				using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+				await WriteAsync(stream, HttpStatusCode.BadGateway, "text/plain", [], timeout.Token);
+			}
+			catch (Exception ex) when (ex is IOException or SocketException or OperationCanceledException)
+			{
+			}
+		}
 	}
 
 	/// <summary>

@@ -18,6 +18,10 @@ public sealed class TorBoxStreamer(IModuleSettings<Settings> settings, ILogger<T
 {
 	private const string Api = "https://api.torbox.app/v1/api";
 	private static readonly TimeSpan s_pollInterval = TimeSpan.FromSeconds(2);
+	// How long a torrent may stay stalled (no peers to download it from) before the stream gives up on it.
+	private static readonly TimeSpan s_stalledLimit = TimeSpan.FromMinutes(1);
+	// mylist's page size (TorBox's most).
+	private const int ListPageSize = 1000;
 
 	// How many streams use each torrent this added (by TorBox's id), so ending one doesn't remove a torrent another still
 	// plays. Static: the streamer is made anew for each use.
@@ -36,12 +40,24 @@ public sealed class TorBoxStreamer(IModuleSettings<Settings> settings, ILogger<T
 		progress?.Report("Adding it to TorBox…");
 		// A .torrent is downloaded here and uploaded, as rqbit does, rather than left to TorBox to fetch.
 		var file = torrent.Scheme is "http" or "https" ? await GetTorrentFileAsync(torrent, ct) : null;
-		// What the user has already, which isn't removed: adding a torrent that's there may return it.
-		// shortcut: only mylist's first page (TorBox's default size); page through it if users have more torrents than that.
-		var existing = settings.Value.KeepTorrents
-			? null
-			: ((await SendAsync<List<Listed>?>(Request("torrents", "mylist").SetQueryParam("bypass_cache", "true").GetAsync(cancellationToken: ct), requireData: false)) ?? [])
-			  .Select(x => x.Id).ToHashSet();
+		// What the user has already, which isn't removed: adding a torrent that's there may return it. Every page of it, so
+		// none of theirs is taken for one this added.
+		HashSet<int>? existing = null;
+		if (!settings.Value.KeepTorrents)
+		{
+			existing = [];
+			for (var offset = 0; ; offset += ListPageSize)
+			{
+				var page = await SendAsync<List<Listed>?>(Request("torrents", "mylist").SetQueryParams(new { bypass_cache = "true", offset, limit = ListPageSize })
+																			 .GetAsync(cancellationToken: ct), requireData: false) ?? [];
+				existing.UnionWith(page.Select(x => x.Id));
+				if (page.Count < ListPageSize)
+				{
+					break;
+				}
+			}
+		}
+
 		var added = await SendAsync<Added>(Request("torrents", "createtorrent").PostMultipartAsync(content =>
 		{
 			if (file is null)
@@ -88,9 +104,11 @@ public sealed class TorBoxStreamer(IModuleSettings<Settings> settings, ILogger<T
 													 CancellationToken ct)
 	{
 		TorrentFile? selected = null;
+		DateTime? stalledSince = null;
 		while (true)
 		{
 			var info = await SendAsync<Torrent>(Request("torrents", "mylist").SetQueryParams(new { id, bypass_cache = "true" }).GetAsync(cancellationToken: ct));
+			var state = info.DownloadState ?? "";
 			// Its files are known once TorBox has the torrent's metadata.
 			if (selected is null && info.Files is { Count: > 0 } files)
 			{
@@ -103,10 +121,17 @@ public sealed class TorBoxStreamer(IModuleSettings<Settings> settings, ILogger<T
 				return selected;
 			}
 
-			if (info.DownloadState.Contains("error", StringComparison.OrdinalIgnoreCase) ||
-				info.DownloadState.Contains("failed", StringComparison.OrdinalIgnoreCase))
+			if (state.Contains("error", StringComparison.OrdinalIgnoreCase) ||
+				state.Contains("failed", StringComparison.OrdinalIgnoreCase))
 			{
-				throw new TorrentStreamException($"TorBox couldn't download it: {info.DownloadState}");
+				throw new TorrentStreamException($"TorBox couldn't download it: {state}");
+			}
+
+			// e.g. "stalled (no seeds)": it may pick up again, but not if it stays so.
+			stalledSince = state.Contains("stalled", StringComparison.OrdinalIgnoreCase) ? stalledSince ?? DateTime.UtcNow : null;
+			if (DateTime.UtcNow - stalledSince > s_stalledLimit)
+			{
+				throw new TorrentStreamException($"TorBox couldn't download it: {state}");
 			}
 
 			progress?.Report(info.Progress > 0 ? $"TorBox is downloading it… {info.Progress:P0}" : "TorBox is getting the torrent…");
@@ -188,7 +213,7 @@ public sealed class TorBoxStreamer(IModuleSettings<Settings> settings, ILogger<T
 	private sealed record Listed([property: JsonPropertyName("id")] int Id);
 
 	private sealed record Torrent(
-		[property: JsonPropertyName("download_state")] string DownloadState,
+		[property: JsonPropertyName("download_state")] string? DownloadState,
 		[property: JsonPropertyName("download_finished")] bool DownloadFinished,
 		[property: JsonPropertyName("download_present")] bool DownloadPresent,
 		[property: JsonPropertyName("progress")] double Progress,
