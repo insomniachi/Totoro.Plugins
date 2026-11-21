@@ -13,19 +13,6 @@
     ]
   },
   {
-    "id": "6da3925f-e703-4f69-9999-c17d6fc7942f",
-    "name": "KickAssAnime",
-    "version": "1.0.0",
-    "description": "KickAssAnime streams anime, subtitled and dubbed, with subtitles in many languages.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/KickAssAnime-v1.0.0/KickAssAnime.totoro-plugin",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.KickAssAnime/icon.png",
-    "minTotoroVersion": "2.0.13",
-    "moduleTypes": [
-      "IAnimeProvider"
-    ]
-  },
-  {
     "id": "e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58",
     "name": "TsukiHime",
     "version": "1.0.3",
@@ -174,6 +161,20 @@
     "sha256": "245beebfaeed3a3de28524ad8b072055a298bdc1c750b9c359e93f60a24ab81d",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Gotaku/icon.png",
     "minTotoroVersion": "2.3.1",
+    "moduleTypes": [
+      "IAnimeProvider"
+    ]
+  },
+  {
+    "id": "6da3925f-e703-4f69-9999-c17d6fc7942f",
+    "name": "KickAssAnime",
+    "version": "1.0.1",
+    "description": "KickAssAnime streams anime, subtitled and dubbed, with subtitles in many languages.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/KickAssAnime-v1.0.1/KickAssAnime.totoro-plugin",
+    "sha256": "18aca69e15fd9900a5cd72044d1e4558d7143c7b278b2a4ce7ae91a5e95ca897",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.KickAssAnime/icon.png",
+    "minTotoroVersion": "2.0.13",
     "moduleTypes": [
       "IAnimeProvider"
     ]
