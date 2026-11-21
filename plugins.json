@@ -13,20 +13,6 @@
     ]
   },
   {
-    "id": "1d572b0b-9185-4679-86d7-5e6dfa1bcdcd",
-    "name": "ReAnime",
-    "version": "1.0.7",
-    "description": "Re:ANIME streams anime, subtitled and dubbed, as the original files from FlixCloud.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/ReAnime-v1.0.7/ReAnime.totoro-plugin",
-    "sha256": "274de4a15fd591e1150f93f7a7c0bb9b603bf5e653835a15c4077de7e96a9f2b",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.ReAnime/icon.png",
-    "minTotoroVersion": "2.0.12",
-    "moduleTypes": [
-      "IAnimeProvider"
-    ]
-  },
-  {
     "id": "4833500d-bf61-4600-9f2d-0890c63c38c4",
     "name": "Shikimori",
     "version": "1.0.2",
@@ -178,6 +164,20 @@
     "minTotoroVersion": "2.0.8",
     "moduleTypes": [
       "ITorrentStreamer"
+    ]
+  },
+  {
+    "id": "1d572b0b-9185-4679-86d7-5e6dfa1bcdcd",
+    "name": "ReAnime",
+    "version": "1.0.8",
+    "description": "Re:ANIME streams anime, subtitled and dubbed, as the original files from FlixCloud.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/ReAnime-v1.0.8/ReAnime.totoro-plugin",
+    "sha256": "476d6567a7cbade9a08fef9decbe156f608f3bda5c7d57e59a3c00a65c808330",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.ReAnime/icon.png",
+    "minTotoroVersion": "2.0.12",
+    "moduleTypes": [
+      "IAnimeProvider"
     ]
   }
 ]
