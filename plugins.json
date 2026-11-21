@@ -53,20 +53,6 @@
     ]
   },
   {
-    "id": "33c86adc-7dc0-4fa4-a2bf-993acc66700b",
-    "name": "TorBox",
-    "version": "1.0.3",
-    "description": "Streams torrents through TorBox, a debrid service: it downloads them on its servers and the player streams its copy.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/TorBox-v1.0.3/TorBox.totoro-plugin",
-    "sha256": "06f62c3d31acb069c76b54b4069033243305eda71290ff7ae1630c269b27b63f",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.TorBox/icon.png",
-    "minTotoroVersion": "2.0.8",
-    "moduleTypes": [
-      "ITorrentStreamer"
-    ]
-  },
-  {
     "id": "1d572b0b-9185-4679-86d7-5e6dfa1bcdcd",
     "name": "ReAnime",
     "version": "1.0.7",
@@ -176,6 +162,20 @@
     "minTotoroVersion": "2.0.12",
     "moduleTypes": [
       "IAnimeProvider"
+    ]
+  },
+  {
+    "id": "33c86adc-7dc0-4fa4-a2bf-993acc66700b",
+    "name": "TorBox",
+    "version": "1.0.4",
+    "description": "Streams torrents through TorBox, a debrid service: it downloads them on its servers and the player streams its copy.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/TorBox-v1.0.4/TorBox.totoro-plugin",
+    "sha256": "7786190affdbf33a6d1890588ba1fe009d709afabefcb456b6e9834d9110ef15",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.TorBox/icon.png",
+    "minTotoroVersion": "2.0.8",
+    "moduleTypes": [
+      "ITorrentStreamer"
     ]
   }
 ]
