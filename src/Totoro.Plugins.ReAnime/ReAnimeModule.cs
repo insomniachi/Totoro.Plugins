@@ -31,7 +31,7 @@ public class ReAnimeModule : IModule<Settings>
 		services.AddKeyedTransient<IAnimeProvider, ReAnimeProvider>(Id);
 		services.AddHttpClient("ReAnime", client =>
 		{
-			client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
+			client.DefaultRequestHeaders.UserAgent.ParseAdd(Totoro.Plugins.Shared.BrowserHeaders.UserAgent);
 			client.DefaultRequestHeaders.Accept.ParseAdd("application/json, text/plain, */*");
 		})
 		// FlixCloud's file links only work from the IP address that asked for them, so connect the way the player will

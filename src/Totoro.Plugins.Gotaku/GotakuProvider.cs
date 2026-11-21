@@ -23,7 +23,7 @@ public sealed partial class GotakuProvider(
 	ILogger<GotakuProvider> logger,
 	IWebPageLoader? pages = null) : IAnimeProvider
 {
-	internal const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
+	internal const string UserAgent = Totoro.Plugins.Shared.BrowserHeaders.UserAgent;
 
 	private static readonly JsonSerializerOptions s_json = new(JsonSerializerDefaults.Web);
 

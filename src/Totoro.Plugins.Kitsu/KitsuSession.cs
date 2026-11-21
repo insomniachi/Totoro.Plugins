@@ -3,6 +3,7 @@ using Flurl;
 using Flurl.Http;
 using Microsoft.Extensions.Logging;
 using Totoro.Core.Settings;
+using Totoro.Plugins.Shared;
 
 namespace Totoro.Plugins.Kitsu;
 
@@ -20,7 +21,12 @@ internal sealed class KitsuSession(IModuleSettings<Settings> settings, ILogger<K
 	private const string Api = "https://kitsu.io";
 	private const string JsonApi = "application/vnd.api+json";
 
-	private readonly SemaphoreSlim _lock = new(1, 1);
+	private readonly OAuthLogin<KitsuToken> _login = new(() => settings.Value.Auth, token =>
+	{
+		settings.Value.Auth = token;
+		settings.Save();
+	}, refreshToken => RequestTokenAsync(new { grant_type = "refresh_token", refresh_token = refreshToken }), logger, "Kitsu");
+
 	private string? _userId;
 
 	public bool IsSignedIn => settings.Value.Auth is not null;
@@ -78,65 +84,14 @@ internal sealed class KitsuSession(IModuleSettings<Settings> settings, ILogger<K
 
 	private async Task SetAuthAsync(KitsuToken? token)
 	{
-		await _lock.WaitAsync();
-		try
-		{
-			settings.Value.Auth = token;
-			settings.Save();
-			_userId = null;
-		}
-		finally
-		{
-			_lock.Release();
-		}
+		await _login.SetAsync(token);
+		_userId = null;
 	}
 
-	private async Task<string?> GetTokenAsync()
-	{
-		await _lock.WaitAsync();
-		try
-		{
-			if (settings.Value.Auth is not { } auth)
-			{
-				return null;
-			}
+	private Task<string?> GetTokenAsync() => _login.GetAccessTokenAsync();
 
-			if (auth.ExpiresAt <= DateTimeOffset.UtcNow.AddMinutes(1))
-			{
-				try
-				{
-					auth = await RequestTokenAsync(new { grant_type = "refresh_token", refresh_token = auth.RefreshToken });
-					settings.Value.Auth = auth;
-					settings.Save();
-				}
-				catch (Exception ex)
-				{
-					// Carry on with the old token; requests that need the login will fail and say so.
-					logger.LogWarning(ex, "Couldn't refresh the Kitsu login");
-				}
-			}
-
-			return auth.AccessToken;
-		}
-		finally
-		{
-			_lock.Release();
-		}
-	}
-
-	private static async Task<KitsuToken> RequestTokenAsync(object body)
-	{
-		var response = await new Url(Api).AppendPathSegments("api", "oauth", "token")
-										  .PostUrlEncodedAsync(body)
-										  .ReceiveJson<JsonObject>();
-
-		return new KitsuToken
-		{
-			AccessToken = (string?)response["access_token"] ?? throw new InvalidOperationException("Kitsu returned no token"),
-			RefreshToken = (string?)response["refresh_token"] ?? "",
-			ExpiresAt = DateTimeOffset.UtcNow.AddSeconds((double?)response["expires_in"] ?? 2592000),
-		};
-	}
+	private static Task<KitsuToken> RequestTokenAsync(object body) =>
+		OAuthLogin<KitsuToken>.RequestAsync(new FlurlRequest(new Url(Api).AppendPathSegments("api", "oauth", "token")), body, TimeSpan.FromDays(30), "Kitsu");
 }
 
 /// <summary>A JSON:API response: its resources, and the ones included with them, found by their relationships.</summary>

@@ -29,7 +29,7 @@ public class KickAssAnimeModule : IModule<Settings>
 		services.AddKeyedTransient<IAnimeProvider, KickAssAnimeProvider>(Id);
 		services.AddHttpClient("KickAssAnime", client =>
 		{
-			client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
+			client.DefaultRequestHeaders.UserAgent.ParseAdd(Totoro.Plugins.Shared.BrowserHeaders.UserAgent);
 			client.DefaultRequestHeaders.Accept.ParseAdd("application/json, text/plain, */*");
 		});
 	}

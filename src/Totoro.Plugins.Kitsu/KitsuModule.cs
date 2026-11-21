@@ -44,7 +44,7 @@ public sealed class Settings : DataContainerConfig
 	public bool IncludeNsfw { get; set; }
 }
 
-public sealed class KitsuToken
+public sealed class KitsuToken : Totoro.Plugins.Shared.IOAuthToken
 {
 	public string AccessToken { get; set; } = "";
 	public string RefreshToken { get; set; } = "";

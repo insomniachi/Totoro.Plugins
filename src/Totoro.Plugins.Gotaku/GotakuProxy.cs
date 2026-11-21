@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using Totoro.Plugins.Shared;
 
 namespace Totoro.Plugins.Gotaku;
 
@@ -20,8 +21,7 @@ internal static partial class GotakuProxy
 		Timeout = TimeSpan.FromSeconds(30),
 	};
 
-	private static readonly Lock s_lock = new();
-	private static TcpListener? s_listener;
+	private static readonly LoopbackServer s_server = new(HandleAsync);
 	private static string s_referer = "https://gotaku.to/";
 
 	/// <summary>The local URL of a stream's playlist.</summary>
@@ -45,7 +45,7 @@ internal static partial class GotakuProxy
 
 		// The file name stays at the end of the path, so players can tell the format from it.
 		var name = playlist ? "playlist.m3u8" : Path.GetFileName(url.AbsolutePath) is { Length: > 0 } file ? file : "file";
-		return new Uri($"http://127.0.0.1:{Port()}/{Uri.EscapeDataString(name)}?{query}{(playlist ? "&m=1" : "")}&s={Sign(url.AbsoluteUri)}");
+		return new Uri($"http://127.0.0.1:{s_server.Port}/{Uri.EscapeDataString(name)}?{query}{(playlist ? "&m=1" : "")}&s={Sign(url.AbsoluteUri)}");
 	}
 
 	// Only URLs the proxy made itself are fetched (signed with a key of this run's), so a web page can't use it to reach
@@ -57,109 +57,51 @@ internal static partial class GotakuProxy
 	private static bool IsSigned(string url, string? signature) =>
 		signature is not null && CryptographicOperations.FixedTimeEquals(Encoding.ASCII.GetBytes(Sign(url)), Encoding.ASCII.GetBytes(signature));
 
-	private static int Port()
+	private static async Task HandleAsync(NetworkStream stream, Uri? target, CancellationToken ct)
 	{
-		lock (s_lock)
+		var query = target is null ? null : HttpUtility.ParseQueryString(target.Query);
+		if (query?["u"] is not { } u || !IsSigned(u, query["s"]) || !Uri.TryCreate(u, UriKind.Absolute, out var url) || url.Scheme != Uri.UriSchemeHttps)
 		{
-			if (s_listener is null)
-			{
-				s_listener = new TcpListener(IPAddress.Loopback, 0);
-				s_listener.Start();
-				_ = AcceptAsync(s_listener);
-			}
-
-			return ((IPEndPoint)s_listener.LocalEndpoint).Port;
+			await LoopbackServer.WriteAsync(stream, HttpStatusCode.BadRequest, "text/plain", "Bad request"u8.ToArray(), ct);
+			return;
 		}
-	}
 
-	private static async Task AcceptAsync(TcpListener listener)
-	{
-		while (true)
+		var keySeed = query["k"] is { } k ? GotakuCrypto.TryBase64Url(k) : null;
+		_ = int.TryParse(query["sb"], out var segmentBytes);
+
+		using var request = new HttpRequestMessage(HttpMethod.Get, url);
+		request.Headers.TryAddWithoutValidation("User-Agent", BrowserHeaders.UserAgent);
+		request.Headers.TryAddWithoutValidation("Referer", s_referer);
+		using var response = await s_client.SendAsync(request, ct);
+		if (!response.IsSuccessStatusCode)
 		{
-			try
-			{
-				_ = HandleAsync(await listener.AcceptTcpClientAsync());
-			}
-			catch (Exception ex) when (ex is ObjectDisposedException or SocketException)
-			{
-				return;
-			}
+			await LoopbackServer.WriteAsync(stream, response.StatusCode, "text/plain", [], ct);
+			return;
 		}
-	}
 
-	private static async Task HandleAsync(TcpClient client)
-	{
-		using var connection = client;
-		var stream = client.GetStream();
-		try
+		var body = await response.Content.ReadAsByteArrayAsync(ct);
+		if (query["m"] == "1")
 		{
-			using var timeout = new CancellationTokenSource(TimeSpan.FromMinutes(1));
-			var target = await ReadTargetAsync(stream, timeout.Token);
-			var query = target is null ? null : HttpUtility.ParseQueryString(target.Query);
-			if (query?["u"] is not { } u || !IsSigned(u, query["s"]) || !Uri.TryCreate(u, UriKind.Absolute, out var url) || url.Scheme != Uri.UriSchemeHttps)
+			var text = keySeed is null ? null : GotakuCrypto.DecryptPlaylist(body, keySeed, url);
+			text ??= Encoding.UTF8.GetString(body);
+			if (!text.TrimStart('﻿', ' ', '\r', '\n').StartsWith("#EXTM3U", StringComparison.Ordinal))
 			{
-				await WriteAsync(stream, HttpStatusCode.BadRequest, "text/plain", "Bad request"u8.ToArray(), timeout.Token);
+				await LoopbackServer.WriteAsync(stream, HttpStatusCode.BadGateway, "text/plain", "The playlist didn't decrypt"u8.ToArray(), ct);
 				return;
 			}
 
-			var keySeed = query["k"] is { } k ? GotakuCrypto.TryBase64Url(k) : null;
-			_ = int.TryParse(query["sb"], out var segmentBytes);
-
-			using var request = new HttpRequestMessage(HttpMethod.Get, url);
-			request.Headers.TryAddWithoutValidation("User-Agent", GotakuProvider.UserAgent);
-			request.Headers.TryAddWithoutValidation("Referer", s_referer);
-			using var response = await s_client.SendAsync(request, timeout.Token);
-			if (!response.IsSuccessStatusCode)
-			{
-				await WriteAsync(stream, response.StatusCode, "text/plain", [], timeout.Token);
-				return;
-			}
-
-			var body = await response.Content.ReadAsByteArrayAsync(timeout.Token);
-			if (query["m"] == "1")
-			{
-				var text = keySeed is null ? null : GotakuCrypto.DecryptPlaylist(body, keySeed, url);
-				text ??= Encoding.UTF8.GetString(body);
-				if (!text.TrimStart('﻿', ' ', '\r', '\n').StartsWith("#EXTM3U", StringComparison.Ordinal))
-				{
-					await WriteAsync(stream, HttpStatusCode.BadGateway, "text/plain", "The playlist didn't decrypt"u8.ToArray(), timeout.Token);
-					return;
-				}
-
-				var rewritten = RewritePlaylist(text, response.RequestMessage?.RequestUri ?? url, query["k"] ?? "", segmentBytes);
-				await WriteAsync(stream, HttpStatusCode.OK, "application/vnd.apple.mpegurl", Encoding.UTF8.GetBytes(rewritten), timeout.Token);
-				return;
-			}
-
-			if (keySeed is not null)
-			{
-				GotakuCrypto.DecryptSegment(body, keySeed, url.AbsoluteUri, segmentBytes);
-			}
-
-			// shortcut: no ranges, every file is sent whole (HLS players fetch segments whole); add them if one seeks within a file.
-			await WriteAsync(stream, HttpStatusCode.OK, response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream", body, timeout.Token);
+			var rewritten = RewritePlaylist(text, response.RequestMessage?.RequestUri ?? url, query["k"] ?? "", segmentBytes);
+			await LoopbackServer.WriteAsync(stream, HttpStatusCode.OK, "application/vnd.apple.mpegurl", Encoding.UTF8.GetBytes(rewritten), ct);
+			return;
 		}
-		catch (Exception ex) when (ex is IOException or SocketException or HttpRequestException or OperationCanceledException)
+
+		if (keySeed is not null)
 		{
-			// The player went away or the CDN failed; it asks again if it still wants it.
+			GotakuCrypto.DecryptSegment(body, keySeed, url.AbsoluteUri, segmentBytes);
 		}
-		catch (Exception)
-		{
-			// What it fetched didn't decrypt or parse (a bad key, a malformed playlist): answered, not dropped.
-			await TryWriteErrorAsync(stream);
-		}
-	}
 
-	private static async Task TryWriteErrorAsync(NetworkStream stream)
-	{
-		try
-		{
-			using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-			await WriteAsync(stream, HttpStatusCode.BadGateway, "text/plain", [], timeout.Token);
-		}
-		catch (Exception ex) when (ex is IOException or SocketException or OperationCanceledException)
-		{
-		}
+		// shortcut: no ranges, every file is sent whole (HLS players fetch segments whole); add them if one seeks within a file.
+		await LoopbackServer.WriteAsync(stream, HttpStatusCode.OK, response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream", body, ct);
 	}
 
 	/// <summary>Every URL in a playlist made one of the proxy's: playlists as playlists, keys and subtitles as they are, the rest as segments.</summary>
@@ -192,37 +134,6 @@ internal static partial class GotakuProxy
 				return $"URI=\"{local.AbsoluteUri}\"";
 			});
 		}));
-	}
-
-	/// <summary>The request's path and query; null if it isn't a GET or HEAD.</summary>
-	private static async Task<Uri?> ReadTargetAsync(NetworkStream stream, CancellationToken ct)
-	{
-		var buffer = new byte[16 * 1024];
-		var length = 0;
-		while (length < buffer.Length)
-		{
-			var read = await stream.ReadAsync(buffer.AsMemory(length), ct);
-			if (read == 0)
-			{
-				break;
-			}
-
-			length += read;
-			if (buffer.AsSpan(0, length).IndexOf("\r\n\r\n"u8) >= 0)
-			{
-				break;
-			}
-		}
-
-		var requestLine = Encoding.ASCII.GetString(buffer, 0, length).Split("\r\n")[0].Split(' ');
-		return requestLine is ["GET" or "HEAD", var path, ..] && Uri.TryCreate($"http://127.0.0.1{path}", UriKind.Absolute, out var target) ? target : null;
-	}
-
-	private static async Task WriteAsync(NetworkStream stream, HttpStatusCode status, string type, byte[] body, CancellationToken ct)
-	{
-		var head = $"HTTP/1.1 {(int)status} {status}\r\nContent-Type: {type}\r\nContent-Length: {body.Length}\r\nAccess-Control-Allow-Origin: *\r\nConnection: close\r\n\r\n";
-		await stream.WriteAsync(Encoding.ASCII.GetBytes(head), ct);
-		await stream.WriteAsync(body, ct);
 	}
 
 	[GeneratedRegex("URI=\"([^\"]+)\"")]

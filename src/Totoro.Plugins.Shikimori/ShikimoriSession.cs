@@ -5,6 +5,7 @@ using Flurl;
 using Flurl.Http;
 using Microsoft.Extensions.Logging;
 using Totoro.Core.Settings;
+using Totoro.Plugins.Shared;
 
 namespace Totoro.Plugins.Shikimori;
 
@@ -27,7 +28,18 @@ internal sealed class ShikimoriSession(IModuleSettings<Settings> settings, ILogg
 	private static readonly JsonSerializerOptions s_graphQl = new(JsonSerializerDefaults.Web);
 	private static readonly JsonSerializerOptions s_rest = new(JsonSerializerDefaults.Web) { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower };
 
-	private readonly SemaphoreSlim _lock = new(1, 1);
+	private readonly OAuthLogin<ShikimoriToken> _login = new(() => settings.Value.Auth, token =>
+	{
+		settings.Value.Auth = token;
+		settings.Save();
+	}, refreshToken => RequestTokenAsync(new
+	{
+		grant_type = "refresh_token",
+		client_id = ClientId,
+		client_secret = ClientSecret,
+		refresh_token = refreshToken,
+	}), logger, "Shikimori");
+
 	private long? _userId;
 
 	public bool IsSignedIn => settings.Value.Auth is not null;
@@ -98,70 +110,13 @@ internal sealed class ShikimoriSession(IModuleSettings<Settings> settings, ILogg
 
 	private async Task SetAuthAsync(ShikimoriToken? token)
 	{
-		await _lock.WaitAsync();
-		try
-		{
-			settings.Value.Auth = token;
-			settings.Save();
-			_userId = null;
-		}
-		finally
-		{
-			_lock.Release();
-		}
+		await _login.SetAsync(token);
+		_userId = null;
 	}
 
-	private async Task<string?> GetTokenAsync()
-	{
-		await _lock.WaitAsync();
-		try
-		{
-			if (settings.Value.Auth is not { } auth)
-			{
-				return null;
-			}
+	private Task<string?> GetTokenAsync() => _login.GetAccessTokenAsync();
 
-			if (auth.ExpiresAt <= DateTimeOffset.UtcNow.AddMinutes(1))
-			{
-				try
-				{
-					auth = await RequestTokenAsync(new
-					{
-						grant_type = "refresh_token",
-						client_id = ClientId,
-						client_secret = ClientSecret,
-						refresh_token = auth.RefreshToken,
-					});
-					settings.Value.Auth = auth;
-					settings.Save();
-				}
-				catch (Exception ex)
-				{
-					// Carry on with the old token; requests that need the login will fail and say so.
-					logger.LogWarning(ex, "Couldn't refresh the Shikimori login");
-				}
-			}
-
-			return auth.AccessToken;
-		}
-		finally
-		{
-			_lock.Release();
-		}
-	}
-
-	private static async Task<ShikimoriToken> RequestTokenAsync(object body)
-	{
-		var response = await new Url(Site).AppendPathSegments("oauth", "token")
-										  .WithHeader("User-Agent", AppName)
-										  .PostUrlEncodedAsync(body)
-										  .ReceiveJson<JsonObject>();
-
-		return new ShikimoriToken
-		{
-			AccessToken = (string?)response["access_token"] ?? throw new InvalidOperationException("Shikimori returned no token"),
-			RefreshToken = (string?)response["refresh_token"] ?? "",
-			ExpiresAt = DateTimeOffset.UtcNow.AddSeconds((double?)response["expires_in"] ?? 86400),
-		};
-	}
+	private static Task<ShikimoriToken> RequestTokenAsync(object body) =>
+		OAuthLogin<ShikimoriToken>.RequestAsync(new Url(Site).AppendPathSegments("oauth", "token").WithHeader("User-Agent", AppName), body,
+												TimeSpan.FromDays(1), "Shikimori");
 }

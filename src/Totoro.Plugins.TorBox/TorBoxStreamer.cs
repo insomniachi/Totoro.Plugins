@@ -5,6 +5,7 @@ using Flurl.Http;
 using Microsoft.Extensions.Logging;
 using Totoro.Core.Modules.Streaming;
 using Totoro.Core.Settings;
+using Totoro.Plugins.Shared;
 
 namespace Totoro.Plugins.TorBox;
 
@@ -39,7 +40,7 @@ public sealed class TorBoxStreamer(IModuleSettings<Settings> settings, ILogger<T
 	{
 		progress?.Report("Adding it to TorBox…");
 		// A .torrent is downloaded here and uploaded, as rqbit does, rather than left to TorBox to fetch.
-		var file = torrent.Scheme is "http" or "https" ? await GetTorrentFileAsync(torrent, ct) : null;
+		var file = TorrentFiles.IsFile(torrent) ? await TorrentFiles.DownloadAsync(torrent, ct) : null;
 		// What the user has already, which isn't removed: adding a torrent that's there may return it. Every page of it, so
 		// none of theirs is taken for one this added.
 		HashSet<int>? existing = null;
@@ -169,17 +170,6 @@ public sealed class TorBoxStreamer(IModuleSettings<Settings> settings, ILogger<T
 		return Api.AppendPathSegments(segments).AllowAnyHttpStatus().WithOAuthBearerToken(settings.Value.ApiKey);
 	}
 
-	private static async Task<byte[]> GetTorrentFileAsync(Uri torrent, CancellationToken ct)
-	{
-		try
-		{
-			return await torrent.AbsoluteUri.GetBytesAsync(cancellationToken: ct);
-		}
-		catch (FlurlHttpException ex)
-		{
-			throw new TorrentStreamException($"Couldn't download the torrent from {torrent.Host}: {ex.Message}", ex);
-		}
-	}
 
 	/// <summary>Calls TorBox's API; its errors become <see cref="TorrentStreamException"/>s with TorBox's explanation.</summary>
 	private static async Task<T> SendAsync<T>(Task<IFlurlResponse> call, bool requireData = true)

@@ -11,4 +11,8 @@
     <AssemblyMetadata Include="ShikimoriClientId" Value="$(SHIKIMORI_CLIENT_ID)" />
     <AssemblyMetadata Include="ShikimoriClientSecret" Value="$(SHIKIMORI_CLIENT_SECRET)" />
   </ItemGroup>
+  <!-- Code shared by plugins: each builds it in, so it needs nothing newer from Totoro than the plugin does. -->
+  <ItemGroup>
+    <Compile Include="..\Shared\OAuthLogin.cs" Link="Shared\OAuthLogin.cs" />
+  </ItemGroup>
 </Project>

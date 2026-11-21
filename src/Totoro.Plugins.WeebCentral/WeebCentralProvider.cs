@@ -15,7 +15,7 @@ namespace Totoro.Plugins.WeebCentral;
 public sealed partial class WeebCentralProvider : IMangaProvider
 {
 	private const string BaseUrl = "https://weebcentral.com";
-	private const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36";
+	private const string UserAgent = Totoro.Plugins.Shared.BrowserHeaders.UserAgent;
 
 	// Search results whose series pages are checked for database links.
 	private const int CandidatesToCheck = 3;

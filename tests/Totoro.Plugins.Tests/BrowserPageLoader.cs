@@ -24,17 +24,6 @@ internal sealed class BrowserPageLoader : IWebPageLoader
 	private static readonly TimeSpan s_automaticCheck = TimeSpan.FromSeconds(15);
 	private static readonly TimeSpan s_loadTimeout = TimeSpan.FromSeconds(30);
 
-	// As the app's WebPageLoader reads a page.
-	private const string ReadScript = """
-		JSON.stringify({
-			url: location.href,
-			type: document.contentType,
-			check: document.title === 'Just a moment...' || !!document.getElementById('challenge-form'),
-			blocked: document.title.startsWith('Attention Required!'),
-			content: document.contentType === 'text/html' ? document.documentElement.outerHTML : (document.body ? document.body.innerText : '')
-		})
-		""";
-
 	private readonly SemaphoreSlim _gate = new(1, 1);
 	private readonly Task<(Form Ui, CoreWebView2 Browser)> _started;
 
@@ -234,22 +223,7 @@ internal sealed class BrowserPageLoader : IWebPageLoader
 
 	private static async Task<PageState> ReadAsync(CoreWebView2 browser)
 	{
-		// The script returns a JSON string, which ExecuteScriptAsync returns as JSON again; null while a page is loading.
-		var json = JsonSerializer.Deserialize<string?>(await browser.ExecuteScriptAsync(ReadScript));
-		if (json is null)
-		{
-			return new PageState("", "", Check: true, Blocked: false, "");
-		}
-
-		using var document = JsonDocument.Parse(json);
-		var root = document.RootElement;
-		return new PageState(
-			root.GetProperty("url").GetString() ?? "",
-			root.GetProperty("type").GetString() ?? "",
-			root.GetProperty("check").GetBoolean(),
-			root.GetProperty("blocked").GetBoolean(),
-			root.GetProperty("content").GetString() ?? "");
+		// As the app's WebPageLoader reads a page.
+		return PageReader.Parse(await browser.ExecuteScriptAsync(PageReader.Script));
 	}
-
-	private sealed record PageState(string Url, string Type, bool Check, bool Blocked, string Content);
 }

@@ -264,6 +264,14 @@ public class PluginVerificationTests
 	}
 
 	[Fact]
+	public async Task AniPMProxy_RefusesHostsOutsideItsCdn()
+	{
+		using var http = new HttpClient();
+		var response = await http.GetAsync(AniPMProxy.Local(new Uri("https://example.com/x.m3u8"), "playlist.m3u8"));
+		Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+	}
+
+	[Fact]
 	public async Task AniPMProvider_Live_SearchesListsAndPlaysAStream()
 	{
 		var module = new AniPMModule();

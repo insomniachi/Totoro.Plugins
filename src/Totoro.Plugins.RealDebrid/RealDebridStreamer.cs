@@ -5,6 +5,7 @@ using Flurl.Http;
 using Microsoft.Extensions.Logging;
 using Totoro.Core.Modules.Streaming;
 using Totoro.Core.Settings;
+using Totoro.Plugins.Shared;
 
 namespace Totoro.Plugins.RealDebrid;
 
@@ -31,8 +32,8 @@ public sealed class RealDebridStreamer(IModuleSettings<Settings> settings, ILogg
 	{
 		progress?.Report("Adding it to Real-Debrid…");
 		// Each add makes a new torrent in the account, even for one the user has already, so the stream owns it.
-		var added = torrent.Scheme is "http" or "https"
-			? await SendAsync<Added>(Request("torrents", "addTorrent").PutAsync(new ByteArrayContent(await GetTorrentFileAsync(torrent, ct)), cancellationToken: ct))
+		var added = TorrentFiles.IsFile(torrent)
+			? await SendAsync<Added>(Request("torrents", "addTorrent").PutAsync(new ByteArrayContent(await TorrentFiles.DownloadAsync(torrent, ct)), cancellationToken: ct))
 			: await SendAsync<Added>(Request("torrents", "addMagnet").PostUrlEncodedAsync(new { magnet = torrent.AbsoluteUri }, cancellationToken: ct));
 		var remove = !settings.Value.KeepTorrents;
 
@@ -103,17 +104,6 @@ public sealed class RealDebridStreamer(IModuleSettings<Settings> settings, ILogg
 		return Api.AppendPathSegments(segments).AllowAnyHttpStatus().WithOAuthBearerToken(settings.Value.ApiKey);
 	}
 
-	private static async Task<byte[]> GetTorrentFileAsync(Uri torrent, CancellationToken ct)
-	{
-		try
-		{
-			return await torrent.AbsoluteUri.GetBytesAsync(cancellationToken: ct);
-		}
-		catch (FlurlHttpException ex)
-		{
-			throw new TorrentStreamException($"Couldn't download the torrent from {torrent.Host}: {ex.Message}", ex);
-		}
-	}
 
 	/// <summary>Calls Real-Debrid's API; its errors become <see cref="TorrentStreamException"/>s with Real-Debrid's reason.</summary>
 	private static async Task<T> SendAsync<T>(Task<IFlurlResponse> call)

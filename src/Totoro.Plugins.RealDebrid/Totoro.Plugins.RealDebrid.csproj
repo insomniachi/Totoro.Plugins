@@ -2,4 +2,8 @@
   <PropertyGroup>
     <RootNamespace>Totoro.Plugins.RealDebrid</RootNamespace>
   </PropertyGroup>
+  <!-- Code shared by plugins: each builds it in, so it needs nothing newer from Totoro than the plugin does. -->
+  <ItemGroup>
+    <Compile Include="..\Shared\TorrentFiles.cs" Link="Shared\TorrentFiles.cs" />
+  </ItemGroup>
 </Project>
