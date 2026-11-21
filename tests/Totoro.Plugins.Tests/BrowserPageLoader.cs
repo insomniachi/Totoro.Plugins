@@ -27,6 +27,9 @@ internal sealed class BrowserPageLoader : IWebPageLoader
 	private readonly SemaphoreSlim _gate = new(1, 1);
 	private readonly Task<(Form Ui, CoreWebView2 Browser)> _started;
 
+	// Held so the GC can't collect it: that closes the browser, and its next use throws on the UI thread, crashing the test host.
+	private CoreWebView2Controller? _controller;
+
 	// The page being opened and as from where: its request gets that Referer (see the WebResourceRequested handler).
 	private (Uri Url, Uri? Referrer)? _opening;
 
@@ -44,9 +47,9 @@ internal sealed class BrowserPageLoader : IWebPageLoader
 				{
 					var folder = Path.Combine(Path.GetTempPath(), "Totoro.Plugins.Tests", "WebView2");
 					var environment = await CoreWebView2Environment.CreateAsync(null, folder);
-					var controller = await environment.CreateCoreWebView2ControllerAsync(ui.Handle);
-					controller.IsVisible = false;
-					var browser = controller.CoreWebView2;
+					_controller = await environment.CreateCoreWebView2ControllerAsync(ui.Handle);
+					_controller.IsVisible = false;
+					var browser = _controller.CoreWebView2;
 					browser.IsMuted = true;
 					browser.WebResourceRequested += (_, args) =>
 					{
