@@ -1,18 +1,5 @@
 [
   {
-    "id": "8fa7a097-dba5-4177-8f06-de7caa2ac580",
-    "name": "Real-Debrid",
-    "version": "1.0.1",
-    "description": "Streams torrents through Real-Debrid, a debrid service: it downloads them on its servers and the player streams its copy.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/RealDebrid-v1.0.1/RealDebrid.totoro-plugin",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.RealDebrid/icon.png",
-    "minTotoroVersion": "2.0.8",
-    "moduleTypes": [
-      "ITorrentStreamer"
-    ]
-  },
-  {
     "id": "e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58",
     "name": "TsukiHime",
     "version": "1.0.3",
@@ -177,6 +164,20 @@
     "minTotoroVersion": "2.3.13",
     "moduleTypes": [
       "IAnimeDatabase"
+    ]
+  },
+  {
+    "id": "8fa7a097-dba5-4177-8f06-de7caa2ac580",
+    "name": "Real-Debrid",
+    "version": "1.0.2",
+    "description": "Streams torrents through Real-Debrid, a debrid service: it downloads them on its servers and the player streams its copy.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/RealDebrid-v1.0.2/RealDebrid.totoro-plugin",
+    "sha256": "b63ce88d7e7e2051d1db6568b72dc1ab02b4b193af19bad30d34b16863ffe6b4",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.RealDebrid/icon.png",
+    "minTotoroVersion": "2.0.8",
+    "moduleTypes": [
+      "ITorrentStreamer"
     ]
   }
 ]
