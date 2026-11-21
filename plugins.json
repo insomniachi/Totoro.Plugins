@@ -26,19 +26,6 @@
     ]
   },
   {
-    "id": "9b7a71c8-7633-46e8-be5e-288c19ac1330",
-    "name": "SubsPlease",
-    "version": "1.0.3",
-    "description": "SubsPlease provides fast and timely English subtitled anime immediately after simulcasting.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/SubsPlease-v1.0.3/SubsPlease.totoro-plugin",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.SubsPlease/icon.png",
-    "minTotoroVersion": "2.0.12",
-    "moduleTypes": [
-      "IAnimeProvider"
-    ]
-  },
-  {
     "id": "e3b5d0a4-6f21-4c8e-9a7d-2b14c9f06e58",
     "name": "TsukiHime",
     "version": "1.0.3",
@@ -173,6 +160,20 @@
     "sha256": "95da90584fa8ce6f507218eaf14e1a06dc6efeb43bd069c388a70f1705101d18",
     "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Gotaku/icon.png",
     "minTotoroVersion": "2.3.1",
+    "moduleTypes": [
+      "IAnimeProvider"
+    ]
+  },
+  {
+    "id": "9b7a71c8-7633-46e8-be5e-288c19ac1330",
+    "name": "SubsPlease",
+    "version": "1.0.4",
+    "description": "SubsPlease provides fast and timely English subtitled anime immediately after simulcasting.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/SubsPlease-v1.0.4/SubsPlease.totoro-plugin",
+    "sha256": "e02616bdcd46cb3dacf91a24e22b318bbd0e3aa3d844fbb2b564cbcd18da50a1",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.SubsPlease/icon.png",
+    "minTotoroVersion": "2.0.12",
     "moduleTypes": [
       "IAnimeProvider"
     ]
