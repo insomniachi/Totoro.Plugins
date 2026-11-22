@@ -6,7 +6,7 @@ using Totoro.UI.Player;
 namespace Totoro.Plugins.Vlc;
 
 /// <summary>The player that plays with libvlc (VLC's engine), in the app's own window.</summary>
-internal sealed class VlcMediaPlayer(IPlayerWindowFactory windows, IModuleSettings<Settings> settings, IPreferences preferences, ILogger<VlcMediaPlayer> logger)
+internal sealed class VlcMediaPlayer(IPlayerWindowFactory windows, IModuleSettings<PlayerSettings> settings, IPreferences preferences, ILogger<VlcMediaPlayer> logger)
 	: WindowMediaPlayer(windows, settings, preferences, logger)
 {
 	// The headers libvlc can send itself; any others go through the proxy.
