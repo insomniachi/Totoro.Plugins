@@ -239,6 +239,14 @@ jobs:
           $notes = "Release of $plugin plugin v$ver"
         }
 
+        # The plugin's commits since its last release (all of them on its first), without the catalog commits.
+        $prev = git tag --list "$plugin-v*" --sort=-v:refname | Select-Object -First 1
+        $range = if ($prev) { "$prev..${{ steps.catalog.outputs.source_sha }}" } else { "${{ steps.catalog.outputs.source_sha }}" }
+        $commits = git log $range --no-merges --invert-grep --grep "\[skip ci\]" --format="- %s (%h)" -- "src/Totoro.Plugins.$plugin"
+        if ($commits) {
+          $notes += "`n`n## Commits`n" + ($commits -join "`n")
+        }
+
         # The release first, so the catalog never lists a package that isn't there.
         gh release create $tag "${{ steps.catalog.outputs.package_path }}" `
           --target "${{ steps.catalog.outputs.source_sha }}" `
