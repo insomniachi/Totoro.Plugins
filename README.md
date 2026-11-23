@@ -10,7 +10,7 @@ Plugins in this repository are dynamically loaded at runtime into an isolated `A
 
 ### Anime streaming
 
-Status comes from each provider's live test (search, episodes, streams; in WebView2, as Totoro runs them, for plugins that load pages in a browser), run weekly by [Check Providers](https://github.com/insomniachi/Totoro.Plugins/actions/workflows/check-providers.yml). Last checked: <!-- provider-check -->2026-11-17<!-- /provider-check -->.
+Status comes from each provider's live test (search, episodes, streams; in WebView2, as Totoro runs them, for plugins that load pages in a browser), run weekly by [Check Providers](https://github.com/insomniachi/Totoro.Plugins/actions/workflows/check-providers.yml). Last checked: <!-- provider-check -->2026-11-23<!-- /provider-check -->.
 
 | Plugin | ID | Description | Status |
 |---|---|---|---|
