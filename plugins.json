@@ -111,20 +111,6 @@
     ]
   },
   {
-    "id": "d8ae6ad9-3e24-40fe-b79a-8c5d4212dc6e",
-    "name": "Kitsu",
-    "version": "1.0.3",
-    "description": "Kitsu is an anime database and list tracker.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Kitsu-v1.0.3/Kitsu.totoro-plugin",
-    "sha256": "25917168d1e6240d82db9622abb2934f5554e646082395868d5e4ab0646f0e0b",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Kitsu/icon.png",
-    "minTotoroVersion": "2.3.13",
-    "moduleTypes": [
-      "IAnimeDatabase"
-    ]
-  },
-  {
     "id": "8fa7a097-dba5-4177-8f06-de7caa2ac580",
     "name": "Real-Debrid",
     "version": "1.0.2",
@@ -178,6 +164,20 @@
     "minTotoroVersion": "2.0.8",
     "moduleTypes": [
       "ITorrentStreamer"
+    ]
+  },
+  {
+    "id": "d8ae6ad9-3e24-40fe-b79a-8c5d4212dc6e",
+    "name": "Kitsu",
+    "version": "1.0.4",
+    "description": "Kitsu is an anime database and list tracker.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Kitsu-v1.0.4/Kitsu.totoro-plugin",
+    "sha256": "de15712410e94d2195d530b552a29ea58fd321540022bfa869f8149f9976ec99",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Kitsu/icon.png",
+    "minTotoroVersion": "2.4.10",
+    "moduleTypes": [
+      "IAnimeDatabase"
     ]
   }
 ]
