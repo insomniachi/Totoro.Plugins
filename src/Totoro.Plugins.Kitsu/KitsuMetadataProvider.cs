@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json.Nodes;
 using Flurl.Http;
 using Microsoft.Extensions.Logging;
@@ -120,6 +121,42 @@ internal class KitsuMetadataProvider(KitsuSession session, ILogger<KitsuMetadata
 				Description = (string?)x["description"] ?? "",
 				Gender = (string?)x["gender"] ?? "",
 			})
+		];
+	}
+
+	/// <summary>
+	/// Its reactions, most upvoted first: Kitsu's short takes on an anime, which replaced its reviews (its API returns
+	/// none of those any more). Totoro shows AniList's reviews when there are none.
+	/// </summary>
+	public async Task<List<ReviewModel>> GetReviewsAsync(long animeId)
+	{
+		var request = (await session.RequestAsync("media-reactions"))
+			.SetQueryParam("filter[animeId]", animeId)
+			.SetQueryParam("sort", "-upVotesCount")
+			.SetQueryParam("page[limit]", 10)
+			.SetQueryParam("include", "user")
+			.SetQueryParam("fields[users]", "name,avatar")
+			.SetQueryParam("fields[mediaReactions]", "reaction,upVotesCount,createdAt,user");
+		var document = await session.GetAsync(request);
+
+		return
+		[
+			.. document.Data.Select(reaction =>
+			{
+				var attributes = reaction["attributes"];
+				var user = document.Related(reaction, "user").FirstOrDefault()?["attributes"];
+				return new ReviewModel(
+					nameof(AnimeId.Kitsu),
+					(string?)user?["name"] ?? "",
+					(string?)user?["avatar"]?["small"],
+					((string?)attributes?["reaction"] ?? "").Trim(),
+					"",
+					null,
+					(int?)attributes?["upVotesCount"] is > 0 and var votes ? (votes == 1 ? "1 upvote" : $"{votes:N0} upvotes") : null,
+					// shortcut: no link, as Kitsu's site turns away requests to check its reaction pages' address; add one once it's known.
+					null,
+					DateTimeOffset.TryParse((string?)attributes?["createdAt"], CultureInfo.InvariantCulture, out var created) ? created : null);
+			}),
 		];
 	}
 
