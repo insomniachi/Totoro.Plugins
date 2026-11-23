@@ -41,20 +41,6 @@
     ]
   },
   {
-    "id": "c4e8a1b2-7f3d-4a96-8e05-2b9d6f1c3a74",
-    "name": "VLC",
-    "version": "1.0.1",
-    "description": "Plays videos in Totoro's own window with libvlc, VLC's engine: it plays what Windows' player doesn't, ASS subtitles included.",
-    "author": "Totoro",
-    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Vlc-v1.0.1/Vlc.totoro-plugin",
-    "sha256": "10e4c56a69d39e0f866094aa9d5373dd290f1a412557cf97f1095822d262e9ef",
-    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Vlc/icon.png",
-    "minTotoroVersion": "2.4.3",
-    "moduleTypes": [
-      "IMediaPlayer"
-    ]
-  },
-  {
     "id": "d3180556-f773-4265-ac9d-b3f3be98ce6a",
     "name": "AniPM",
     "version": "1.0.2",
@@ -178,6 +164,20 @@
     "minTotoroVersion": "2.4.10",
     "moduleTypes": [
       "IAnimeDatabase"
+    ]
+  },
+  {
+    "id": "c4e8a1b2-7f3d-4a96-8e05-2b9d6f1c3a74",
+    "name": "VLC",
+    "version": "1.0.3",
+    "description": "Plays videos in Totoro's own window with libvlc, VLC's engine: it plays what Windows' player doesn't, ASS subtitles included.",
+    "author": "Totoro",
+    "downloadUrl": "https://github.com/insomniachi/Totoro.Plugins/releases/download/Vlc-v1.0.3/Vlc.totoro-plugin",
+    "sha256": "bc4186efdd823d911a3354a34d713f804d547788b5dc7d436af8c46faa37b8d0",
+    "iconUrl": "https://raw.githubusercontent.com/insomniachi/Totoro.Plugins/main/src/Totoro.Plugins.Vlc/icon.png",
+    "minTotoroVersion": "2.4.9",
+    "moduleTypes": [
+      "IMediaPlayer"
     ]
   }
 ]
